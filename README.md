@@ -412,7 +412,7 @@ def square(a) do
 end
 ```
 
-![Key concept][lambda]  It is also worth noticing, that the function does not have an explicit `return` statement or similar like imperative languages such as Java or C have. This is a common feature in functional languages. The function body is expression, and the last evluated value in the function body is treated as the functions value.
+![Key concept][lambda]  It is also worth noticing, that the function does not have an explicit `return` statement or similar, like imperative languages such as Java or C tend to use. This is a common feature in functional languages. The function body is an expression, and the last evluated value in the function body is treated as the function's return value, as in, the value the function evaluates to.
 
 **math.ex**
 
@@ -437,11 +437,9 @@ iex> Math.square(2)
 4
 ```
 
-When executing the `iex` REPL in the same directory where the compiled file is stored in, the module is automatically available for the Elixir interpreter. 
+When executing the `iex` REPL in the same directory the compiled file is stored in, the module is automatically available for the Elixir interpreter. 
 
 ### Functions
-
-
 
 ### Recursion
 
