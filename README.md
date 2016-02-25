@@ -413,6 +413,7 @@ iex> names = people |> Enum.map(fn(map) -> Map.get(map, :name) end)
 
 The names can be fetched from the map objects by calling `Map.get(map, key)` in an anonomyous function, but having to do this repeatedly can get a bit labory.
 
+**mapops.ex**
 ```elixir
 defmodule MapOps do
    def get_key(key) do
@@ -423,6 +424,8 @@ end
 We start by defining the module `MapOps` which is used to contain our function `get_key/1` that takes the key we are interested in as it's own parameter. The `get_key/1` function returns an anonymous `fn/1` that takes a map of interest as it's parameter.
 
 ```elixir
+iex> import MapOps
+nil
 iex> get_name = MapOps.get_key(:name)
 #Function<0.89557173/1 in CurryTest.get/1>
 iex> get_born = MapOps.get_key(:born)
