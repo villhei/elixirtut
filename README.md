@@ -59,7 +59,7 @@ Hello Elixir!
 
 An Elixir script can be executed by using the command `elixir <filename.exs>` . Execute the file you created.
 
-#### Basic types
+## Basic types
 
 Basic types and their typing formats.
 
@@ -315,9 +315,9 @@ iex> hd([])
 	:erlang.hd([])
 ```
 
-Two important functions for working with lists are the head `hd\1` and tail `tl\1` functions. 
+Two important functions for working with lists are the head `hd/1` and tail `tl/1` functions. 
 
-The head `hd\1`function returns the first element of a non-empty list. `hd\1` raises an error for en empty list.
+The head `hd\1`function returns the first element of a non-empty list. `hd/1` raises an error for en empty list.
 
 ```elixir
 iex> list = [1,2,3]
@@ -327,6 +327,23 @@ iex>tl([1])
 []
 ```
 The tail function returns all the elements but the first of a non-empty list. If the list only has a single element, `tl\1` returns an empty list. Like the head function, tail raises an error if the list is empty.
+```elixir
+iex> [head | tail] = [1,2,3]
+[1,2,3]
+iex> head
+[1]
+iex>tail
+[2,3]
+```
+
+Elixir also features a shorthand syntax for matching the head and list of the tail with the operator `|`. The operator can also be used to prepend items to a list, as shown in the next example.
+
+```elixir
+iex> list = [1,2,3]
+[1,2,3]
+iex> [0|list]
+[0,1,2,3]
+```
 
 ### Tuples
 
@@ -349,9 +366,29 @@ iex> cat
 {:cat, 'Brown', 5}
 ```
 
-Use the `put_elem\3` function to modify an element of a tuple. Notice that all declared variables in Elixir are immutable, and the `put_elem\3` returns a new copy of the original tuple rather than modifying the original element like typically done in eg. Java.
+Use the `put_elem/3` function to modify an element of a tuple. Notice that all declared variables in Elixir are immutable, and the `put_elem/3` returns a new copy of the original tuple rather than modifying the original element like typically done in eg. Java.
 
 Immutability is a key concept in functional languages. Immutability allows for easier reasoning about the code and efficient equality comparisons, where only references of the values need to be compared.
+
+## Functions and modules
+
+### Modules
+
+### Functions
+
+### Recursion
+
+### λ (lambda) functions 
+
+### High-order functions
+
+## Pattern matching
+
+### Pattern matching
+
+### Pin operator
+
+## Building applications
 
 ### Game of Life
 
