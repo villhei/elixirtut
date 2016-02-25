@@ -406,7 +406,7 @@ iex> people = [%{name: "Matti Ruohonen", born: 1949},
 
 Let's define a list people represented by map objects.
 
-```èlixir
+```elixir
 iex> names = people |> Enum.map(fn(map) -> Map.get(map, :name) end)
 ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
 ```
