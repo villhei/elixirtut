@@ -383,7 +383,7 @@ Immutability is a key concept in functional languages. Immutability allows for e
 
 ### Modules
 
-Elixir uses the concept of modules for grouping several functions together. Functions, other than anonymous functions, cannot be declared outside the scope of a module.
+Elixir uses the concept of modules for grouping several functions together. Functions, other than anonymous functions, cannot be declared outside the scope of a module. We introduce the modules here very briefly and return to them when we start building something more complex. 
 
 ```elixir
 iex> defmodule Math do 
@@ -395,6 +395,8 @@ iex> defmodule Math do
 iex> Math.square(2)
 4
 ```
+
+A module can be declared using the `iex` interpreter, or by saving the contents of the module to a file with the `.ex` extension by convention. Modules declared in separate files should be compiled with the `elixirc` compiler
 
 ``` elixir
 defmodule <module_name> do
@@ -477,7 +479,7 @@ defmodule Temperature do
 end
 ```
 
-Above is an example of the module `Temperature` which consists of conversion functions between temperatures reported in celsius, kelvin and fahrenheit. The functions do not have an explicit return statement, instead the functions return the value the expression representing the function body evaluates to. In this case, the expressions of the functions evaluate to the result of the calculation declared in the function body. 
+The above is an example of the module `Temperature` which consists of conversion functions between temperatures reported in celsius, kelvin and fahrenheit. The functions do not have an explicit return statement, instead the functions return the value the expression representing the function body evaluates to. In this case, the expressions of the functions evaluate to the result of the calculation declared in the function body. 
 
 ```elixir
 defmodule PersonOps do
@@ -490,13 +492,25 @@ defmodule PersonOps do
     IO.puts("The person's age is #{name}")
   end
 end
-
-person = %{first_name: "Esko", last_name: "Erikoinen", age: 42}
-
 ```
 
-```elixir
+Let's declare some operations for a person represented by the map type. The person has three properties, `first_name`, `last_name` and `age`.
 
+```elixir
+iex> person = %{first_name: "Esko", last_name: "Erikoinen", age: 42}
+%{age: 42, first_name: "Esko", last_name: "Erikoinen"}
+
+iex> PersonOps.print_age(person)
+The person's age is 42
+:ok
+
+iex> PersonOps.print_name(person)
+The person's age is Esko Erikoinen
+:ok
+```
+You'll notice that the functions perform the actions you expected. A careful reader makes an additional note: now that the `IO.puts\1` is the last value of the expression declared in the function body, in addition to the `:stdout` output the function returns the atom `:ok` indicating a succesful I/O operation.
+
+Repeat after me: everything is an expression, and every expression evaluates to a value.
 
 In Elixir everything is an expression, as in everything has an identifiable value.
 
