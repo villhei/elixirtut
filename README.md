@@ -10,35 +10,35 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 
 ### Key features
 
-	* Compiles to bytecode for the Erlang VM
-	* Dynamic, strong typing
-	* Support for the Erlang actor model
-	* Erlang-Elixir interoperability
+* Compiles to bytecode for the Erlang VM
+* Dynamic, strong typing
+* Support for the Erlang actor model
+* Erlang-Elixir interoperability
 
 ### Functional features
 
-	* Everything is an expression
-	* Lazy streams
-	* Pattern matching
-	* Emphasis on recursion and high-order functions
-	* Avoid side-effects
+* Everything is an expression
+* Lazy streams
+* Pattern matching
+* Emphasis on recursion and high-order functions
+* Avoid side-effects
 
 ### Installation
 
-	* Using version 1.2.3
-	* [Installation instructions](http://elixir-lang.org/install.html)
-	* Sublime as an editor works reasonably well
+* Using version 1.2.3
+* [Installation instructions](http://elixir-lang.org/install.html)
+* Sublime as an editor works reasonably well
 
 ### Usage
 
-	* Run with the interactive REPL 'iex'
-	* As scripts with  'elixir'
-	* Compiler 'elixirc'
+* Run with the interactive REPL 'iex'
+* As scripts with  'elixir'
+* Compiler 'elixirc'
 
 ### Notes
 
-	* When introducing functions, we use a notation `fun_name/1` where 1 indicates the number of parameters accepted by that function
-	* This material follows the conventions from [Elixir style guide](https://github.com/niftyn8/elixir_style_guide)
+* When introducing functions, we use a notation `fun_name/1` where 1 indicates the number of parameters accepted by that function
+* This material follows the conventions from [Elixir style guide](https://github.com/niftyn8/elixir_style_guide)
 
 
 ### Hello Elixir!
@@ -74,10 +74,10 @@ Basic types and their typing formats.
 	iex> {1, 2, 3}  # tuple
 	````
 
-	* Floats are 64-bit double precision
-	* Elixir is a dynamically typed language so the types are inferred during runtime. 
-	* The [Kernel.TypeSpec](http://elixir-lang.org/docs/v1.1/elixir/Kernel.Typespec.html) module provides macros and functions for working with typespecs that allow static analyzer programs useful for bug hunting.
-	* In elixir, custom types composing of the basic types can be defined by using the `@type` directive.
+* Floats are 64-bit double precision
+* Elixir is a dynamically typed language so the types are inferred during runtime. 
+* The [Kernel.TypeSpec](http://elixir-lang.org/docs/v1.1/elixir/Kernel.Typespec.html) module provides macros and functions for working with typespecs that allow static analyzer programs useful for bug hunting.
+* In elixir, custom types composing of basic types can be defined by using the `@type` directive.
 
 ### Basic arithmetic and numbers
 
