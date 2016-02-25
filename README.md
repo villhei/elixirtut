@@ -18,10 +18,13 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 ### Functional features
 
 * Everything is an expression
+* Functions are first class citizens
 * Lazy streams
 * Pattern matching
 * Emphasis on recursion and high-order functions
-* Avoid side-effects
+* Avoidance side-effects
+* Extensive use of high order functions
+* Lambda (anonymous) functions
 
 ### Installation
 
@@ -31,9 +34,9 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 
 ### Usage
 
-* Run with the interactive REPL 'iex'
-* As scripts with  'elixir'
-* Compiler 'elixirc'
+* Run with the interactive REPL `iex`
+* As scripts with  `elixir`
+* Compiler `elixirc`
 
 ### Notes
 
@@ -78,6 +81,8 @@ iex> {1, 2, 3}  # tuple
 * Elixir is a dynamically typed language so the types are inferred during runtime. 
 * The [Kernel.TypeSpec](http://elixir-lang.org/docs/v1.1/elixir/Kernel.Typespec.html) module provides macros and functions for working with typespecs that allow static analyzer programs useful for bug hunting.
 * In elixir, custom types composing of basic types can be defined by using the `@type` directive.
+
+In addition to the basic types listed above, Elixir also provides additional types such as a `Port`,  `PID` and a `Reference`, more about these types later on.
 
 ### Basic arithmetic and numbers
 
@@ -142,6 +147,81 @@ true
 
 There exists a function (really a macro) for checking the type of every basic type in the [Kernel](http://elixir-lang.org/docs/v1.2/elixir/Kernel.html) module.
 
+```elixir
+iex> true and true
+true
+iex> true and false
+false
+iex> true or false
+true
+iex> false or true
+true
+iex> not true
+false
+```
+
+Elixir uses the logical operators `and`, `or` and `not` for boolean values.
+
+| Operator | Elixir | Java |
+| -------- | ------ | ---- |
+| And      | and    | &&   |
+| Or       | or     | ||   |
+| not      | not    | !    |
+
+```elixir
+iex> 1 || true
+1
+iex> false || 2
+2
+iex> nil && 42
+nil
+iex> true && 42
+42
+iex> !true
+false
+iex> !1
+false
+iex> !nil
+true
+```
+
+Elixir also provides the operators `&&`, `||` and `!`. The difference with the former operators is that they accept any kinds of values to be evaluated. These operators evaluate all values except `false` and `nil` to true.
+
+You should use the operators `and`,  `or` and `not` always when you are excepting booleans.
+
+```elixir
+iex> 1 == 1
+true
+iex> 1 != 2
+true
+iex> 1 < 2
+true
+```
+
+Elixir also provides the operators `==`, `!=`, `===`, `<=`, `>=`, `<` and `>` for comparisons.
+
+```elixir
+iex> 1 == 1.0
+true
+iex> 1 === 1.0
+
+```
+
+The difference between the `==` and  `===` comparisons is that the latter is a strict comparison when comparing integers and floats.
+
+```elixir
+iex> 1 < :atom
+true
+```
+
+It is also possible to compare different types, which proves itself useful when implementing ie. sorting algorithms, the same algorithm works for different data types.
+
+```
+number < atom < reference < functions < port < pid < tuple < maps < list < bitstring
+```
+
+The ordering in comparisons of different data types is represented in the table above. 
+
 ### Atoms
 
 ```elixir
@@ -176,6 +256,15 @@ iex> "Älämölö"
 ```
 
 Strings are inserted between double quotes and encoded in UTF-8.
+
+
+```elixir
+iex> "Functional" <> " programming " <> "is fun"
+"Functional programming is fun"
+```
+
+Strings can be concatenated with the `<>` operator.
+
 
 ```elixir
 iex> "I like #{:moomins}"
@@ -240,6 +329,9 @@ iex>tl([1])
 The tail function returns all the elements but the first of a non-empty list. If the list only has a single element, `tl\1` returns an empty list. Like the head function, tail raises an error if the list is empty.
 
 ### Tuples
+
+Functional programmers often find the need to return more than a single value from a function. These sets of values can be represented as tuples, which are ordered pairs of n elements. 
+
 ```elixir
 iex> cat = {:cat, 'Brown', 5}
 {:cat, 'Brown', 5}
