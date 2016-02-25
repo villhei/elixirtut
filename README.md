@@ -384,11 +384,63 @@ Immutability is a key concept in functional languages. Immutability allows for e
 
 ## Pattern matching
 
+### Cond
+
 ### Pattern matching
 
 ### Pin operator
 
+## Advanced techniques
+
+### Currying
+
+Currying is an often used technique in functional programming languages to translate functions with multiple parameters (arity of n) into a sequence functions that accept a single parameter (arity of 1).
+
+Currying is not built in to the Elixir core language, so we define a module for transforming functions.
+
+```elixir
+iex> people = [%{name: "Matti Ruohonen", born: 1949},
+...> %{name: "Teppo Ruohonen", born: 1948}, 
+...> %{name: "Seppo Räty", born: 1962}]
+```
+
+Let's define a list people represented by map objects.
+
+```èlixir
+iex> names = people |> Enum.map(fn(map) -> Map.get(map, :name) end)
+["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
+```
+
+The names can be fetched from the map objects by calling `Map.get(map, key)` in an anonomyous function, but having to do this repeatedly can get a bit labory.
+
+```elixir
+defmodule MapOps do
+   def get_key(key) do
+     fn(map) -> Map.get(map, key) end
+   end
+end
+```
+We start by defining the module `MapOps` which is used to contain our function `get_key/1` that takes the key we are interested in as it's own parameter. The `get_key/1` function returns an anonymous `fn/1` that takes a map of interest as it's parameter.
+
+```elixir
+iex> get_name = MapOps.get_key(:name)
+#Function<0.89557173/1 in CurryTest.get/1>
+iex> get_born = MapOps.get_key(:born)
+#Function<0.89557173/1 in CurryTest.get/1>
+```
+
+When calling the MapOps.get_key/1 the function returns the anonymous inner function, that is now ready to accept a parameter.
+
+```elixir
+names = people |> Enum.map(get_name)
+ages = people |> Enum.map(get_born)
+```
+
+Now the benefit of the curried function is clearly visible, as we reduced the repeated code quite a plenty. The currying can be generalized even further, as shown [in this blog post](http://blog.patrikstorm.com/function-currying-in-elixir).
+
 ## Building applications
+
+## Reactive applications
 
 ### Game of Life
 
