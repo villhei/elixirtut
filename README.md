@@ -195,6 +195,10 @@ Strings can span multiple lines, and they can use escape sequences such as `\n` 
 
 ### Lists
 
+Lists play an important role in functional programming in general. The first functional language [LISP](https://en.wikipedia.org/wiki/Lisp_(programming_language) (1958) is in fact an acronym for LISt Processor.
+
+Lists in Elixir, as like with most other functional languages, are implemented internally as linked lists. It's good to keep this in mind, as it means prepending to a list runs in constant time `O(1)` and thus populating a list from left to right runs in linear time `O(N)`.
+
 ```elixir
 iex> [1,2,3,4,5]
 [1,2,3,4,5]
@@ -204,12 +208,12 @@ iex> length([1,2,3])
 
 A list can be introduced by enclosing a set of comma separated values within brackets `[]`. You can get the length of a list by calling the function `length\1`. Remember, calculating the length of a linked list runs in linear `O(N)` time. 
 
-	````elixir
-	iex> [1,2,3] ++ [4,5,6]
-	[1,2,3,4,5,6]
-	iex> [1,2,3,4,5,6] -- [2, 4]
-	[1,3,5,6]
-	````
+```elixir
+iex> [1,2,3] ++ [4,5,6]
+[1,2,3,4,5,6]
+iex> [1,2,3,4,5,6] -- [2, 4]
+[1,3,5,6]
+```
 
 Two lists can be concatenated with the unary function `++/2` and subtracted with `--/2`.
 
@@ -233,7 +237,7 @@ iex> tl(list)
 iex>tl([1])
 []
 ```
-The tail function returns all the elements but the first of a non-empty list. If the list only has a single element, `tl\1` returns an empty list, if no elements but the first are present. Like the head function, tail raises an error if the list is empty.
+The tail function returns all the elements but the first of a non-empty list. If the list only has a single element, `tl\1` returns an empty list. Like the head function, tail raises an error if the list is empty.
 
 ### Tuples
 ```elixir
@@ -243,7 +247,7 @@ iex> tuple_size(cat)
 3
 ```
 
-Tuples are defined with curly brackets. The elements in a tuple are stored contiguously in memory, which means that accessing the elements of a tuple by index, or getting the size of a tuple is a fast operation. Tuples are indexed from zero.
+Tuples are defined by using curly brackets. The elements in a tuple are stored contiguously in memory, which means that accessing the elements of a tuple by index, or getting the size of a tuple is a fast operation. Tuples are indexed from zero.
 
 ```elixir
 iex> cat = {:cat, 'Brown', 5}
