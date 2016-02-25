@@ -164,9 +164,9 @@ Elixir uses the logical operators `and`, `or` and `not` for boolean values.
 
 | Operator | Elixir | Java |
 | -------- | ------ | ---- |
-| And      | and    | &&   |
-| Or       | or     | ||   |
-| not      | not    | !    |
+| And      |`and`   | `&& `|
+| Or       |`or`    | `||` |
+| not      |`not`   | `!`  |
 
 ```elixir
 iex> 1 || true
