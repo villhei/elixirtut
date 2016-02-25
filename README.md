@@ -50,7 +50,7 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 * When introducing functions, we use a notation `fun_name/1` where 1 indicates the number of parameters accepted by that function
 * This material follows the conventions from [Elixir style guide](https://github.com/niftyn8/elixir_style_guide)
 
- ![Key concept][lambda] Paragraphs marked with the lambda symbol contain key functional programming concepts that apply also to many other languages than Elixir. 
+  ![Key concept][lambda] Paragraphs marked with the lambda symbol contain key functional programming concepts that apply also to many other languages than Elixir. 
 
 
 ### Hello Elixir!
@@ -379,6 +379,8 @@ Use the `put_elem/3` function to modify an element of a tuple. Notice that all d
 
 Immutability is a key concept in functional languages. Immutability allows for easier reasoning about the code and efficient equality comparisons, where only references of the values need to be compared.
 
+### Maps
+
 ## Functions and modules
 
 ### Modules
@@ -519,7 +521,7 @@ In Elixir everything is an expression, as in everything has an identifiable valu
 
 ### Recursion
 
-##### ![Key concept][lambda] Recursion is looping
+#### ![Key concept][lambda] Recursion is looping
 Recursion plays an important part in functional programming. Recursion is equivalent to looping, so expect to see no `for` or `while` loops when looking at functionally written code, but expect to see lots and lots of recursion.
 
 Recursive function is a function that calculates it's final value by repeated application of the function - in other words - function calling itself over and over again.
@@ -566,7 +568,10 @@ We defined a module `ArrayOps` with a two variants of the function `square_list/
 
 The pattern matching is also used in the function parameters as `[head|tail]` to extract the head element from the tail of the list, as introduced in the lists-chapter earlier.
 
-![Key concept][lambda] The function we defined does not come without problems. The Elixir compiler supports a feature called *tail call optimization* (or tail call elimination) for recursive functions. Tail call optimization refers to the elimination of the actual recursive call in favor of transforming the recursive calls in to a loop.
+```elixir
+
+#### ![Key concept][lambda] Tail call optimization
+The function we defined does not come without problems. The Elixir compiler supports a feature called *tail call optimization* (or tail call elimination) for recursive functions. Tail call optimization refers to the elimination of the actual recursive call in favor of transforming the recursive calls in to a loop.
 
 The optimization is a significant performance improvement over recursion. After the transformation the virtual machine does not need to allocate a new call stack to the successive recursive function calls, but can instead reuse the original stack created during the initial function call.
 
@@ -594,9 +599,83 @@ The rewritten `square_list\1` uses a helper function to enable the elimination o
 
 `do_squaring/2` takes two parameters, an accumulator list that holds the squared values and the list with the values to square. The function iterates over the list element-by-element, and finally when the list runs out of elements, the `do_squaring/2` returns the accumulated value.
 
-### λ (lambda) functions 
+### ![Key concept][lambda] λ (lambda) functions 
 
-### High-order functions
+Functional programming languages has its roots in lambda calculus. Functional language implementations support declaring lambda functions, often with a very efficient syntax. Lambda functions are also called anonymous functions, as they do not have a name associated with them most of the time.
+
+The common use case for lambda functions is as parameters to functions accepting functions. Lambda functions are often treated as throwaway functions to complement the functionality of high order functions, which we will discuss in the next chapter.
+
+```elixir
+iex> mult = fn(a,b) -> a * b end
+#Function<12.54118792/2 in :erl_eval.expr/5>
+iex> is_function(mult)
+true
+iex> mult.(3, 5)
+15
+```
+
+On the first line we match an anonymous function accepting two parameters to a variable. The function just performs a multiplication for the arguments. 
+
+The function is called by applying a the parameters `(3,5)` to the variable associated with the function. Notice that the arguments are separated by a dot `.` -  which is a requirement for calling anonymous functions.
+
+Unlike regular functions, anonymous functions can be declared outside a module.
+
+```elixir
+iex> foo = "bar"
+"bar"
+iex> (fn -> foo = "quux" end).()
+"quux"
+iex>
+"bar"
+```
+
+Lambda functions are closures, and such they have a private scope that only the anonymous function can access. Any variable declared within the scope of an anonymous function does not affect the higher leven environment.
+
+Like any other function or expression, the lambda function evaluates to the value returned by that expression.
+
+### ![Key concept][lambda] High-order functions
+
+High order functions are functions that accept functions as their arguments or return a function as their result. Elixir's [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module provides a familiar set of high-order functions often found in other functional languages. 
+
+The high-order functions we are about to look into are `map/2`, `filter/2`, `zip/2` and `fold/2`.
+
+```elixir
+iex> list = [1,2,3,4,5]
+[1, 2, 3, 4, 5]
+iex> Enum.map(list, fn(x) -> x*x end)
+[1, 4, 9, 16, 25]
+```
+
+The `map/2` is a function that accepts a variable of a type implementing the [Enumerable](http://elixir-lang.org/docs/stable/elixir/Enumerable.html) protocol (ie. a list, a map or a stream) as it's first parameter and a function accepting an element of the type.
+
+`map/2` iterates over the Enumrable collection and executes the function for each of the elements within the collection, creating a new transformed instance of the collection as a result. Notice that operations performed within the `map/2` operation do not affect the original collection, but create a new transformed collection.
+
+More formally, `map/2` is a function used to *map* (transform) an Enumerable of type A to type B.
+
+```elixir
+people = [%{name: "Matti Ruohonen", born: 1949},
+          %{name: "Teppo Ruohonen", born: 1948}, 
+          %{name: "Seppo Räty", born: 1962}]
+```
+Let's create a list objects representing the most important finnish celebrities and their birth years.
+
+```elixir
+iex> Enum.map(people, fn(p) -> Map.get(p, :name) end)
+["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
+iex> Enum.map(people, fn(p) -> Map.get(p, :born) end)
+[1949, 1948, 1962]
+
+```
+In the first case, the `map/2` transforms a list of `Map`s to a list of strings, without mutating the original collection. In the second case, `map/2` transforms the list of `Map`s to a list of strings. 
+
+```elixir
+iex> names = Enum.map(people, fn(p) -> Map.get(p, :name) end)
+["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
+iex> Enum.map(names, fn(n) -> String.upcase(n) end)  
+["MATTI RUOHONEN", "TEPPO RUOHONEN", "SEPPO RÄTY"]
+```
+
+`map/2` is often used to formulate *functional pipelines* where the value is transformed multiple times to a new format or type suitable for the next operation. The second call to `map/2` uses the function `upcase/1` from the [String](http://elixir-lang.org/docs/stable/elixir/String.html) module.
 
 ## Pattern matching
 
@@ -668,3 +747,7 @@ Life.Board.t is a convention
 defomdule Life.Board do
 	@type t :: map
 end
+
+
+Enum.scan -- sounds good for primes
+Enum.unfold --- for fibonacci
