@@ -1,5 +1,8 @@
 # Functional programming in Elixir
 
+
+[lambda]: img/lambda.png
+
 ## About
 
 Sometghing about the material
@@ -22,7 +25,7 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 * Lazy streams
 * Pattern matching
 * Emphasis on recursion and high-order functions
-* Avoidance side-effects
+* Avoidance of side-effects
 * Extensive use of high order functions
 * Lambda (anonymous) functions
 
@@ -43,6 +46,8 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 * When introducing functions, we use a notation `fun_name/1` where 1 indicates the number of parameters accepted by that function
 * This material follows the conventions from [Elixir style guide](https://github.com/niftyn8/elixir_style_guide)
 
+[lambda] Paragraphs marked with the lambda symbol contain key functional programming concepts that, apply to also many otherlanguages in addition to Elixir.
+
 
 ### Hello Elixir!
 
@@ -50,7 +55,7 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 IO.puts("Hello Elixir!")
 ```
 
-Elixir scripts use the extension `.exs` by convention, and elixir source files user the extension `.ex`. Create a file `hello.exs` with the content above. 
+Elixir scripts use the extension `.exs` by convention, and elixir source files user the extension `.ex`. Create a file `hello.exs` with the content above. Executing the `elixirc
 
 ```bash
 $ elixir hello.exs 
@@ -374,7 +379,69 @@ Immutability is a key concept in functional languages. Immutability allows for e
 
 ### Modules
 
+Elixir uses the concept of modules for grouping several functions together. Functions, other than anonymous functions, cannot be declared outside the scope of a module.
+
+```elixir
+iex> defmodule Math do 
+...>  def square(a) do
+...>    a * a
+...>  end
+...>end
+
+iex> Math.square(2)
+4
+```
+
+``` elixir
+defmodule <module_name> do
+  # Module body
+end
+```
+The module definition follows the format `defmodule` module name `do` ... module body ... `end`. Functions within a module are defined with the `def` macro and private functions visible only within the lexical scope of the module use the `defp` macro. 
+``` elixir
+def <function_name> do
+  # Function body
+end
+```
+
+Both public and private functions follow the structure `def` fn_name(params..) `do` ... function body ... `end`
+
+```elixir
+def square(a) do
+  a * a
+end
+```
+
+![Key concept][lambda] It is also worth noticing, that the function does not have an explicit `return` statement or similar like imperative languages such as Java or C have. This is a common feature in functional languages. The function body is expression, and the last evluated value in the function body is treated as the functions value.
+
+**math.ex**
+
+```elixir
+defmodule Math do
+  def square(a) do
+    a * a
+  end
+end
+```
+
+Create a new file called `math.ex` and save the contents above inside the file.
+
+```bash
+$ elixirc math.ex
+```
+
+When the module is defined in it's own file, the module can be compiled with the `elixirc` command followed by the filename. The bytecode resulting from the compilation of our example can be found from the file `Elixir.Math.beam` 
+
+```elixir
+iex> Math.square(2)
+4
+```
+
+When executing the `iex` REPL in the same directory where the compiled file is stored in, the module is automatically available for the Elixir interpreter. 
+
 ### Functions
+
+
 
 ### Recursion
 
@@ -394,7 +461,7 @@ Immutability is a key concept in functional languages. Immutability allows for e
 
 ### Currying
 
-Currying is an often used technique in functional programming languages to translate functions with multiple parameters (arity of n) into a sequence functions that accept a single parameter (arity of 1).
+![Key concept][lambda] Currying is an often used technique in functional programming languages to translate functions with multiple parameters (arity of n) into a sequence functions that accept a single parameter (arity of 1).
 
 Currying is not built in to the Elixir core language, so we define a module for transforming functions.
 
@@ -432,7 +499,7 @@ iex> get_born = MapOps.get_key(:born)
 #Function<0.89557173/1 in CurryTest.get/1>
 ```
 
-When calling the MapOps.get_key/1 the function returns the anonymous inner function, that is now ready to accept a parameter.
+When calling the `MapOps.get_key/1` the function returns the anonymous inner function, that is now ready to accept a parameter.
 
 ```elixir
 names = people |> Enum.map(get_name)
