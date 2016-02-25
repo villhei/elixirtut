@@ -568,8 +568,6 @@ We defined a module `ArrayOps` with a two variants of the function `square_list/
 
 The pattern matching is also used in the function parameters as `[head|tail]` to extract the head element from the tail of the list, as introduced in the lists-chapter earlier.
 
-```elixir
-
 #### ![Key concept][lambda] Tail call optimization
 The function we defined does not come without problems. The Elixir compiler supports a feature called *tail call optimization* (or tail call elimination) for recursive functions. Tail call optimization refers to the elimination of the actual recursive call in favor of transforming the recursive calls in to a loop.
 
