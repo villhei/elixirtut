@@ -30,7 +30,7 @@ Short, motivating description of functional programming.
 
 ## <a name="elixir"></a>Elixir?
 
-Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is functional, concurrent general purpose language deriving from Erlang, with added features such as macros and metaprogramming. 
+Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is a functional and concurrent general purpose language deriving from Erlang. Elixir decorates Erlang's extremely powerful concurrency model with features such as macros and support metaprogramming. 
 
 ### <a name="elixir_key_features"></a>Key features
 
