@@ -323,7 +323,7 @@ The head `hd\1`function returns the first element of a non-empty list. `hd/1` ra
 iex> list = [1,2,3]
 iex> tl(list)
 [2,3]
-iex>tl([1])
+iex> tl([1])
 []
 ```
 The tail function returns all the elements but the first of a non-empty list. If the list only has a single element, `tl\1` returns an empty list. Like the head function, tail raises an error if the list is empty.
@@ -332,7 +332,7 @@ iex> [head | tail] = [1,2,3]
 [1,2,3]
 iex> head
 [1]
-iex>tail
+iex> tail
 [2,3]
 ```
 
@@ -341,7 +341,7 @@ Elixir also features a shorthand syntax for matching the head and list of the ta
 ```elixir
 iex> list = [1,2,3]
 [1,2,3]
-iex> [0|list]
+iex> [0 | list]
 [0,1,2,3]
 ```
 
