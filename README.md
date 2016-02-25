@@ -46,7 +46,7 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 * When introducing functions, we use a notation `fun_name/1` where 1 indicates the number of parameters accepted by that function
 * This material follows the conventions from [Elixir style guide](https://github.com/niftyn8/elixir_style_guide)
 
-[lambda][Key concept] Paragraphs marked with the lambda symbol contain key functional programming concepts that, apply to also many otherlanguages in addition to Elixir.
+![Key concept][lambda] Paragraphs marked with the lambda symbol contain key functional programming concepts that, apply to also many otherlanguages in addition to Elixir.
 
 
 ### Hello Elixir!
