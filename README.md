@@ -43,16 +43,16 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 
 ### Hello Elixir!
 
-	````elixir
-	IO.puts("Hello Elixir!")
-	````
+```elixir
+IO.puts("Hello Elixir!")
+```
 
 Elixir scripts use the extension `.exs` by convention, and elixir source files user the extension `.ex`. Create a file `hello.exs` with the content above. 
 
-	````
-	$ elixir hello.exs 
-	Hello Elixir!
-	````
+```bash
+$ elixir hello.exs 
+Hello Elixir!
+```
 
 An Elixir script can be executed by using the command `elixir <filename.exs>` . Execute the file you created.
 
@@ -60,19 +60,19 @@ An Elixir script can be executed by using the command `elixir <filename.exs>` . 
 
 Basic types and their typing formats.
 
-	````elixir
-	iex> 1          # integer
-	iex> 0b1010		# integer, binary -> 10
-	iex> 0o111		# integer, octal -> 73
-	iex> 0x1FF      # integer, hex -> 255
-	iex> 1.0        # float
-	iex> 1.23e+3	# float, exponent -> 1230.0
-	iex> true       # boolean
-	iex> :atom      # atom / symbol
-	iex> "elixir"   # string
-	iex> [1, 2, 3]  # list
-	iex> {1, 2, 3}  # tuple
-	````
+```elixir
+iex> 1          # integer
+iex> 0b1010		# integer, binary -> 10
+iex> 0o111		# integer, octal -> 73
+iex> 0x1FF      # integer, hex -> 255
+iex> 1.0        # float
+iex> 1.23e+3	# float, exponent -> 1230.0
+iex> true       # boolean
+iex> :atom      # atom / symbol
+iex> "elixir"   # string
+iex> [1, 2, 3]  # list
+iex> {1, 2, 3}  # tuple
+```
 
 * Floats are 64-bit double precision
 * Elixir is a dynamically typed language so the types are inferred during runtime. 
@@ -177,19 +177,19 @@ iex> "Älämölö"
 
 Strings are inserted between double quotes and encoded in UTF-8.
 
-	````elixir
-	iex> "I like #{:moomins}"
-	"I like moomins"
-	````
+```elixir
+iex> "I like #{:moomins}"
+"I like moomins"
+```
 
 Elixir also supports string interpolation. You can insert the value into a string by enclosing the var_name like `#{var_name}`. Remember atom name equals their value.
 
-	````elixir
-	iex> "Hey you, out there in the cold
-	---> getting lonely, getting old
-	---> can you feel me?"
-	"Hey you, out there in the cold\ngetting lonely getting old\ncan you feel me?"
-	````
+```elixir
+iex> "Hey you, out there in the cold
+---> getting lonely, getting old
+---> can you feel me?"
+"Hey you, out there in the cold\ngetting lonely getting old\ncan you feel me?"
+```
 
 Strings can span multiple lines, and they can use escape sequences such as `\n` for newline and `\t` for a tab.
 
@@ -220,7 +220,7 @@ iex> hd(list)
 iex> hd([])
 ** (ArgumentError) argument error
 	:erlang.hd([])
-``` 
+```
 
 Two important functions for working with lists are the head `hd\1` and tail `tl\1` functions. 
 
