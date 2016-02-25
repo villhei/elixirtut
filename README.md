@@ -1,28 +1,45 @@
 # Functional programming in Elixir
 
-
 [lambda]: img/lambda.png
 
-## About
+## Contents
+
+- About the material
+- Functional programming
+- Elixir?
+- Notes
+- Hello Elixir!
+- Basic types
+- Functions and modules
+- The pipe operator
+- Pattern matching
+- Conditions
+- Processes
+- Actors
+- Advanced techniques
+- Building applications
+- Reactive applications
+
+## <a name="about_material"></a>About the material
 
 Something about the material
 
-## Functional programming
+## <a name="functional_programming"></a>Functional programming
 
 Short, motivating description of functional programming.
 
-## Elixir
+## <a name="elixir"></a>Elixir?
 
 Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is functional, concurrent general purpose language deriving from Erlang, with added features such as macros and metaprogramming. 
 
-### Key features
+### <a name="elixir_key_features"></a>Key features
 
 * Compiles to bytecode for the Erlang VM
 * Dynamic, strong typing
 * Support for the Erlang actor model
 * Erlang-Elixir interoperability
 
-### Functional features
+### <a name="elixir_functional_features"></a>Functional features
 
 * Everything is an expression
 * Functions are first class citizens
@@ -33,19 +50,19 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 * Extensive use of high order functions
 * Lambda (anonymous) functions
 
-### Installation
+### <a name="elixir_installation"></a>Installation
 
 * Using version 1.2.3
 * [Installation instructions](http://elixir-lang.org/install.html)
 * Sublime as an editor works reasonably well
 
-### Usage
+### <a name="elixir_usage"></a>Usage
 
 * Run with the interactive REPL `iex`
 * As scripts with  `elixir`
 * Compiler `elixirc`
 
-### Notes
+## <a name="material_notes"></a>Notes
 
 * When introducing functions, we use a notation `fun_name/1` where 1 indicates the number of parameters accepted by that function
 * This material follows the conventions from [Elixir style guide](https://github.com/niftyn8/elixir_style_guide)
@@ -53,7 +70,7 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
   ![Key concept][lambda] Paragraphs marked with the lambda symbol contain key functional programming concepts that apply also to many other languages than Elixir. 
 
 
-### Hello Elixir!
+## <a name="hello_elixir"></a>Hello Elixir!
 
 ```elixir
 IO.puts("Hello Elixir!")
@@ -68,7 +85,7 @@ Hello Elixir!
 
 An Elixir script can be executed by using the command `elixir <filename.exs>` . Execute the file you created.
 
-## Basic types
+## <a name="basic_types"></a>Basic types
 
 Basic types and their typing formats.
 
@@ -89,11 +106,11 @@ iex> {1, 2, 3}  # tuple
 * Floats are 64-bit double precision
 * Elixir is a dynamically typed language so the types are inferred during runtime. 
 * The [Kernel.TypeSpec](http://elixir-lang.org/docs/v1.1/elixir/Kernel.Typespec.html) module provides macros and functions for working with typespecs that allow static analyzer programs useful for bug hunting.
-* In elixir, custom types composing of basic types can be defined by using the `@type` directive.
+* In Elixir, custom types composing of basic types can be defined by using the `@type` directive.
 
 In addition to the basic types listed above, Elixir also provides additional types such as a `Port`,  `PID` and a `Reference`, more about these types later on.
 
-### Basic arithmetic and numbers
+### <a name="basic_arithmetic"></a>Basic arithmetic and numbers
 
 Open up the `iex` REPL and try out the following expressions
 
@@ -117,7 +134,7 @@ iex> rem 10, 3
 1
 ```
 
-In elixir, parentheses are optional in function invocation. Parentheses are preferred most of the time in these examples. 
+In Elixir, parentheses are optional in function invocation. Parentheses are preferred most of the time in these examples. 
 
 ```elixir
 iex> round(3.55)
@@ -128,7 +145,7 @@ iex> trunc(3.55)
 
 In case you want to convert integers to floats, you can use either the `round` function to round to the nearest, or `trunc` to get the integer part of the number.
 
-### Booleans
+### <a name="basic_types_booleans"></a>Booleans
 
 ```elixir
 iex> true
@@ -231,7 +248,7 @@ number < atom < reference < functions < port < pid < tuple < maps < list < bitst
 
 The ordering in comparisons of different data types is represented in the table above. 
 
-### Atoms
+### <a name="basic_types_atoms"></a>Atoms
 
 ```elixir
 iex> :foo
@@ -257,7 +274,7 @@ true
 
 It turns out, booleans are implemented as atoms.
 
-### Strings
+### <a name="basic_types_strings"></a>Strings
 
 ```elixir
 iex> "Älämölö"
@@ -291,7 +308,9 @@ iex> "Hey you, out there in the cold
 
 Strings can span multiple lines, and they can use escape sequences such as `\n` for newline and `\t` for a tab.
 
-### Lists
+### <a name="data_structures"></a> Data structures
+
+#### <a name="data_structures_list"></a> Lists
 
 Lists play an important role in functional programming in general. The first functional language [LISP](https://en.wikipedia.org/wiki/Lisp_(programming_language)) (1958) is in fact an acronym for LISt Processor.
 
@@ -299,7 +318,7 @@ Lists in Elixir, as like with most other functional languages, are implemented i
 
 ```elixir
 iex> [1,2,3,4,5]
-[1,2,3,4,5]
+[1, 2, 3, 4, 5]
 iex> length([1,2,3])
 3
 ```
@@ -308,9 +327,9 @@ A list can be introduced by enclosing a set of comma separated values within bra
 
 ```elixir
 iex> [1,2,3] ++ [4,5,6]
-[1,2,3,4,5,6]
+[1, 2, 3, 4, 5, 6]
 iex> [1,2,3,4,5,6] -- [2, 4]
-[1,3,5,6]
+[1, 3, 5, 6]
 ```
 
 Two lists can be concatenated with the unary function `++/2` and subtracted with `--/2`.
@@ -338,23 +357,26 @@ iex> tl([1])
 The tail function returns all the elements but the first of a non-empty list. If the list only has a single element, `tl\1` returns an empty list. Like the head function, tail raises an error if the list is empty.
 ```elixir
 iex> [head | tail] = [1,2,3]
-[1,2,3]
+[1, 2, 3]
 iex> head
 [1]
 iex> tail
-[2,3]
+[2, 3]
 ```
 
 Elixir also features a shorthand syntax for matching the head and list of the tail with the operator `|`. The operator can also be used to prepend items to a list, as shown in the next example.
 
 ```elixir
 iex> list = [1,2,3]
-[1,2,3]
+[1, 2, 3]
 iex> [0 | list]
-[0,1,2,3]
+[0, 1, 2, 3]
 ```
 
-### Tuples
+#### <a name="data_structures_streams_and_ranges"></a> Streams and ranges
+
+
+#### <a name="data_structures_tuples"></a> Tuples
 
 Functional programmers often find the need to return more than a single value from a function. These sets of values can be represented as tuples, which are ordered pairs of n elements. 
 
@@ -379,11 +401,48 @@ Use the `put_elem/3` function to modify an element of a tuple. Notice that all d
 
 Immutability is a key concept in functional languages. Immutability allows for easier reasoning about the code and efficient equality comparisons, where only references of the values need to be compared.
 
-### Maps
+####  <a name="data_structures_maps"></a> Maps
 
-## Functions and modules
+```elixir
+iex> country_capitals = %{:sweden =>  "Stockholm", 
+...> :finland => "Helsinki", 
+...> :germany => "Berlin", 
+...> :spain => "Madrid"}
+%{finland: "Helsinki", germany: "Berlin", spain: "Madrid", sweden: "Stockholm"}
+```
 
-### Modules
+Map is a data structure used as a container for pairs with a key and a value. Maps are often used as a sort of dictionary, and it's an efficient way of indexing values for different types of searches and retriavals.
+
+```elixir
+iex> Map.get(country_capitals, :sweden)
+"Stockholm"
+```
+
+The values contained in a map can be retrieved by calling `Map.get/2` function, which accepts a map and a key as it's parameters and retrieves the value associated with that key in constant `O(1)` time.
+
+```elixir
+iex> Map.put(country_capitals, :netherlands, Amsterdam)
+%{finland: "Helsinki", germany: "Berlin", netherlands: Amsterdam,
+  spain: "Madrid", sweden: "Stockholm"}
+iex> country_capitals
+%{finland: "Helsinki", germany: "Berlin", spain: "Madrid", sweden: "Stockholm"}
+
+```
+
+The `Map.put/3` function can be used to create an updated copy of a map provided as the first argument. The second argument is the new key to be inserted, and the third is the value associated with that key. The original map is on updated by the `Map.put/3` function.
+
+```elixir
+iex> Map.delete(country_capitals, :germany)               
+%{finland: "Helsinki", spain: "Madrid", sweden: "Stockholm"}
+iex> Map.drop(country_capitals, [:spain, :sweden])  
+%{finland: "Helsinki", germany: "Berlin"}
+```
+
+The contents of the map can also be modified with the functions `Map.delete/2` which accepts a map and key to be deleted and `Map.drop/2` accepting a map and a list of keys to be deleted. The original map is not modified, but a new copy with the values removed is created.
+
+## <a name="functions_and_modules"></a> Functions and modules
+
+### <a name="modules"></a> Modules
 
 Elixir uses the concept of modules for grouping several functions together. Functions, other than anonymous functions, cannot be declared outside the scope of a module. We introduce the modules here very briefly and return to them when we start building something more complex. 
 
@@ -421,10 +480,8 @@ end
 ```
 
 
-##### ![Key concept][lambda] Implicit return values
-It is also worth noticing, that the function does not have an explicit `return` statement or similar, like imperative languages such as Java or C tend to use. This is a common feature in functional languages. The function body is an expression, and the last evaluated value in the function body is treated as the function's return value.
-
-**math.ex**
+##### <a name="implicit_return_values"></a> Implicit return values
+![Key concept][lambda] It is also worth noticing, that the function does not have an explicit `return` statement or similar, like imperative languages such as Java or C tend to use. This is a common feature in functional languages. The function body is an expression, and the last evaluated value in the function body is treated as the function's return value.
 
 ```elixir
 defmodule Math do
@@ -449,10 +506,10 @@ iex> Math.square(2)
 
 When executing the `iex` REPL in the same directory the compiled file is stored in, the module is automatically available for the Elixir interpreter. 
 
-### Functions
+### <a name="functions"></a> Functions
 
-##### ![Key concept][lambda] Functions as first-class citizens
- Extensive use and composition of short, single purpose functions is one of the distinguishing properties of functional programming. Functions are first class citizens in functional programming: functions are acceptable parameters for functions, functions can be anonymous or named, assigned to variables, stored in data structures and functions can return functions as their return values.
+##### <a name="first_class_citizens"></a> Functions as first-class citizens
+ ![Key concept][lambda] Extensive use and composition of short, single purpose functions is one of the distinguishing properties of functional programming. Functions are first class citizens in functional programming: functions are acceptable parameters for functions, functions can be anonymous or named, assigned to variables, stored in data structures and functions can return functions as their return values.
 
 In other words, function is a value with the type function, which when evaluated, reduces to the return value generated by the expression captured by the function. 
 
@@ -519,10 +576,10 @@ Repeat after me: everything is an expression, and every expression evaluates to 
 
 In Elixir everything is an expression, as in everything has an identifiable value.
 
-### Recursion
+### <a name="recursion"></a> Recursion
 
-#### ![Key concept][lambda] Recursion is looping
-Recursion plays an important part in functional programming. Recursion is equivalent to looping, so expect to see no `for` or `while` loops when looking at functionally written code, but expect to see lots and lots of recursion.
+#### <a name="recursion_is_looping"></a> Recursion is looping
+![Key concept][lambda] Recursion plays an important part in functional programming. Recursion is equivalent to looping, so expect to see no `for` or `while` loops when looking at functionally written code, but expect to see lots and lots of recursion.
 
 Recursive function is a function that calculates it's final value by repeated application of the function - in other words - function calling itself over and over again.
 
@@ -568,8 +625,8 @@ We defined a module `ArrayOps` with a two variants of the function `square_list/
 
 The pattern matching is also used in the function parameters as `[head|tail]` to extract the head element from the tail of the list, as introduced in the lists-chapter earlier.
 
-#### ![Key concept][lambda] Tail call optimization
-The function we defined does not come without problems. The Elixir compiler supports a feature called *tail call optimization* (or tail call elimination) for recursive functions. Tail call optimization refers to the elimination of the actual recursive call in favor of transforming the recursive calls in to a loop.
+#### <a name="tail_call_optimization"></a> Tail call optimization
+![Key concept][lambda] The function we defined does not come without problems. The Elixir compiler supports a feature called *tail call optimization* (or tail call elimination) for recursive functions. Tail call optimization refers to the elimination of the actual recursive call in favor of transforming the recursive calls in to a loop.
 
 The optimization is a significant performance improvement over recursion. After the transformation the virtual machine does not need to allocate a new call stack to the successive recursive function calls, but can instead reuse the original stack created during the initial function call.
 
@@ -597,9 +654,9 @@ The rewritten `square_list\1` uses a helper function to enable the elimination o
 
 `do_squaring/2` takes two parameters, an accumulator list that holds the squared values and the list with the values to square. The function iterates over the list element-by-element, and finally when the list runs out of elements, the `do_squaring/2` returns the accumulated value.
 
-### ![Key concept][lambda] λ (lambda) functions 
+### <a name="lambda_functions"></a> λ (lambda) functions 
 
-Functional programming languages has its roots in lambda calculus. Functional language implementations support declaring lambda functions, often with a very efficient syntax. Lambda functions are also called anonymous functions, as they do not have a name associated with them most of the time.
+![Key concept][lambda] The functional programming paradigm has its roots in lambda calculus. Functional language implementations support declaring lambda functions, often with a very efficient syntax. Lambda functions are also called anonymous functions, as they do not have a name associated with them most of the time.
 
 The common use case for lambda functions is as parameters to functions accepting functions. Lambda functions are often treated as throwaway functions to complement the functionality of high order functions, which we will discuss in the next chapter.
 
@@ -631,11 +688,15 @@ Lambda functions are closures, and such they have a private scope that only the 
 
 Like any other function or expression, the lambda function evaluates to the value returned by that expression.
 
-### ![Key concept][lambda] High-order functions
+### <a name="high_order_functions"></a> High-order functions
 
-High order functions are functions that accept functions as their arguments or return a function as their result. Elixir's [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module provides a familiar set of high-order functions often found in other functional languages. 
+![Key concept][lambda]  High order functions are functions that accept functions as their arguments or return a function as their result. Elixir's [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module provides a familiar set of high-order functions often found in other functional languages. 
 
-The high-order functions we are about to look into are `map/2`, `filter/2`, `zip/2` and `fold/2`.
+The often used high-order functions we are about to look into are `map/2`, `filter/2`, `zip/2` and `fold/2`.
+
+The high-order functions here are supplied by the [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module, and equivalent lazy functions can be found from the [Stream](http://elixir-lang.org/docs/stable/elixir/Stream.html) module. When working with collections, you can think of these functions as generalizations or replacements of loop constructs.
+
+#### <a name="high_order_map"></a> Map/2
 
 ```elixir
 iex> list = [1,2,3,4,5]
@@ -646,7 +707,7 @@ iex> Enum.map(list, fn(x) -> x*x end)
 
 The `map/2` is a function that accepts a variable of a type implementing the [Enumerable](http://elixir-lang.org/docs/stable/elixir/Enumerable.html) protocol (ie. a list, a map or a stream) as it's first parameter and a function accepting an element of the type.
 
-`map/2` iterates over the Enumrable collection and executes the function for each of the elements within the collection, creating a new transformed instance of the collection as a result. Notice that operations performed within the `map/2` operation do not affect the original collection, but create a new transformed collection.
+`map/2` iterates over the `Enumerable` collection and executes the function for each of the elements within the collection, creating a new transformed instance of the collection as a result. Notice that operations performed within the `map/2` operation do not affect the original collection, but create a new transformed collection.
 
 More formally, `map/2` is a function used to *map* (transform) an Enumerable of type A to type B.
 
@@ -675,19 +736,134 @@ iex> Enum.map(names, fn(n) -> String.upcase(n) end)
 
 `map/2` is often used to formulate *functional pipelines* where the value is transformed multiple times to a new format or type suitable for the next operation. The second call to `map/2` uses the function `upcase/1` from the [String](http://elixir-lang.org/docs/stable/elixir/String.html) module.
 
-## Pattern matching
+#### <a name="high_order_filter"></a> Filter/2
 
-### Cond
+```elixir
+iex> list = [1,2,3,4,5]
+[1, 2, 3, 4, 5]
+iex> Enum.filter(list, fn(x) -> rem(x, 2) === 0 end)
+[2, 4]
+```
 
-### Pattern matching
+The `filter/2` is a function that accepts an `Enumerable` and a predicate function. `filter/2` executes the predicate function for each element in the `Enumerable`, and finally returns an `Enumerable` with those elements the predicate yielded `true` for. In the example above, `filter/2` is used to filter odd values out of the resulting collection.
 
-### Pin operator
+The elements returned by the filter function are of the same type as the input elements, in other words, filter is used to limit the size of a sample when working with `Enumerable` types.
 
-## Advanced techniques
+```elixir
+iex> names = Enum.map(people, fn(p) -> Map.get(p, :name) end)
+["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
+iex> Enum.filter(names, fn(n) -> String.contains?(n, "Ruohonen") end)
+["Matti Ruohonen", "Teppo Ruohonen"]
+iex> Enum.map(matches, fn(n) ->       
+...>   name_parts = String.split(n, " ")
+...>   hd(name_parts)
+...> end)
+["Matti", "Teppo"]
+```
 
-### ![Key concept][lambda] Currying
+The `filter/2` function is often used together with other high order functions, like with the `map/2` used in this example. First the list of people is transformed to list of names. We are only interested in the names that include the string "Ruohonen", which we check for with the `String.contains?/2` function from the [String](http://elixir-lang.org/docs/stable/elixir/String.html) module. For the filtered list, we perform yet another `map/2` to split the names in to parts, of which we grab the first elements of.
 
-Currying is an often used technique in functional programming languages to translate functions with multiple parameters (arity of n where n > 1) into a sequence  of functions that accept a single parameter (arity of 1).
+#### <a name="high_order_zip"></a> Zip/2
+
+```elixir
+iex> numbers = [1,2,3,4,5]
+[1, 2, 3, 4, 5]
+iex> alphabet = ["a", "b", "c", "d", "e"]
+["a", "b", "c", "d", "e"]
+iex> Enum.zip(numbers, alphabet)
+[{1, "a"}, {2, "b"}, {3, "c"}, {4, "d"}, {5, "e"}]
+iex> Enum.zip(numbers, numbers) 
+[{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}]
+```
+
+The `zip/2` is a function that takes two lists as parameters and merges their contents to a new list containing the values *zipped* together as tuples. 
+
+```elixir
+iex> Enum.zip(["Matti", "Teppo", "Seppo"], ["Ruohonen", "Ruohonen", "Räty"])
+[{"Matti", "Ruohonen"}, {"Teppo", "Ruohonen"}, {"Seppo", "Räty"}]
+iex> list = [1,2,3,4,5,6]
+[1, 2, 3, 4, 5, 6]
+iex> Enum.zip(list, tl(list))
+[{1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}]
+
+```
+
+**TODO** better examples, maybe with streams?
+
+Generally speaking, the purpose of the `zip/2` function is simply what we stated, but the use cases are endless. You sometimes might require the index of the element while performing a `map/2`, the solution is to call `zip/2` on the original list with a second list containing the indices.
+
+#### <a name="high_order_reduce"></a> Reduce/2
+
+```elixir
+iex> numbers = [1,2,3,4,5]
+[1, 2, 3, 4, 5]
+iex> Enum.reduce(numbers, 0, fn(n, acc) -> acc + n end)
+15
+```
+
+The `reduce/3` function is used to reduce the values of an `Enumerable` to a single value. `reduce/3` accepts three paremeters, a collection, an initial value and a function. The parameter function has two params `(n, acc)` of which the `acc` is the initial accumulator value or the value returned by the previous iteration of the function and `n` is the value of the current element. The previous example simply sums the elements of the list.
+
+```elixir
+iex> names = ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
+["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
+iex> Enum.reduce(names, "", fn(name, acc) -> acc <> name <> "!!!11 "end)            
+"Matti Ruohonen!!!11 Teppo Ruohonen!!!11 Seppo Räty!!!11 "
+```
+
+Like the other functions introduced, the `reduce/3` can work with any data type, and reduce the data to any kind of value.
+
+## <a name="pipe_operator"></a> The pipe operator
+
+We noticed that when applying several high-order functions sequentially, the code starts to lose some of it's beautiful, minimalistic elegance. Luckily we have the pipe operator `|>` that is used to chain pass the value on the left-hand side of the operator to the function on the right-hand side.
+
+```elixir
+iex> sum_of_squares = [1,2,3,4,5] 
+...> |> Enum.map(fn(x) -> x*x end)
+...> |> Enum.reduce(0, fn(n, acc) -> n + acc end)
+55
+```
+
+In the example above, the pipe `|>` passes the array of numbers to the `map/2` function. The `map/2` passes the resulting array of squared values to the `reduce/3` function that calculates the sum of squares.
+
+```elixir
+people = [%{name: "Matti Ruohonen", born: 1949},
+          %{name: "Teppo Ruohonen", born: 1948}, 
+          %{name: "Seppo Räty", born: 1962}]
+```
+
+Let's return to the previous example of people and do some function chaining.
+
+```elixir
+iex> people 
+...> |> Enum.map(fn(p) -> Map.get(p, :name) end)
+...> |> Enum.filter(fn(n) -> String.contains?(n, "Ruohonen") end) 
+...> |> Enum.map(fn(n) -> String.split(n, " ") end)
+...> |> Enum.map(fn(nn) -> hd(nn) end)
+...> |> Enum.reduce("", fn(n, acc) -> acc <> n <> " OMG!!! " end)
+"Matti OMG!!! Teppo OMG!!! "
+````
+
+We can start seeing the benefits of the pipe operator here `|>`. The first step is to extract the names from the persons in people using `map/2`, then we use `filter/2` to check if the name contains the string `"Ruohonen"`, after which we split it to two parts with the `String.split/2`, drop the tail using `hd/1` on the split values and finally use `reduce/3` to reduce the result to a string.
+
+Piping is by no means limited to the functions from the `Enum` module and you can use it any time you need to pass the result of the previous function as the first argument to the next function.
+
+## <a name="pattern_matching"></a> Pattern matching
+
+### <a name="pin_operator"></a> Pin operator
+
+## <a name="conditions"></a> Conditions
+
+## <a name="processes"></a> Processes
+
+## <a name="actors"></a> Actors
+
+### <a name="actors_supervisors"></a> Supervisors
+
+## <a name="advanced_techniques"></a> Advanced techniques
+
+### <a name="advanced_techniques_currying"></a> Currying
+
+![Key concept][lambda] Currying is an often used technique in functional programming languages to translate functions with multiple parameters (arity of n where n > 1) into a sequence  of functions that accept a single parameter (arity of 1).
 
 Currying is not built in to the Elixir core language, so we define a module for transforming functions.
 
@@ -720,9 +896,9 @@ We start by defining the module `MapOps` which is used to contain our function `
 iex> import MapOps
 nil
 iex> get_name = MapOps.get_key(:name)
-#Function<0.89557173/1 in CurryTest.get/1>
+#Function<0.89557173/1 in MapOps.get/1>
 iex> get_born = MapOps.get_key(:born)
-#Function<0.89557173/1 in CurryTest.get/1>
+#Function<0.89557173/1 in MapOps.get/1>
 ```
 
 When calling the `MapOps.get_key/1` the function returns the anonymous inner function, that is now ready to accept a parameter.
@@ -734,9 +910,9 @@ ages = people |> Enum.map(get_born)
 
 Now the benefit of the curried function is clearly visible, as we reduced the repeated code quite a plenty. The currying can be generalized even further, as shown [in this blog post](http://blog.patrikstorm.com/function-currying-in-elixir).
 
-## Building applications
+## <a name="building_applications"> Building applications
 
-## Reactive applications
+## <a name="reactive_applications"> Reactive applications
 
 ### Game of Life
 
