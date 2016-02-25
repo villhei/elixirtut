@@ -46,7 +46,7 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 * When introducing functions, we use a notation `fun_name/1` where 1 indicates the number of parameters accepted by that function
 * This material follows the conventions from [Elixir style guide](https://github.com/niftyn8/elixir_style_guide)
 
-[lambda] Paragraphs marked with the lambda symbol contain key functional programming concepts that, apply to also many otherlanguages in addition to Elixir.
+[lambda][Key concept] Paragraphs marked with the lambda symbol contain key functional programming concepts that, apply to also many otherlanguages in addition to Elixir.
 
 
 ### Hello Elixir!
@@ -412,7 +412,7 @@ def square(a) do
 end
 ```
 
-![Key concept][lambda] It is also worth noticing, that the function does not have an explicit `return` statement or similar like imperative languages such as Java or C have. This is a common feature in functional languages. The function body is expression, and the last evluated value in the function body is treated as the functions value.
+![Key concept][lambda]  It is also worth noticing, that the function does not have an explicit `return` statement or similar like imperative languages such as Java or C have. This is a common feature in functional languages. The function body is expression, and the last evluated value in the function body is treated as the functions value.
 
 **math.ex**
 
