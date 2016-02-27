@@ -62,7 +62,7 @@ Elixir is a programming language for the Erlang virtual machine BEAM. Elixir is 
 * As scripts with  `elixir`
 * Compiler `elixirc`
 
-## <a name="material_notes"></a>Notes
+## <a name="material_notes"></a>Notes for the reader
 
 * When introducing functions, we use a notation `fun_name/1` where 1 indicates the number of parameters accepted by that function
 * This material follows the conventions from [Elixir style guide](https://github.com/niftyn8/elixir_style_guide)
@@ -109,6 +109,14 @@ iex> {1, 2, 3}  # tuple
 * In Elixir, custom types composing of basic types can be defined by using the `@type` directive.
 
 In addition to the basic types listed above, Elixir also provides additional types such as a `Port`,  `PID` and a `Reference`, more about these types later on.
+
+### A few words on immutability
+
+Like most functional languages, Elixir favors immutable data. Immutability means, that a value cannot, and there is no way to change once a it has been declared. Immutability has lots of benefits to it, especially when it comes to parallel processing. Usually the challenges of parallel and asynchronous computation lies in the mutation of the state. All the writes by different parallel units of processing must carefully lock the data they write to and simultanous access to writable data structures is in practice very error prone. 
+
+Immutable data completely avoids many shortcomings of using mutable values. Then again immutability is not a silver bullet nor without downsides. Immutability can be very costly, when there is an actual need to update a value, since every time we want to chang data, the previous value needs to be copied to the new value - which can be expensive for complex data structures.
+
+Without a way to mutate values, the internal application state becomes an interesting topic. There are several constructs which allow to upkeep of an application state, such as state machines and actors. 
 
 ### <a name="basic_arithmetic"></a>Basic arithmetic and numbers
 
@@ -399,8 +407,6 @@ iex> cat
 
 Use the `put_elem/3` function to modify an element of a tuple. Notice that all declared variables in Elixir are immutable, and the `put_elem/3` returns a new copy of the original tuple rather than modifying the original element like typically done in eg. Java.
 
-Immutability is a key concept in functional languages. Immutability allows for easier reasoning about the code and efficient equality comparisons, where only references of the values need to be compared.
-
 ####  <a name="data_structures_maps"></a> Maps
 
 ```elixir
@@ -690,7 +696,7 @@ Like any other function or expression, the lambda function evaluates to the valu
 
 ### <a name="high_order_functions"></a> High-order functions
 
-![Key concept][lambda]  High order functions are functions that accept functions as their arguments or return a function as their result. Elixir's [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module provides a familiar set of high-order functions often found in other functional languages. 
+![Key concept][lambda] High order functions are functions that accept functions as their arguments or return a function as their result. Elixir's [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module provides a familiar set of high-order functions often found in other functional languages. 
 
 The often used high-order functions we are about to look into are `map/2`, `filter/2`, `zip/2` and `fold/2`.
 
@@ -848,6 +854,97 @@ We can start seeing the benefits of the pipe operator here `|>`. The first step 
 Piping is by no means limited to the functions from the `Enum` module and you can use it any time you need to pass the result of the previous function as the first argument to the next function.
 
 ## <a name="pattern_matching"></a> Pattern matching
+
+![Key concept][lambda] Pattern matching in functional languages is a mechanism often used for implementing control flows and guard expressions within functions and expressions. We have seen the operator '=' used earlier for assignment of variables. In reality, the `=` operator in Elixir is called the *match operator*.
+
+As like pattern matching in other functional languages in general, pattern matching is used to match simple values to a format pattern, pattern matching can also be used to destructure complex data types.
+
+```elixir
+iex> hello = "Perfect match!"
+"Perfect match!"
+```
+
+The example above matches the right-hand side of the match operator `=` to the left-hand side variable hello, which as en expression, evaluates to the value "Perfect match!" and assigns the value to the variable hello.
+
+```elixir
+iex> {a, b, c} = {"Mickey", "Donald", "Zappa"}
+{"Mickey", "Donald", "Zappa"}
+iex> a
+"Mickey"
+iex> b
+"Donald"
+iex> c
+"Zappa"
+```
+
+Descructing using the match operator `=` works by comparing the right-hand side data structure (a tuple in this case) to the pattern `{a, b ,c}` on the left-hand side. Because the pattern matches, the variables a, b, c are assigned the values obtained from the destructured data structure.
+
+```elixir
+iex> {"Mickey", b, c} = {"Mickey", "Donald", "Zappa"}
+{"Mickey", "Donald", "Zappa"}
+iex> b
+"Donald"
+iex> c
+"Zappa"
+iex> {"Mike", b, c} = {"Mickey", "Donald", "Zappa"}  
+** (MatchError) no match of right hand side value: {"Mickey", "Donald", "Zappa"}
+```
+
+The patttern can also be more specific, than just multiple variables. The matching can be constrained to require specific values to be present in the match pattern, or the match will result in a `MatchError`, which usually does not need to be handled in match chains, which we will be looking in to the next chapter.
+
+```elixir
+iex> [a, b, c] = [1, 2, 3]
+[1, 2, 3]
+iex> a
+1
+iex> b
+2
+iex> c
+3
+
+```
+
+Matching and destructuring works also for other data types than tuples. A list can effectively be destructured in order to extract values. This is a nice shorthand syntax for accessing the values of the list data structure.
+
+```elixir
+iex> [a | b] = [1, 2, 3]
+[1, 2, 3]
+iex> a
+1
+iex> b
+[2, 3]
+```
+
+It is also possible to extract the head and tail of the list using the match operator `=` in combination with the `[head | tail]` format, which we already looked in to in the [lists](#data_structures_list) chapter.
+
+```elixir
+iex> [a | b] = []
+** (MatchError) no match of right hand side value: []
+
+iex> [a | [] ] = [1]
+[1]
+iex> a
+1
+iex> [a| [] ] = [1,2,3]
+** (MatchError) no match of right hand side value: [1, 2, 3]
+
+iex> [1 | b] = [1, 2, 3]
+[1, 2, 3]
+iex> b
+[2, 3]
+
+```
+
+It's worth noticing, that pattern matching can effectively be used to extract information of more information than just the values of the list. It's a very convenient way to find out i the list is empty or contains a single element, or the head of the list matches a specific value.
+
+```elixir
+iex> [1 | [2, b] ] = [1, 2, 3]
+[1, 2, 3]
+iex> b
+3
+```
+
+Nested lists are also valid patterns to match against. The pattern above inspects the two leading values of the list and gives you access to the rest via the variable `b`.
 
 ### <a name="pin_operator"></a> Pin operator
 
