@@ -1,9 +1,9 @@
 defmodule SimpleServer do
-	use Application
+  use Application
 
   def start(_type, _args) do
 
-  	port = Application.get_env(:simple_server, :SERVER_PORT)
+    port = Application.get_env(:simple_server, :SERVER_PORT)
 
     dispatch = :cowboy_router.compile([
                  {:_, [{"/", SimpleServer.PageHandler, []}]}

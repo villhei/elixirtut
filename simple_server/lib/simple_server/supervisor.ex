@@ -1,7 +1,7 @@
 defmodule SimpleServer.Supervisor do
   use Supervisor
 
-    def start_link do
+  def start_link do
     :supervisor.start_link(__MODULE__, [])
   end
 
