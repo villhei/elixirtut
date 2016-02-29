@@ -1,7 +1,5 @@
 defmodule SimpleServer.AppRouter do
-  
   use Plug.Router
-
   import Plug.Conn
 
   plug(:match)
