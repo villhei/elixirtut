@@ -14,7 +14,7 @@ defmodule SimpleServer.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :cowboy],
+    [applications: [:logger, :cowboy, :plug],
     mod: {SimpleServer, []}]
   end
 
@@ -28,6 +28,7 @@ defmodule SimpleServer.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:cowboy, "1.0.4"}]
+    [{:cowboy, "1.0.4"},
+    {:plug, "~> 1.0"}]
   end
 end

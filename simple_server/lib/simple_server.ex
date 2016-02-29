@@ -2,16 +2,13 @@ defmodule SimpleServer do
   use Application
 
   def start(_type, _args) do
-
     port = Application.get_env(:simple_server, :SERVER_PORT)
+    IO.puts("Server starting listen in port #{port}")
 
-    dispatch = :cowboy_router.compile([
-                 {:_, [{"/", SimpleServer.PageHandler, []}]}
-               ])
-    {:ok, _} = :cowboy.start_http(:http, 100,
-                                  [port: port],
-                                  [env: [dispatch: dispatch]])
-    IO.puts("Server listening to port #{port}")
-    SimpleServer.Supervisor.start_link
+    Plug.Adapters.Cowboy.http(SimpleServer.AppRouter, [], port: port)
+  end
+
+  def stop do
+    Plug.Adapters.Cowboy.shutdown(SimpleServer.AppRouter.HTTP)
   end
 end
