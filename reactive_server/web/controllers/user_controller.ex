@@ -4,7 +4,8 @@ defmodule ReactiveServer.UserController do
   alias ReactiveServer.User
   alias ReactiveServer.UserQuery
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__, typ: "token"
+  # https://hexdocs.pm/phoenix/Phoenix.Controller.Pipeline.html#summary
+  plug Guardian.Plug.EnsureAuthenticated, %{ handler: __MODULE__, typ: "token" } when not action in [:new, :create] 
 
   # Scrub empty params to cause validation errors
   plug :scrub_params, "user" when action in [:create, :update]
@@ -39,10 +40,11 @@ defmodule ReactiveServer.UserController do
 
   defp do_create(conn, %{"user" => user_params}, current_user, changeset) do
     if changeset.valid? do
-      user = Repo.insert(changeset)
+      {:ok, user} = Repo.insert(changeset)
       conn
       |> put_flash(:info, "User created successfully.")
       |> Guardian.Plug.sign_in(user, :token)
+      |> put_session(:current_user, user.id)
       |> redirect(to: user_path(conn, :index))
     else
       conn
