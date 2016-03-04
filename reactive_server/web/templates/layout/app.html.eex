@@ -8,7 +8,7 @@
     <meta name="author" content="">
 
     <title><%= title %></title>
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/style.css") %>">
   </head>
 
   <body>
@@ -17,7 +17,7 @@
         <nav role="navigation">
           <ul class="nav nav-pills pull-right">
           <%= if @current_user do %>
-            <li><a>Logged in as <%= "#{current_user(@conn).displayname}"%></a></li>
+            <li><a href>Logged in as <%= "#{current_user(@conn).displayname}"%></a></li>
             <li><a href="<%= logout_path(@conn, :logout) %>">Log out</a></li>
           <% end %>
           </ul>
@@ -33,7 +33,6 @@
       </main>
 
     </div> <!-- /container -->
-    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
-    <script>require("web/static/js/app").App.run()</script>
+    <script src="<%= static_path(@conn, "/js/main.js") %>"></script>
   </body>
 </html>
