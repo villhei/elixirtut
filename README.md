@@ -1099,6 +1099,11 @@ Tests can be ran by running the `mix test` command. You can also supply that fil
 
 ## <a name="reactive_applications"> Reactive applications
 
+	- Have to use phoenix for examples, it's a little too heavyweight for exercises
+	- Phoenix has WebSocket channels that can handle communication between subscribers
+	- Phoenix fails to run if Node < 4.0 or NPM < 3.0
+	
+
 ### Game of Life
 
 Life.Board.t is a convention
