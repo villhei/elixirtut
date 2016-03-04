@@ -8,7 +8,6 @@ defmodule ReactiveServer.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug ReactiveServer.Plugs.PrintConn
     plug ReactiveServer.Plugs.CurrentUser
 
   end

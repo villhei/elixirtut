@@ -1,5 +1,11 @@
 # ReactiveServer
 
+Requirements
+
+    * Brunch.IO wants Node >5.0
+    * Brunch.IO wants npm >3.0
+        - https://github.com/phoenixframework/phoenix/issues/1410
+
 To start your Phoenix app:
 
   * Install dependencies with `mix deps.get`
@@ -7,7 +13,7 @@ To start your Phoenix app:
   * Install Node.js dependencies with `npm install`
   * Start Phoenix endpoint with `mix phoenix.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Now you can visit [`localhost:8080`](http://localhost:8080) from your browser.
 
 Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
 

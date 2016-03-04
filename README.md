@@ -93,7 +93,7 @@ Basic types and their typing formats.
 iex> 1          # integer
 iex> 0b1010		# integer, binary -> 10
 iex> 0o111		# integer, octal -> 73
-iex> 0x1FF      # integer, hex -> 255
+iex> 0x1FF      # integer, hex -> 511
 iex> 1.0        # float
 iex> 1.23e+3	# float, exponent -> 1230.0
 iex> true       # boolean
@@ -117,6 +117,8 @@ Like most functional languages, Elixir favors immutable data. Immutability means
 Immutable data completely avoids many shortcomings of using mutable values. Then again immutability is not a silver bullet nor without downsides. Immutability can be very costly, when there is an actual need to update a value, since every time we want to chang data, the previous value needs to be copied to the new value - which can be expensive for complex data structures.
 
 Without a way to mutate values, the internal application state becomes an interesting topic. There are several constructs which allow to upkeep of an application state, such as state machines and actors. 
+
+**TODO** Expand the immutability text with some pictorial examples and explain the variable reassignment
 
 ### <a name="basic_arithmetic"></a>Basic arithmetic and numbers
 
@@ -427,8 +429,8 @@ iex> Map.get(country_capitals, :sweden)
 The values contained in a map can be retrieved by calling `Map.get/2` function, which accepts a map and a key as it's parameters and retrieves the value associated with that key in constant `O(1)` time.
 
 ```elixir
-iex> Map.put(country_capitals, :netherlands, Amsterdam)
-%{finland: "Helsinki", germany: "Berlin", netherlands: Amsterdam,
+iex> Map.put(country_capitals, :netherlands, "Amsterdam")
+%{finland: "Helsinki", germany: "Berlin", netherlands: "Amsterdam",
   spain: "Madrid", sweden: "Stockholm"}
 iex> country_capitals
 %{finland: "Helsinki", germany: "Berlin", spain: "Madrid", sweden: "Stockholm"}
@@ -591,6 +593,8 @@ Recursive function is a function that calculates it's final value by repeated ap
 
 Recursion and thinking recursively might feel a little strange for those used to the imperative programming paradigm. Recursion is no different from using while loops.
 
+**TODO** Add some really simple case of recursion, such as the Factorial function
+
 ```java
 int[] array = {1,2,3,4,5};
 
@@ -659,6 +663,10 @@ iex> ArrayOps.square_list [1,2,3,4,5]
 The rewritten `square_list\1` uses a helper function to enable the elimination of the call stack creation. Creating a private helper function `do_squaring/2` within the module allows for the original call syntax for the users' of the function.
 
 `do_squaring/2` takes two parameters, an accumulator list that holds the squared values and the list with the values to square. The function iterates over the list element-by-element, and finally when the list runs out of elements, the `do_squaring/2` returns the accumulated value.
+
+#### Functions as function parameters
+
+**TODO** Write a block about the use of functions as parametrs
 
 ### <a name="lambda_functions"></a> λ (lambda) functions 
 
