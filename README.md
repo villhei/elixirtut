@@ -1,7 +1,7 @@
 # Functional programming in Elixir
 
 [lambda]: img/lambda.png
-
+[warning]: todo/warning.png
 ## Contents
 
 - About the material
@@ -109,16 +109,6 @@ iex> {1, 2, 3}  # tuple
 * In Elixir, custom types composing of basic types can be defined by using the `@type` directive.
 
 In addition to the basic types listed above, Elixir also provides additional types such as a `Port`,  `PID` and a `Reference`, more about these types later on.
-
-### A few words on immutability
-
-Like most functional languages, Elixir favors immutable data. Immutability means, that a value cannot, and there is no way to change once a it has been declared. Immutability has lots of benefits to it, especially when it comes to parallel processing. Usually the challenges of parallel and asynchronous computation lies in the mutation of the state. All the writes by different parallel units of processing must carefully lock the data they write to and simultanous access to writable data structures is in practice very error prone. 
-
-Immutable data completely avoids many shortcomings of using mutable values. Then again immutability is not a silver bullet nor without downsides. Immutability can be very costly, when there is an actual need to update a value, since every time we want to chang data, the previous value needs to be copied to the new value - which can be expensive for complex data structures.
-
-Without a way to mutate values, the internal application state becomes an interesting topic. There are several constructs which allow to upkeep of an application state, such as state machines and actors. 
-
-**TODO** Expand the immutability text with some pictorial examples and explain the variable reassignment
 
 ### <a name="basic_arithmetic"></a>Basic arithmetic and numbers
 
@@ -320,11 +310,34 @@ Strings can span multiple lines, and they can use escape sequences such as `\n` 
 
 ### <a name="data_structures"></a> Data structures
 
+#### <a name="data_structures_tuples"></a> Tuples
+
+Functional programmers often find the need to return more than a single value from a function. These sets of values can be represented as tuples, which are ordered pairs of n elements. 
+
+```elixir
+iex> cat = {:cat, 'Brown', 5}
+{:cat, 'Brown', 5}
+iex> tuple_size(cat)
+3
+```
+
+Tuples are defined by using curly brackets. The elements in a tuple are stored contiguously in memory, which means that accessing the elements of a tuple by index, or getting the size of a tuple is a fast operation. Tuples are indexed from zero.
+
+```elixir
+iex> cat = {:cat, 'Brown', 5}
+iex> put_elem cat, 1, "Pink"
+{:cat, "Pink", 5}
+iex> cat
+{:cat, 'Brown', 5}
+```
+
+Use the `put_elem/3` function to modify an element of a tuple. Notice that all declared variables in Elixir are immutable, and the `put_elem/3` returns a new copy of the original tuple rather than modifying the original element like typically done in eg. Java.
+
 #### <a name="data_structures_list"></a> Lists
 
 Lists play an important role in functional programming in general. The first functional language [LISP](https://en.wikipedia.org/wiki/Lisp_(programming_language)) (1958) is in fact an acronym for LISt Processor.
 
-Lists in Elixir, as like with most other functional languages, are implemented internally as linked lists. It's good to keep this in mind, as it means prepending to a list runs in constant time `O(1)` and thus populating a list from left to right runs in linear time `O(N)`.
+Lists in Elixir, as like with most other functional languages, are implemented internally as linked lists. It's good to keep this in mind, as it means prepending to a list runs in constant time `O(1)` and thus populating a list from left to right runs in linear time `O(N)`. List is an ordered collection.
 
 ```elixir
 iex> [1,2,3,4,5]
@@ -383,31 +396,42 @@ iex> [0 | list]
 [0, 1, 2, 3]
 ```
 
+####  <a name="data_structures_keyword_lists"></a> Keyword lists
+
+Elixir also provides a variant of the list, where each element in a list is associated with an atom acting as a keyword. Internally, keyword lists combine the two previous data structures as being lists of tuples.
+
+It is important to understand that keyworded lists are precisely lists, and all the list functions and all the normal functions and linear performance characteristics apply as usual.
+
+```elixir
+iex> [name: "Bill", name: "Hillary", name: "Donald"]                   
+[name: "Bill", name: "Hillary", name: "Donald"]
+
+```
+
+A keyword list is syntactic sugar for creating lists of tuples with non-unique keys. The key must be an atom while the value can hold anything.
+
+```elixir
+iex> [name: "Bill", name: "Hillary", name: "Donald"] ++ [name: "Abe"]
+[name: "Bill", name: "Hillary", name: "Donald", name: "Abe"]
+
+```
+
+```elixir
+iex> people = [name: "Bill", last_name: "Clinton", name: "Donald", last_name: "Trump"]
+[name: "Bill", last_name: "Clinton", name: "Donald", last_name: "Trump"]
+iex> people[:name]
+"Bill"
+iex> people[:last_name]
+"Clinton" 
+```
+
+A keyword can be looked up from the keyword list with the syntax `list_name[:keyword]`. Upon lookup, the first item matching the condition will be returned.
+
+The keyword list allows for creating syntactically pleasant functions in a number of cases. For example, we introduce the conditonal macro `if/2` in a later section.
+
+When the keyword list is the last argument of a function, the square brackets are optional. This allows passing multiple keyworded parameters to a function expecting a list.
+
 #### <a name="data_structures_streams_and_ranges"></a> Streams and ranges
-
-
-#### <a name="data_structures_tuples"></a> Tuples
-
-Functional programmers often find the need to return more than a single value from a function. These sets of values can be represented as tuples, which are ordered pairs of n elements. 
-
-```elixir
-iex> cat = {:cat, 'Brown', 5}
-{:cat, 'Brown', 5}
-iex> tuple_size(cat)
-3
-```
-
-Tuples are defined by using curly brackets. The elements in a tuple are stored contiguously in memory, which means that accessing the elements of a tuple by index, or getting the size of a tuple is a fast operation. Tuples are indexed from zero.
-
-```elixir
-iex> cat = {:cat, 'Brown', 5}
-iex> put_elem cat, 1, "Pink"
-{:cat, "Pink", 5}
-iex> cat
-{:cat, 'Brown', 5}
-```
-
-Use the `put_elem/3` function to modify an element of a tuple. Notice that all declared variables in Elixir are immutable, and the `put_elem/3` returns a new copy of the original tuple rather than modifying the original element like typically done in eg. Java.
 
 ####  <a name="data_structures_maps"></a> Maps
 
@@ -419,7 +443,9 @@ iex> country_capitals = %{:sweden =>  "Stockholm",
 %{finland: "Helsinki", germany: "Berlin", spain: "Madrid", sweden: "Stockholm"}
 ```
 
-Map is a data structure used as a container for pairs with a key and a value. Maps are often used as a sort of dictionary, and it's an efficient way of indexing values for different types of searches and retriavals.
+Map is a data structure used as a container for pairs with a key and a value. Maps are often used as a sort of dictionary, and it's an efficient way of indexing values for different types of searches and retriavals. 
+
+Unlike lists, maps are not ordered collections.
 
 ```elixir
 iex> Map.get(country_capitals, :sweden)
@@ -447,6 +473,131 @@ iex> Map.drop(country_capitals, [:spain, :sweden])
 ```
 
 The contents of the map can also be modified with the functions `Map.delete/2` which accepts a map and key to be deleted and `Map.drop/2` accepting a map and a list of keys to be deleted. The original map is not modified, but a new copy with the values removed is created.
+
+```elixir
+iex> %{} = %{finland: "Helsinki", germany: "Berlin", spain: "Madrid", sweden: "Stockholm"}
+%{finland: "Helsinki", germany: "Berlin", spain: "Madrid", sweden: "Stockholm"}
+```
+
+When performing pattern matching with maps, it's important to notice that an empty map `%{}` as a right-hand side of the match operator `=` matches all lists.
+
+```elixir
+iex> animal_sounds =  %{cow: "Moo!", dog: "Woof!", cat: "Meeoow!"}
+%{cat: "Meeoow!", cow: "Moo!", dog: "Woof!"}
+iex> animal_sounds.cow
+"Moo!"
+iex> animal_sounds.snake
+** (KeyError) key :snake not found in: %{cat: "Meeoow!", cow: "Moo!", dog: "Woof!"} 
+
+```
+
+When all the keys in a map are atoms, you can also use the `keyword:` syntax for associating keys with values in a map. Also, one can access the map with a special syntax `map.key` instead of using the `Map.get/2` function. 
+
+Accessing the map with a non-existant key will raise an error.
+
+```elixir
+iex> %{ animal_sounds | :snake => "Hsssst!"}
+** (KeyError) key :snake not found in: %{cat: "Meeoow!", cow: "Moo!", dog: "Woof!"}
+    (stdlib) :maps.update(:snake, "Hsssst!", %{cat: "Meeoow!", cow: "Moo!", dog: "Woof!"})
+    (stdlib) erl_eval.erl:255: anonymous fn/2 in :erl_eval.expr/5
+    (stdlib) lists.erl:1262: :lists.foldl/3
+iex> %{ animal_sounds | :dog => "WOOOF!"}   
+%{cat: "Meeoow!", cow: "Moo!", dog: "WOOOF!"}
+
+```
+
+The syntax `%{map_name | :key => value}` can be used to *update* a value in a map. The update requires the value to be present and for non-existant keys an error will be raised.
+
+### A few words on immutability
+
+![Key concept][lambda] Like most functional languages, Elixir favors immutable data. Immutability means, that a value cannot, and there is no way to change once a it has been declared. Immutability has lots of benefits to it, especially when it comes to parallel processing. Usually the challenges of parallel and asynchronous computation lies in the mutation of the state. All the writes by different parallel units of processing must carefully lock the data they write to and simultanous access to writable data structures is in practice very error prone. 
+
+Immutable data completely avoids many shortcomings of using mutable values. Then again immutability is not a silver bullet nor without downsides. Immutability can be very costly, when there is an actual need to update a value, since every time we want to chang data, the previous value needs to be copied to the new value - which can be expensive for complex data structures.
+
+Without a way to mutate values, the internal application state becomes an interesting topic. There are several constructs which allow to upkeep of an application state, such as state machines and actors. 
+
+```elixir
+iex> pekka = %{name: "pekka", age: 27}
+%{age: 27, name: "pekka"}
+iex> teppo =  Map.put(pekka, :name, "teppo")
+%{age: 27, name: "teppo"}
+iex> pekka
+%{age: 27, name: "pekka"}
+```
+
+The immutable data in general can be observed in functions manipulating  data structures. Instead of mutating the original data structures, the functions return a new copy of data with the updated values.
+
+It is also important to note that unlike data, variables are free to be re-assigned.
+
+```elixir
+iex> teppo_copy = teppo
+%{age: 27, name: "teppo"}
+iex> teppo = Map.put(teppo, :name, "some other teppo")
+%{age: 27, name: "some other teppo"}
+iex> teppo
+%{age: 27, name: "some other teppo"}
+iex> teppo_copy 
+%{age: 27, name: "teppo"}
+
+```
+
+On the first line, we assign a new reference `teppo_copy` to the data referenced by the variable `teppo`. Variable `teppo` is then re-assigned to point to the new copy of the data returned by the `Map.put/3` function. Even though the function does not mutate the map pointed by `teppo`, the Elixir runtime allows the user to re-assign the variable to point to the newly updated map.
+
+It's also noteworth to observe, that in case of every assignment, the Elixir interpreter evaluates the value assigned as the return value of the expression. Everything is an expression, even if it looks like a statement.
+
+## <a name="conditions"></a> Conditional structures
+
+Elixir supports `if` ... `else`, `unless`, `cond` and `case` structures for controlling the flow of an application. The `if` ... `else` structures work much like in other languages. `unless` is syntactic sugar for negation of an `if` condition. `case` is used to match patterns extracted from variables or values, `cond` is used for complex chains of `if` ... `else` conditions.
+
+### <a name="conditions_if_else"</a>If .. else
+
+```elixir
+iex> if true do
+...>   "was true"
+...> else
+...>   "wasn't true"
+...> end
+"was true"
+```
+
+The `if/2` macro accepts a condition (remember: only `nil` and `false` atoms evaluate to `false`) and a keyworded list of clauses for `do` in case of a truthful condition, and `else` in the case of a falsy or `nil` condition. The `if/2` is usually called using the syntax above.
+
+```elixir
+iex> if(1, [do: true, else: false])
+true
+iex> if(1, do: true, else: false)
+true
+```
+
+The behavior of the `if/2` macro and it's keyword-list parameters is demonstrated with the example above. The condition is truthful, so the  which evaluates to true. The macro has two clauses, the `do:` block for a truthful condition and the `else:` block for a falsy condition. This syntax is rarely used, but is demonstrated here for better understanding of the implementation of the `if/2` macro.
+
+```elixir 
+iex> iex(7)> if(false, do: "hello")
+nil
+```
+
+In case of a missing `else:`  block or keyword, the `if/2` evaluates to false.
+
+```elixir
+iex> hello = "world"
+"world"
+iex> if(false, do: hello = "true", else: hello = "false")
+"false"
+iex> hello
+"false"
+
+```
+
+![Warning][warning] It turns out that the macro implementation of the `if/2` has a slight gotcha! It's good to bear in mind that the `do:` or `else:` keyworded blocks are bound to their outer scopes, which unfortunately can be side-effecting as demonstrated above.
+
+```elixir
+iex> hello = if(false, do: "true", else: "false")        
+"false"
+```
+
+In order to keep your intentions explicit and for good functional programming practice, the side-effecting pattern should be avoided in favor of the latter. Clearly show your intention to bind the return value to a variable.
+
+ !! TODO - Conditions need to be here in order for have them with us in functions, which are kind of hard to terminate in case of recursion without conditions
 
 ## <a name="functions_and_modules"></a> Functions and modules
 
@@ -591,9 +742,55 @@ In Elixir everything is an expression, as in everything has an identifiable valu
 
 Recursive function is a function that calculates it's final value by repeated application of the function - in other words - function calling itself over and over again.
 
-Recursion and thinking recursively might feel a little strange for those used to the imperative programming paradigm. Recursion is no different from using while loops.
+Recursion and thinking recursively might feel a little strange for those used to the imperative programming paradigm. In the end, recursion is no different from using for or while loops.
 
-**TODO** Add some really simple case of recursion, such as the Factorial function
+```java
+static int factorial(int n) {
+  if(n < 2) {
+    return n;
+  }
+  int res = 1;
+  while(n > 1) {
+    res = n * res;
+    n--;
+  }
+  return res;
+}
+
+```
+
+The above is an example of an imperative approach to the commonly implemented factorial function. The function first checks if the input parameter is valid for calculating factorial and then loops the following: multiply the integer `res` with the input number `n` and decrement `n` while `n` has a value over `1`.
+
+
+```elixir
+defmodule MathEx do
+  def fact(n) do
+    if(n < 2) do
+      n
+    else
+      n * fact(n-1)
+  end
+end
+```
+
+The factorial function can be easily re-written to use a recursive approach. The principle of operation is the same, if `n < 2`, return `n`. Otherwise  multiply `n` with the result of the function `fact(n-1)`.
+
+```elixir
+iex> MathEx.fact(5)
+120
+
+# What happens in the function is:
+
+iex> MathEx.fact(5)
+    --> 5 * fact(4)
+      --> 4 * fact(3)
+        --> 3 * fact(2)
+          --> 2 * fact(1)
+            --> 1 # Recursion-terminating return value of fact(1)
+120
+```
+
+It is always important to have a terminating condition for recursion (`n < 2`) otherwise the recursive function will call itself indefinitely, eventually resulting in a stack overflow.
 
 ```java
 int[] array = {1,2,3,4,5};
@@ -613,7 +810,7 @@ int[] result = squareArray(array); // Yields an array of {1, 4, 9, 16, 25};
 
 ```
 
-The Java code above represents a simple algorithm filling a result array with the squared values of the input array. Let's make a recursive rewrite of the function in Elixir.
+The Java code above represents a simple algorithm filling a result array with the squared values of the input array. Let's make a recursive rewrite of the function:
 
 ```elixir
 defmodule ArrayOps do
@@ -631,9 +828,11 @@ iex> ArrayOps.square_list [1,2,3,4,5]
 
 Here we already play with a new concept called pattern matching, which we will discuss in more detail in a later chapter.
 
-We defined a module `ArrayOps` with a two variants of the function `square_list/1`. The first variant accepts a pattern of empty list, the second variant accepts a pattern for a non-empty list (remember, the function `hd\1` raises an exception for an empty list). The second function multiplies the head of the list with itself, and prepends the result to the result produced by a recursive call to the same function `square_list/1`. The recursive call can now match against either of the functions by the same name.
+We defined a module `ArrayOps` with a two variants of the function `square_list/1`. The first variant accepts a pattern matching an empty list. The second variant accepts a pattern for a non-empty list (remember from the lists-section, that the function `hd\1` raises an exception for an empty list).
 
-The pattern matching is also used in the function parameters as `[head|tail]` to extract the head element from the tail of the list, as introduced in the lists-chapter earlier.
+The second function multiplies the head of the list with itself, and prepends the result to the result produced by a recursive call to the same function `square_list/1`. The recursive call can now match against either of the functions by the same name.
+
+The pattern matching is also used in the function parameters with the syntax `[head|tail]` to extract the head element from the tail of the list, as introduced in the lists-chapter earlier.
 
 #### <a name="tail_call_optimization"></a> Tail call optimization
 ![Key concept][lambda] The function we defined does not come without problems. The Elixir compiler supports a feature called *tail call optimization* (or tail call elimination) for recursive functions. Tail call optimization refers to the elimination of the actual recursive call in favor of transforming the recursive calls in to a loop.
@@ -666,7 +865,7 @@ The rewritten `square_list\1` uses a helper function to enable the elimination o
 
 #### Functions as function parameters
 
-**TODO** Write a block about the use of functions as parametrs
+**TODO** Write a block about the use of functions as parameters.
 
 ### <a name="lambda_functions"></a> λ (lambda) functions 
 
@@ -685,7 +884,7 @@ iex> mult.(3, 5)
 
 On the first line we match an anonymous function accepting two parameters to a variable. The function just performs a multiplication for the arguments. 
 
-The function is called by applying a the parameters `(3,5)` to the variable associated with the function. Notice that the arguments are separated by a dot `.` -  which is a requirement for calling anonymous functions.
+The function is called by applying a the parameters `(3,5)` to the variable associated with the function. Notice that the arguments are separated from the variable by a dot `.` -  which is a requirement for calling anonymous functions in the case they get assigned to a variable.
 
 Unlike regular functions, anonymous functions can be declared outside a module.
 
@@ -875,6 +1074,23 @@ iex> hello = "Perfect match!"
 The example above matches the right-hand side of the match operator `=` to the left-hand side variable hello, which as en expression, evaluates to the value "Perfect match!" and assigns the value to the variable hello.
 
 ```elixir
+iex> x = 1
+1
+iex> 1 = x
+1
+```
+
+The use of match operator `=` looks a lot like assignments familiar from other programming languages when extracting values from the right-hand side of the match operator. It's good to keep in mind that whatever assigned to the left-hand side of the operator is also a constraint for the right-hand side. Using a variable is like saying "match anything from the right", using a value or a partial value is equivalent to saying "The data should look a lot like the value 1", as presented in the example above.
+
+```elixir
+iex> 2 = x
+** (MatchError) no match of right hand side value: 1
+
+```
+
+An invalid match will raise an exception. The exceptions are expected behavior and they act as a motivator to handle both valid and invalid cases in matching.
+
+```elixir
 iex> {a, b, c} = {"Mickey", "Donald", "Zappa"}
 {"Mickey", "Donald", "Zappa"}
 iex> a
@@ -955,8 +1171,6 @@ iex> b
 Nested lists are also valid patterns to match against. The pattern above inspects the two leading values of the list and gives you access to the rest with the variable `b`.
 
 ### <a name="pin_operator"></a> Pin operator
-
-## <a name="conditions"></a> Conditions
 
 ## <a name="processes"></a> Processes
 
