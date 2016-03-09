@@ -394,7 +394,19 @@ iex> list = [1,2,3]
 [1, 2, 3]
 iex> [0 | list]
 [0, 1, 2, 3]
+iex> [0 | [1 | [2,3,4]]]
+[0, 1, 2, 3, 4]
+
 ```
+
+It is recommended to use the prepend function only to prepend or extract a single element as a head of the list. When prepending more than a single element, things get quite ugly fast.
+
+```elixir
+iex> Enum.reverse([1,2,3,4,5])
+[5, 4, 3, 2, 1]
+```
+
+The module [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) comes with handful of helpful functions for working with lists. Here we apply the `Enum.reverse/1` function for the list `[1,2,3,4,5]` and unsprisingly we receive a reversed copy of the list.
 
 ####  <a name="data_structures_keyword_lists"></a> Keyword lists
 
@@ -599,8 +611,146 @@ In order to keep your intentions explicit and for good functional programming pr
 
 ### <a name="conditions_cond"</a>Cond
 
+```elixir
+iex> name = "hello"
+"hello"
+iex> cond do
+       name == "world" ->
+        "it's not"
+       name == "hello" ->
+        "well #{name}!"
+       name == "something else" ->
+        "highly unlikely"
+      end
+"well hello!"
+
+```
+
+The `cond` turns out useful when the expressive power of `if` .. `else` runs out. The additional conditions listed in the `cond` construct behave much like `else if` statements in imperative languages such as Java. `cond` is relatively rarely used in Elixir, because most of the time `cond` can be substituted with the `case` construct that leans towards the functional style.
+
+```elixir
+iex> name = "hello"
+"hello"
+iex> cond do
+       name == "world" ->
+        "it's not"
+       name == "I WILL NOT MATCH" ->
+        "well #{name}!"
+       name == "something else" ->
+        "highly unlikely"
+      end
+** (CondClauseError) no cond clause evaluated to a true value
+
+```
+
+The `cond` construct will raise an error if it does not find a suitable condition to fulfill. 
+
+```elixir
+iex> name = "hello"
+"hello"
+iex> cond do
+       name == "world" ->
+        "it's not"
+       name == "I WILL NOT MATCH" ->
+        "well #{name}!"
+       name == "something else" ->
+        "highly unlikely"
+       true ->
+        "Atoms to the rescue!"
+      end
+"Atoms to the rescue!"
+```
+
+The last condition of a `cond` construct can be substituted with the atom `true` in order to prevent an exception from raising. The `true` will obviously always be truthful and by this addition we're making sure there is a fallback mechanism, for example in the case of unexpected values or a programmer error.
+
 ### <a name="conditions_case"</a>Case
 
+The `case` construct is perharps the most interesting of the conditional constructs. The `case` construct allows the programmer to use the full power of pattern matching in combination with guard clauses.
+
+```elixir
+iex> case {1, 2, 3} do
+        {4, 5, 6} -> "Will not match"
+        {1, 2, 3} -> "Will match"
+        {2, 3, 4} -> "Will not match"
+     end
+"Will match"
+```
+
+The patterns in the `cond` clause will be evaluated from top to bottom, and the first clause to match will return the associated expression.
+
+```elixir
+iex> case {1, 2, 3} do
+        {4, 5, 6} -> "Will not match"
+        {1, 2, 4} -> "Will not match"
+        {2, 3, 4} -> "Will not match"
+     end
+** (CaseClauseError) no case clause matching: {1, 2, 3}
+```
+
+An error will be raised if none of the clauses match, just like with `cond` and `if` .. `else` constructs.
+
+```elixir
+iex> case {1, 2, 3} do
+        {4, 5, 6} -> "Will not match"
+        {1, 2, 4} -> "Will not match"
+        {2, 3, 4} -> "Will not match"
+        _         -> "Will always match"
+     end
+"Will always match"
+```
+
+The `_` clause has a special meaning in Elixir. The underscore `_` means "any value" or "anything" or "ignore the value" and will always yield true in `cond` constructs. 
+
+
+```elixir
+iex> case {1, 2, 3} do
+        {_, y, 4} -> "Will not match"
+        {x, 2, _} -> "Will match"
+        {2, _, _} -> "Will not match"
+        _         -> "Will not match"
+     end
+"Will match"
+```
+
+The clauses listet in the `case` construct need not be exhaustive. The clauses can be a combination of bound variables or they can be ignored. The second clause in addition to the last one is the only one that has a properly matching pattern.
+
+### <a name="conditions_case"</a>A case of guards
+
+```elixir
+iex> case {1, 2, 3} do
+        {x, y, z} when x + y + z == 7 -> "Will not match"
+        {x, y, z} when x + y + z == 6 -> "Will match"
+        {x, y, z} when x + y + z == 8 -> "Will not match"
+     end
+"Will match"
+```
+
+The `cond` constructs can also be complemented with *guard* conditions that represent a condition that must me fulfilled in addition for the pattern matching to produce valid results. In the example above we extract the values of the input `{1, 2, 3}` to variables in the tuple `{x, y, z}` and test a simple arithmetic expression against an integer value. 1 + 2 + 3 is equal to 6, so the middle condition is the only one to yield true.
+
+Note that all comparison operators (ie. `<`, `>`, `<=` or `>=`) can be used as a part of a guard condition. Also the type checking functions such as `is_atom/1` are valid guard clauses. Full list of valid clauses can be found from the official [Elixir tutorial](http://elixir-lang.org/getting-started/case-cond-and-if.html).
+
+Also noteworthy that instead of the type-agnostic `||` and `&&` operators only the boolean operators `and` and `or` can be used as a part of a guard condition.
+
+```elixir
+iex> case :dog do
+       x when x in [:cat, :dog, :cow] -> "Will match"
+       _ -> "Will not match"
+     end
+"Will match"
+```
+
+The guard condition guarding the clause can also be used to match multiple items in the same time using the `in` operator, which looks for the input value in a `list` or `range`. Unfortunately because of the `in`'s macro implementation and dynamic typing of Elixir, the `in` cannot reference a variable as it's right-hand side.
+
+```elixir
+iex> case 666 do
+       x when x in 1..500 -> "Won't match"
+       x when x in 501..1000 -> "Will match"
+       _ -> "No match"
+     end
+"Will match"
+```
+
+The guard condition can also match against ranges, which can prove itself useful with it's elegant short-hand syntax.
 ## <a name="functions_and_modules"></a> Functions and modules
 
 ### <a name="modules"></a> Modules
@@ -625,7 +775,9 @@ defmodule <module_name> do
   # Module body
 end
 ```
+
 The module definition follows the format `defmodule` module name `do` ... module body ... `end`. Functions within a module are defined with the `def` macro and private functions visible only within the lexical scope of the module use the `defp` macro. 
+
 ``` elixir
 def function_name(param_a, param_b) do
   # Function body
@@ -642,7 +794,7 @@ end
 
 
 ##### <a name="implicit_return_values"></a> Implicit return values
-![Key concept][lambda] It is also worth noticing, that the function does not have an explicit `return` statement or similar, like imperative languages such as Java or C tend to use. This is a common feature in functional languages. The function body is an expression, and the last evaluated value in the function body is treated as the function's return value.
+![Key concept][lambda] It is also worth noticing, that the function `square/1` does not have an explicit `return` statement or similar, like imperative languages such as Java or C tend to use. This is a common feature in functional languages. The function body is an expression, and the last evaluated value in the function body is treated as the function's return value.
 
 ```elixir
 defmodule Math do
@@ -763,7 +915,6 @@ static int factorial(int n) {
 
 The above is an example of an imperative approach to the commonly implemented factorial function. The function first checks if the input parameter is valid for calculating factorial and then loops the following: multiply the integer `res` with the input number `n` and decrement `n` while `n` has a value over `1`.
 
-
 ```elixir
 defmodule MathEx do
   def fact(n) do
@@ -771,6 +922,7 @@ defmodule MathEx do
       n
     else
       n * fact(n-1)
+    end
   end
 end
 ```
@@ -865,6 +1017,29 @@ The rewritten `square_list\1` uses a helper function to enable the elimination o
 
 `do_squaring/2` takes two parameters, an accumulator list that holds the squared values and the list with the values to square. The function iterates over the list element-by-element, and finally when the list runs out of elements, the `do_squaring/2` returns the accumulated value.
 
+#### Guards in functions
+
+```elixir
+defmodule MathEx do
+  def fact(n) when (is_number(n) and n > -1) do
+    if(n < 2) do
+      n
+    else
+      n * fact(n-1)
+    end
+  end
+end
+
+iex> MathEx.fact("a")
+** (FunctionClauseError) no function clause matching in MathEx.fact/1
+    iex:75: MathEx.fact("a")
+
+```
+
+The function definitions can also be decorated with guards in order to allow the function to yield safe and predictable results. The factorial function does not work for numbers less than zero so we decorate the function definition with a guard with the `when <cond>` just before the block initiated by the `do` keyword. Our guard makes sure that the function receives a number and the function is of valid magnitude.
+
+**TODO** Write a larger block about guards
+ 
 #### Functions as function parameters
 
 **TODO** Write a block about the use of functions as parameters.
@@ -903,6 +1078,7 @@ Lambda functions are closures, and such they have a private scope that only the 
 
 Like any other function or expression, the lambda function evaluates to the value returned by that expression.
 
+
 ### <a name="high_order_functions"></a> High-order functions
 
 ![Key concept][lambda] High order functions are functions that accept functions as their arguments or return a function as their result. Elixir's [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module provides a familiar set of high-order functions often found in other functional languages. 
@@ -922,9 +1098,10 @@ High order functions and lambda functions are best friends, as the loop-abstract
 | `Enum.zip/2`    | 1. Enumerable A 2. Enumerable B | Merge all elements of two enumerables A and B to an enumerable of tuples `{A, B}`. The `zip/2` terminates when either one runs out of elements. |  
 | `Enum.reduce/3` | 1. Enumerable 2. An initial value 3. A `function/2` with the accumulator value and an element of a list as parameters. | Reduce all the elements of an enumerable to a single element. The reducer function starts with the initial value and the first item, and passes the return value as the accumulator to the subsequent call|
 
+
 A more complete list of functions is documented in the [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module. 
 
-#### <a name="high_order_map"></a> Map/2
+#### <a name="high_order_map"></a> Enum.map/2
 
 ```elixir
 iex> list = [1,2,3,4,5]
@@ -944,27 +1121,29 @@ people = [%{name: "Matti Ruohonen", born: 1949},
           %{name: "Teppo Ruohonen", born: 1948}, 
           %{name: "Seppo Räty", born: 1962}]
 ```
-Let's create a list objects representing the most important finnish celebrities and their birth years.
+Let's create a list objects representing the most important finnish celebrities and their birth years. Note that celebrities are represented by the `%{}` map *type*.
 
 ```elixir
-iex> Enum.map(people, fn(p) -> Map.get(p, :name) end)
+iex> Enum.map(people, fn(person) -> person.name end)
 ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
+
 iex> Enum.map(people, fn(p) -> Map.get(p, :born) end)
 [1949, 1948, 1962]
 
 ```
-In the first case, the `map/2` transforms a list of `Map`s to a list of strings, without mutating the original collection. In the second case, `map/2` transforms the list of `Map`s to a list of strings. 
+In the first case, the `map/2` transforms a list of `Map`s to a list of strings, without mutating the original collection. In the second case, `map/2` transforms the list of `Map`s to a list of strings using the `Map.get/2` function. 
 
 ```elixir
-iex> names = Enum.map(people, fn(p) -> Map.get(p, :name) end)
+iex> names = Enum.map(people, fn(person) -> person.name end)
 ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
+
 iex> Enum.map(names, fn(n) -> String.upcase(n) end)  
 ["MATTI RUOHONEN", "TEPPO RUOHONEN", "SEPPO RÄTY"]
 ```
 
 `map/2` is often used to formulate *functional pipelines* where the value is transformed multiple times to a new format or type suitable for the next operation. The second call to `map/2` uses the function `upcase/1` from the [String](http://elixir-lang.org/docs/stable/elixir/String.html) module.
 
-#### <a name="high_order_filter"></a> Filter/2
+#### <a name="high_order_filter"></a> Enum.filter/2
 
 ```elixir
 iex> list = [1,2,3,4,5]
@@ -978,7 +1157,7 @@ The `filter/2` is a function that accepts an `Enumerable` and a predicate functi
 The elements returned by the filter function are of the same type as the input elements, in other words, filter is used to limit the size of a sample when working with `Enumerable` types.
 
 ```elixir
-iex> names = Enum.map(people, fn(p) -> Map.get(p, :name) end)
+iex> names = Enum.map(people, fn(person) -> person.name end)
 ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
 iex> Enum.filter(names, fn(n) -> String.contains?(n, "Ruohonen") end)
 ["Matti Ruohonen", "Teppo Ruohonen"]
@@ -991,7 +1170,7 @@ iex> Enum.map(matches, fn(n) ->
 
 The `filter/2` function is often used together with other high order functions, like with the `map/2` used in this example. First the list of people is transformed to list of names. We are only interested in the names that include the string "Ruohonen", which we check for with the `String.contains?/2` function from the [String](http://elixir-lang.org/docs/stable/elixir/String.html) module. For the filtered list, we perform yet another `map/2` to split the names in to parts, of which we grab the first elements of.
 
-#### <a name="high_order_zip"></a> Zip/2
+#### <a name="high_order_zip"></a> Enum.zip/2
 
 ```elixir
 iex> numbers = [1,2,3,4,5]
@@ -1020,7 +1199,7 @@ iex> Enum.zip(list, tl(list))
 
 Generally speaking, the purpose of the `zip/2` function is simply what we stated, but the use cases are endless. You sometimes might require the index of the element while performing a `map/2`, the solution is to call `zip/2` on the original list with a second list containing the indices.
 
-#### <a name="high_order_reduce"></a> Reduce/3
+#### <a name="high_order_reduce"></a> Enum.reduce/3
 
 ```elixir
 iex> numbers = [1,2,3,4,5]
@@ -1039,6 +1218,11 @@ iex> Enum.reduce(names, "", fn(name, acc) -> acc <> name <> "!!!11 " end)
 ```
 
 Like the other functions introduced, the `reduce/3` can work with any data type, and reduce the data to any kind of value.
+
+**Exercise** Return the first letters of a list of strings as a single string
+
+**Exercise** Reverse a list using fold
+
 
 ## <a name="pipe_operator"></a> The pipe operator
 
@@ -1063,7 +1247,7 @@ Let's return to the previous example of people and do some function chaining.
 
 ```elixir
 iex> people 
-...> |> Enum.map(fn(p) -> Map.get(p, :name) end)
+...> |> Enum.map(fn(p) -> p.name end)
 ...> |> Enum.filter(fn(n) -> String.contains?(n, "Ruohonen") end) 
 ...> |> Enum.map(fn(n) -> String.split(n, " ") end)
 ...> |> Enum.map(fn(nn) -> hd(nn) end)
@@ -1194,6 +1378,16 @@ Nested lists are also valid patterns to match against. The pattern above inspect
 ### <a name="actors_supervisors"></a> Supervisors
 
 ## <a name="advanced_techniques"></a> Advanced techniques
+
+### <a name="advanced_techniques_fun_capture">Function capturing</a>
+
+```elixir
+iex> [1, 2, 3, 4, 5] |> Enum.map(&(&1 * &1))    
+[1, 4, 9, 16, 25]
+
+```
+
+Elixir provides a special syntax for function capturing with the `&` operator prepending the function. The `&` operator can be used to condence the lambda function syntax even further. The function `&(&1 * &1)` passed for the `Enum.map/2` is strictly equivalent to the function `fn n -> n * n end`.
 
 ### <a name="advanced_techniques_currying"></a> Currying
 
