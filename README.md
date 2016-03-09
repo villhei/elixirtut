@@ -905,9 +905,22 @@ Like any other function or expression, the lambda function evaluates to the valu
 
 ![Key concept][lambda] High order functions are functions that accept functions as their arguments or return a function as their result. Elixir's [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module provides a familiar set of high-order functions often found in other functional languages. 
 
-The often used high-order functions we are about to look into are `map/2`, `filter/2`, `zip/2` and `fold/2`.
+The often used high-order functions we are about to look into are `map/2`, `filter/2`, `zip/2` and `reduce/3`.
 
 The high-order functions here are supplied by the [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module, and equivalent lazy functions can be found from the [Stream](http://elixir-lang.org/docs/stable/elixir/Stream.html) module. When working with collections, you can think of these functions as generalizations or replacements of loop constructs.
+
+High order functions and lambda functions are best friends, as the loop-abstracting nature of high-order functions is commonly complemented with throw-away lambda functions expressing the action of the loop. Using lambda functions with common high-order functions is good practice, as a lambda is often more explicit about it's actions than a named function as a parameter.
+
+#### Summary of the common high order functions
+
+| Function   | Parameters | Description |
+| ---------- | ---------- | ----------- |
+| `map/2`    | 1. Enumerable 2. A `function/1` with an element passed as a parameter | Transform (map) all elements list from type A to type B |
+| `filter/2` | 1. Enumerable 2. A `function/1` returning a condition with an element passed as a paaemeter | Create a new list from the elements in a list that satisfy a given condition |
+| `zip/2`    | 1. Enumerable 2. Enumerable | Merge all elements of two lists A and B to a list of tuples `{A, B}`. The `zip/2` terminates when either one of the lists runs out of elements. |  
+| `reduce/3` | 1. Enumerable 2. An initial value 3. A `function/2` with the accumulator value and an element of a list as parameters. | Reduce all the elements of a list to a single element, starting with an initial value and from the first item|
+
+A more complete list of functions is documented in the [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module. 
 
 #### <a name="high_order_map"></a> Map/2
 
@@ -1005,7 +1018,7 @@ iex> Enum.zip(list, tl(list))
 
 Generally speaking, the purpose of the `zip/2` function is simply what we stated, but the use cases are endless. You sometimes might require the index of the element while performing a `map/2`, the solution is to call `zip/2` on the original list with a second list containing the indices.
 
-#### <a name="high_order_reduce"></a> Reduce/2
+#### <a name="high_order_reduce"></a> Reduce/3
 
 ```elixir
 iex> numbers = [1,2,3,4,5]
