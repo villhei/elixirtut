@@ -597,7 +597,9 @@ iex> hello = if(false, do: "true", else: "false")
 
 In order to keep your intentions explicit and for good functional programming practice, the side-effecting pattern should be avoided in favor of the latter. Clearly show your intention to bind the return value to a variable.
 
- !! TODO - Conditions need to be here in order for have them with us in functions, which are kind of hard to terminate in case of recursion without conditions
+### <a name="conditions_cond"</a>Cond
+
+### <a name="conditions_case"</a>Case
 
 ## <a name="functions_and_modules"></a> Functions and modules
 
@@ -915,10 +917,10 @@ High order functions and lambda functions are best friends, as the loop-abstract
 
 | Function   | Parameters | Description |
 | ---------- | ---------- | ----------- |
-| `map/2`    | 1. Enumerable 2. A `function/1` with an element passed as a parameter | Transform (map) all elements list from type A to type B |
-| `filter/2` | 1. Enumerable 2. A `function/1` returning a condition with an element passed as a paaemeter | Create a new list from the elements in a list that satisfy a given condition |
-| `zip/2`    | 1. Enumerable 2. Enumerable | Merge all elements of two lists A and B to a list of tuples `{A, B}`. The `zip/2` terminates when either one of the lists runs out of elements. |  
-| `reduce/3` | 1. Enumerable 2. An initial value 3. A `function/2` with the accumulator value and an element of a list as parameters. | Reduce all the elements of a list to a single element, starting with an initial value and from the first item|
+| `Enum.map/2`    | 1. Enumerable 2. A `function/1` with an element passed as a parameter | Transform (map) all elements of an enumerable from type A to type B |
+| `Enum.filter/2` | 1. Enumerable 2. A `function/1` returning a condition with an element passed as a parameter | Create a new enumerable of the same type from the elements that satisfy a given condition |
+| `Enum.zip/2`    | 1. Enumerable A 2. Enumerable B | Merge all elements of two enumerables A and B to an enumerable of tuples `{A, B}`. The `zip/2` terminates when either one runs out of elements. |  
+| `Enum.reduce/3` | 1. Enumerable 2. An initial value 3. A `function/2` with the accumulator value and an element of a list as parameters. | Reduce all the elements of an enumerable to a single element. The reducer function starts with the initial value and the first item, and passes the return value as the accumulator to the subsequent call|
 
 A more complete list of functions is documented in the [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module. 
 
@@ -1032,7 +1034,7 @@ The `reduce/3` function is used to reduce the values of an `Enumerable` to a sin
 ```elixir
 iex> names = ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
 ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
-iex> Enum.reduce(names, "", fn(name, acc) -> acc <> name <> "!!!11 "end)            
+iex> Enum.reduce(names, "", fn(name, acc) -> acc <> name <> "!!!11 " end)            
 "Matti Ruohonen!!!11 Teppo Ruohonen!!!11 Seppo Räty!!!11 "
 ```
 
