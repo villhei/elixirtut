@@ -20,6 +20,11 @@ defmodule Week2 do
   def merge_with_indices(left, right) do
     nil
   end
+  
+  # Reverse list using fold
+  def fold_list_backwords(xs) do
+    nil
+  end
 
   # Map of animals as input, filter :type carnivore
   def carnivores_only(i) do
