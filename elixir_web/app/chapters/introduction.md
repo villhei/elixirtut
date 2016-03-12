@@ -27,6 +27,16 @@ Advances in multi-core and parallel processing have caused a surge of interest i
 
 Functional programming is generally known to provide a lot better support for *structured programming* than imperative programming. A structured program is a program where the program is composed of structural abstractions and components. Functional languages allows the programmer to create these abstractions in an easy and clean manner. High-order abstracting loop-structures in Elixir are an excellent example of these elegant abstractions.
 
+```elixir
+defmodule Sort do
+  def merge_sort(list) when length(list) <= 1, do: list
+  def merge_sort(list) do
+    {left, right} = Enum.split(list, div(length(list), 2))
+    :lists.merge( merge_sort(left), merge_sort(right))
+  end
+end
+```
+
 Functional applications are more declarative, clean and typically a lot shorter than their imperative counterparts. Less code translates to less bugs,higher productivity and a better readability.
 
 An increasing number of programming languages support functional programming features, but they rarely do so very well. In order to understand what the functional programming approach has to offer, one has to really learn a functional programming language and the way applications are built in this paradigm.
