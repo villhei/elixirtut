@@ -1,4 +1,4 @@
-# <a name="building_applications"> Building applications
+[lambda]: img/lambda.png
 
 ## <a name="building_applications"></a>Throwing a project into the mix
 Elixir uses the `mix` application to build and manage projects. In this chapter we wiill familiarize ourselves with the use of `mix`.

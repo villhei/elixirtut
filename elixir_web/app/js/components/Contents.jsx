@@ -1,19 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router'
+import Chapters from '../chapters.js'
 
 export default class Contents extends React.Component {
-    render(){
+    render() {
+          let links = Chapters.map(chapter => 
+             (<li key={chapter.path}><Link to={chapter.path}>{chapter.title}</Link></li>))
         return(
           <div>
               <h1>Functional programming Elixir</h1>
               <h2>Table of contents</h2>
-              <ul>
-                <li><Link to="/introduction">Introduction</Link></li>
-                <li><Link to="/basics">Basics and syntax</Link></li>
-                <li><Link to="/processes">Parallelism with processes</Link></li>
-                <li><Link to="/language_tools">Building applications</Link></li>
-                <li><Link to="/drafts_and_ideas">Drafts and ideas</Link></li>
-              </ul>
+              <ol className="table-of-contents">
+                {links}
+              </ol>
           </div>
         );
     }

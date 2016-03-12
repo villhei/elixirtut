@@ -4,8 +4,8 @@ import $ from 'jquery';
 import StaticMarkdownRenderer from './StaticMarkdownRenderer.jsx'
 
 export default class StaticPage extends React.Component {
-    content() {
-        return this.props.route.content;
+    chapter() {
+        return this.props.route.chapter;
     }
 
     shouldComponentUpdate(){
@@ -13,7 +13,10 @@ export default class StaticPage extends React.Component {
     }
     render(){
         return(
-            <StaticMarkdownRenderer content={this.content()} />
+          <div>
+          <h1>{this.chapter().title}</h1>
+            <StaticMarkdownRenderer chapter={this.chapter()} />
+          </div>
         );
     }
 }

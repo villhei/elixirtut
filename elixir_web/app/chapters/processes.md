@@ -1,6 +1,7 @@
-## <a name="processes"></a> Processes and actors
+[lambda]: img/lambda.png
+
 <div class="quote"><p>Processes are a part of the language - they do not belong to the operating system. That's really what's wrong in languages such as Java or C++ that, threads are not in the language, they are something that's in the operating system. They inherit all the problems they have in the the operating system.</p>
- <span class="quotee">-Joe Armstrong, The principal inventor of Erlang</span>
+    <span class="quotee">-Joe Armstrong, The principal inventor of Erlang</span>
 </div>
 
 ### Introduction

@@ -5,7 +5,7 @@ import hljs from 'highlight.js'
 
 export default class StaticMarkdownRenderer extends React.Component {
     rawMarkup() {
-        return{ __html: this.props.content};
+        return{ __html: this.props.chapter.content};
     }
 
     componentDidMount() {
