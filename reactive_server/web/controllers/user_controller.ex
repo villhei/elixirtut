@@ -17,7 +17,7 @@ defmodule ReactiveServer.UserController do
   def index(conn, _params, current_user, _claims) do
     users = Repo.all(UserQuery.order_by_email)
     |> Enum.map(fn(user) -> remove_secrets(user) end)
-    render(conn, "index.html", users: users)
+    render(conn, "index.html", users: users, current_user: current_user)
   end
 
   def new(conn, _params, current_user, _claims) do

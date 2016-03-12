@@ -1,0 +1,118 @@
+@import "~highlight.js/styles/hybrid.css";
+@import "~bootstrap3/less/bootstrap";
+
+@import "theme/variables.less";
+
+body {
+  padding-top: 50px;
+}
+
+#content-container {
+  font-family: 'Merriweather', serif;
+  font-weight: 300; 
+  font-size: 10pt;
+  background-color: #fff;
+  padding-left: 40px;
+  padding-right: 40px;
+
+  p {
+    text-indent: 1em;
+    line-height: 1.9em;
+  }
+}
+
+.key-concept {
+  .bg-info;
+}
+
+footer {
+    background-color: #fff;
+}
+
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
+
+.quote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+    p {
+        text-indent: 0;
+        display: inline;
+        font-style: italic;
+    }
+    .quotee {
+        display: inline-block;
+        font-weight: 400;
+        font-style: italic;
+        margin-top: 1em;
+        float: right;
+    }
+}
+
+.quote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+
+}
+
+.article-page {
+    pre {
+        margin: 15px 0 15px 0;
+        background: -webkit-linear-gradient(top, @gray-light 0, lighten(@gray-light, 6.5%) 20px);
+        //box-shadow: 0px 2px 0px #575757 inset;
+        border-radius: 8px;
+        padding: 20px 0 0 0;
+    }
+
+    table {
+        .table;
+        font-size: 10pt;
+    }
+}
+
+.key-concept {
+    @color: @gray-lighter;
+    background-color: @color;
+    border: 1px solid darken(@color, 10%);
+    padding: 15px;
+    font-weight: 400;
+    text-indent: 0;
+
+    span {
+        font-size: 12pt;
+        font-weight: 800;
+        color: darken(@color, 50%);
+    }
+
+    img {
+        vertical-align: middle;
+        float: left;
+        margin: 10px;
+    }
+    p {
+        margin-left: 60px;
+    }
+}
+
+.exercise-container {
+    
+    @exercise-color: lighten(@brand-info, 20%);
+    background-color: @exercise-color;
+    border: 1px solid darken(@exercise-color, 10%);
+    padding: 15px;
+
+    .group-name {
+        color: darken(@exercise-color, 40%);;
+        font-weight: 800;
+        font-size: 14pt;
+    }
+} 
