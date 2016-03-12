@@ -964,7 +964,6 @@ static int[] squareArray(int[] array) {
   int[] result = new int[array.length];
 
   for(int i = 0 ; i < ; array.length ; ++i) {
-    int[] result = new int[array.length];
     result[i] = array[i] * array[i];
   }
 
@@ -1399,10 +1398,9 @@ Nested lists are also valid patterns to match against. The pattern above inspect
 ## <a name="processes"></a> Processes and actors
 
 ### Introduction
+*"Processes are a part of the language - they do not belong to the operating system. That's really what's wrong in languages such as Java or C++ that, threads are not in the language, they are something that's in the operating system. They inherit all the problems they have in the the operating system."*
 
-"Processes are a part of the language - they do not belong to the operating system. That's really what's wrong in languages such as Java or C++ that, threads are not in the language, they are something that's in the operating system. They inherit all the problems they have in the the operating system."
-
- - Joe Armstrong, The principal invertor of Erlang
+ --Joe Armstrong, The principal inventor of Erlang
 
 Elixir inherits the concept of processes from the Erlang Virtual Machine BEAM. In Elixir all code runs within processes, which area extremely light-weight abstractions over threads. Internally BEAM creates a set of kernel-level threads and schedules the light weight threads (processes) between the more heavy-weight lower level threads. The amount of kernel level threads usually equals the amount of available CPU cores.
 
