@@ -3,6 +3,7 @@
   <span>TODOS</span
   <ul>
     <li>The page looks a little boring</li>
+    <li>The introduction needs a little more work</li>
   </ul>
 </div>
 
@@ -15,13 +16,17 @@ Elixir inherits the concept of processes from the Erlang Virtual Machine BEAM. I
 
 Process creation in Elixir is really cheap in comparison to other programming languages such as Java or C#. The traditional approach is to create a new thread at the operating system level, which comes at a relatively high cost of context switching and memory use in comparison to the approach selected for BEAM.
 
+Because of the multi-threaded nature of the BEAM virtual machine, Elixir processes run in *parallel*. Parallelism is concept distinct from concurrency. Many single-threaded languages such as JavaScript allow for *concurrent* execution, but not for *parallel* execution.
+
+Parallel means simultaneous execution of possible related computations in multiple processor cores. In turn, concurrency references to the composition of independentely executing processes. Or well, if you work on an ancient single-threaded machine, even resorting to Elixir won't make your computations parallel.
+
 As a result, it is no way uncommon for a typical Elixir or Erlang application to coordinate hundreds, thousands or even tens of thousands of processes on a single machine. Impressive, tempting, exciting!
 
 Being a functional language, Elixir also doesn't face the problem of state corruption, which is a typical problem in concurrent programming using imperative languages. Because mutable state does not exist, data does not need to be protected from writes with constructs such as locks, mutexes or semaphores.
 
 More info, motivation: http://www.infoq.com/presentations/erlang-software-for-a-concurrent-world
 
-There are two possible approaches to concurrency, the shared memory model, where processes lock the data for the duration needed to access it and the message passing model selected for use in BEAM.
+There are two possible approaches to parallelism and concurrency: *the shared memory model*, where processes lock the data for the duration needed to access it and the *message passing* model selected for use in BEAM.
 
 **The problems of shared memory model**
   - A thread crashes while doing a write in a shared region of memory making the memory corrupted and thus inaccessible for other threads
@@ -87,7 +92,7 @@ When the `parent` receives the first results back from a `worker` the parent tra
 
 ## Spawning processes
 
-It turns out we have been working inside a BEAM process this whole time! That means, the thread we are working in can be used to spawn processes. Let's confirm this fact immediately.
+It turns out we have been working inside a BEAM process this whole time! That means, the thread we are working in can be used to spawn processes. Let's confirm this fact immediately. 
 
 ### The keys to the kingdom with `spawn/1`
 
