@@ -30,6 +30,14 @@ To be able to utilize these features provided by BEAM, we are going to take a lo
   - Lots of computers (let one crash)
   - Functional programming (avoid side effects)
 
+<div class="key-concept">
+  ![Key concept][lambda]<span>Note about processes</span>
+  <p>Processes play an important role in fault-tolerant systems. Processes in Elixir applications are usually <i>linked</i> to special processes called supervisors.</p>
+
+  <p>In case of a process failure, the supervisor process usually restarts the process group that failed. This is possible because processes are isolated and <b>do not</b> share any data with other processes. Since processes are isolated, a failure in a process <b>will not</b> crash or corrupt the state of another process.</p>
+
+  <p>Remember, it's completely okay for a process to fail, for there is a very little overhead in creating a new process.</p> 
+</div>
 ## <a name="actors"></a> Some formalism with actors
 
 Defined more formally, the independent processing units (processes) in Elixir and the BEAM follow the definition of an [Actor](https://en.wikipedia.org/wiki/Actor_model). Actor is a concept introduced by Carl Hewitt in 1973 as an alternative to the object-oriented approach for stucturing of programs. 
@@ -158,20 +166,66 @@ iex> flush()
 
 In practice, especially for debugging purposes, we do not really have to write the `receive` expression every single time. The Elixir Kernel also provides the `flush/0` function that reads every message from the mailbox and calls `inspect/2` for each result.
 
-Now that we have taken a closer look to processes, let's start building something a little more complex and return to the abstract example of `parent` and `worker`s used in the introductory section.
+## Process links with `spawn_link/1`
+
+The Erlang virtual machine supports a concept called process link. A link between the process is a relationship between processes that change the behavior in case of crashes. In case of a crash a linked child process will bring down the parent process. Also in the case of a parent failure, the link also causes the child process to die. 
+
+This behavior is a useful property with links, when we take dependencies between processes in to consideration. If a process dies, it's a good idea to kill the processes that depend on it rather than resolving the potentially missing dependencies manually. An alternative to manual resolving is just to restart the whole process tree or group. This is a part of the let-it-die, or fail fast philosophy of both Erlang and Elixir. 
+
+```elixir
+iex> pid = spawn(fn -> raise "hell" end)
+#PID<0.71.0>
+iex>
+18:04:03.476 [error] Process #PID<0.71.0> raised an exception
+** (RuntimeError) hell
+    :erlang.apply/2
+iex> send(pid, :hello)
+:hello
+iex> flush()
+:ok
+```
+
+When we create a new process using `spawn/1` and have it crash, the `iex` interpreter continues it's operation normally. In the case of the process potentially dying, we can still send messages to that process and we really have no idea whether it received the message or not.
+
+```elixir
+iex> flush()
+:ok
+iex> Process.alive?(pid)
+false
+```
+
+The flush command does not give any hints on the message delivery failing, but when we query the process with `Process.alive?/1`, we finally get a falsy answer. Failing fast is a lot better alternative to manually querying processes, although your mileage may vary.
+
+```elixir
+iex(9)> pid = spawn_link(fn -> raise "hell" end)
+** (EXIT from #PID<0.69.0>) an exception was raised:
+    ** (RuntimeError) hell
+        :erlang.apply/2
+
+18:09:22.606 [error] Process #PID<0.82.0> raised an exception
+** (RuntimeError) hell
+    :erlang.apply/2
+
+Interactive Elixir (1.2.3) - press Ctrl+C to exit (type h() ENTER for help)
+iex(1)>
+```
+
+The `spawn_link/1` can be used exactly like the `spawn/1` function, but the difference is, that it makes the parent process die in case of the child dying. It is kind of scary to see the `iex` process crashing at the same time, but it's comforting to know that in a real-life scenario our application would basically just restart and continue normal operation. 
+
+We don't really have to worry about these linked processes crashing our application all the time. Elixir and Erlang feature a special type of process called the (process) supervisor for this purpose. We will discuss supervisors in a bit more detail in the next chapter.
 
 ## Modelling a state machine
+Now that we have taken a closer look to processes, let's start building something a little more complex and return to the abstract example of `parent` and `worker`s used in the introductory section.
 
 ```elixir
 defmodule Parent do
-
   def start() do
     spawn_link(fn -> ready_to_receive() end)
   end
 
   defp ready_to_receive() do 
     receive do
-      {:do_something_expensive} ->
+      :do_something ->
         IO.puts("Task received")
         ready_to_receive()
       _ -> 
@@ -184,7 +238,7 @@ end
 
 Let's start by defining a really simple implementation for the behavior of `parent` we discussed earlier. The parent has a public function `start/0` which calls the `spawn_link/1` function with an anonymous function calling the other function `ready_to_receive/0`. The `ready_to_receive` defines the expression `receive` with two patterns to match the incoming data against. 
 
-The first pattern defined by the expression matches the incoming data to the tuple `{:do_something_expensive, sender, dataset}`. If the data doesn't match, the any `_` pattern will output an error message. Both patterns recursively call `ready_to_receive/0` recursively to enable us to do a little bit of test-driving our fancy new process!
+The first pattern defined by the expression matches the incoming data to the atom `:do_something`. If the data doesn't match, the any `_` pattern will output an error message. Both patterns recursively call `ready_to_receive/0` recursively to enable us to do a little bit of test-driving our fancy new process!
 
 ```elixir
 iex> parent = Parent.start()
@@ -196,15 +250,170 @@ First we start a new instance of the parent. The `spawn_link/1` returns us a pro
 ```elixir
 iex> send(p, :foo)            
 :foo
-iex> send(p, {:do_something_expensive})
+iex> send(p, :do_something)
 Task received
-{:do_something_expensive}
+:do_something
 ```
 
 Looking good! The parent reacted to our messages as expected, and even better, handled more than a single message! Now let's allow the parent to transition to a different state.
 
+At this point, working in the `iex` interpreter is getting a little challenging. I recommended you to create a new elixir script `state_machine.exs`, which can be executed by entering the command `elixir state_machine.exs` in the directory the file was saved in.
+
 ```elixir
+defmodule Parent do
+  def start() do
+    spawn_link(fn -> ready_to_receive() end)
+  end
+
+  defp ready_to_receive() do 
+    receive do
+      :do_something ->
+        IO.puts("Task received")
+        task_running()
+      _ -> 
+        IO.puts("Can't handle this")
+        ready_to_receive()
+    end
+  end
+
+  defp task_running() do
+    receive do
+      _ -> IO.puts("I am busy, bother me later")
+           task_running()
+    end
+  end
+end
+
+parent = Parent.start()
+
+send(parent, :foo)
+send(parent, :do_something)
+send(parent, :foo)
+```
+
+```bash
+$ elixir test.exs
+Can\'t handle this
+Task received
+I am busy, bother me later
+```
+By adding a second privately defined function `task_running/0` we are allowing an instance of the Parent module to perform a *state transition* when it receives a message with the atom `:do_something`. So far, our new state is a little bit dumb, as it can't really perform anything else than output a message indicating it's busy doing nothing.
+
+```elixir
+defmodule Worker do
+  def start(parent, n) when is_pid(parent) and is_number(n) do
+    spawn_link(fn -> send(parent, {:job_done, self(), do_square(n)}) end)
+  end
+
+  defp do_square(n) do
+    n*n
+  end
+end
+```
+
+Now it's the time to add a second module `Worker` to our script. The worker defines two functions `start/2` which takes a sender process to send the result back to and a number `n` indicating the number to be squared. The worker will respond with a tuple `{:job_done, pid, result}` when it finishes the task. We opt to use the `pid` to determine which worker sent the result in order to allow our parent to preserve ordering of the results.
+
+Notice that we also choose to use a function guard here to enforce the type safety. Using a guard is completely optional, but we choose to use one for the sake of practice.
+
+```elixir
+iex> Worker.start(self, 5)
+#PID<0.52.0>
+iex> receive do
+...> x -> IO.inspect(x)
+...> end
+{:job_done, #PID<0.52.0>, 25}
+```
+
+Now that we have verified our `Worker` does pretty much what we intended, let's finish our implementation of the `Parent` module to use it. Take a long breath, we're almost there! 
 
 ```
-  - Walk through the previous example illustrated with code without using a supervisor
+defmodule Parent do
+  def start() do
+    # Unchanged from previous examples
+  end
 
+  defp ready_to_receive() do 
+    receive do
+      # We now use a tuple here, in order to take in a command and parameters
+      {:do_something, sender, dataset} ->
+        # We want to extract the heavy lifting out of here
+        start_task(sender, dataset)
+      x -> 
+        IO.puts("Can't handle this #{inspect(x)}")
+        ready_to_receive()
+    end
+  end
+
+  defp start_task(initiator, dataset) do
+    # We map over the dataset and grab the PID's of the started workers
+    # in order to preserve the order in which the input data was given
+    workers = dataset |> Enum.map(fn n -> Worker.start(self(), n) end)
+    # Use an empty map for receiving results, because we can't know 
+    # in which order they will arrive. Don't we all just love asynchronism?
+    task_running(initiator, workers, %{})
+  end
+
+  defp task_running(initiator, workers, result_map) do
+    receive do
+      {:job_done, sender, result} ->
+        # Whenever a result comes in, insert it into the result map
+        # remember overwriting the variable result_map is perfectly safe
+        result_map = Map.put(result_map, sender, result)
+        # Inspect if the result count matches the number of workers
+        case Map.size(result_map) == length(workers) do
+        # If all results are in, send them back and transition back to 
+        # accepting new jobs
+          true -> 
+            send_results(initiator, workers, result_map)
+            ready_to_receive()
+        # If all results are not in yet, stay in current state
+          false -> 
+            task_running(initiator, workers, result_map)
+        end
+        # Keep on telling we're busy
+      _ -> IO.puts("I am busy, bother me later")
+           task_running(initiator, workers, result_map)
+    end
+  end
+
+  # Map over the workers, and grab the result corresponding the worker
+  # from the result map, resulting in an ordered list of results
+  defp send_results(initiator, workers, result_map) do
+    results = workers |> Enum.map(fn w -> Map.get(result_map, w) end)
+    send(initiator, {:done, results})
+  end
+end
+```
+
+All good and dandy. We made quite a lot of changes and additions to the `Parent` module. The principle of the new operation is explained in the comments above. The basic concept here to is to make the `Parent` a stateful module by updating the state every time an appropriately formed message arrives and passing the preserving the updated state by calling `task_running/3` with the new state over and over again.
+
+```elixir
+parent = Parent.start()
+
+send(parent, {:do_something, self(), [1,2,3,4,5]})
+
+receive do 
+  {:done, res} -> IO.puts("Received a result #{inspect(res)}")
+  after
+    1_000 -> IO.puts ("Timeout")
+end
+```
+
+We can test our newly implemented state machine by adding the code above to the same script file where the `Worker` and `Parent` module definitions lie.
+
+```bash
+$ elixir state_machine.exs
+Received a result [1, 4, 9, 16, 25]
+```
+
+Nice! We basically implemented a map-reduce type of action using a finite state machine! Our FSM first splits the task, collects the results and reports them back to the sender. Although it feels a little shameful that the `do_square/1` function we implemented in the `Worker` module would have performed a lot faster had we implemented it as an inline lambda, but let's not get stuck on the minor details.
+
+```elixir
+      msg -> IO.puts("I am busy, bother me later")
+           send(self(), msg)
+           task_running(initiator, workers, result_map)
+```
+
+As a side note, changing the last match condition in `task_running/3` from using the `_` underscore to recognize a message `msg`, we can send the message back to the instance of the parent by calling `send/2` with `self()` and `msg`, which effectively creates a queuing mechanism, albeit a naive one.
+
+This concludes our tour of processes. In the next chapter we will look at some built-in constructs on processes which allow us to implement a similar functionality with a lot less code using the built-in abstractions for generalized process behaviors. 
