@@ -8,6 +8,9 @@ import drafts_and_ideas from '../chapters/drafts_and_ideas.md'
 import conditionals from '../chapters/conditionals.md'
 import functions_modules from '../chapters/functions_modules.md'
 import high_order_fun from '../chapters/high_order_functions.md'
+import pattern_matching from '../chapters/pattern_matching.md'
+import lazy_streams from '../chapters/lazy_streams.md'
+
 
 let raw_chapters = [{
         title: "Introduction",
@@ -35,9 +38,19 @@ let raw_chapters = [{
         content: functions_modules
       },
       {
+        title: "Pattern matching",
+        path: "/pattern_matching",
+        content: pattern_matching
+      },
+      {
         title: "High-order functions",
         path: "/high_order_fun",
         content: high_order_fun
+      },
+      {
+        title: "Lazy evaluation and streams",
+        path: "/lazy_streams",
+        content: lazy_streams
       },
       {
         title: "Parallelism with processes",

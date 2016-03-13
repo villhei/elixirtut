@@ -1,12 +1,17 @@
 [lambda]: img/lambda.png
 
+<div class="warning">
+  <span>TODOS</span
+  <ul>
+    <li>Enum.takeWhile / Enum.dropWhile, Enum.take / Enum.drop</li>
+  </ul>
+</div>
+
 <div class="key-concept">
 ![Key concept][lambda]<span>High-order functions</span>
 <p>High-order functions are functions that accept functions as their arguments or return a function as their result.</p> 
 
 <p>Elixir's [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module provides a familiar set of high-order functions often found in other functional languages. </p>
-
-<p>!! TODO mention Stream module here</p>
 </div>
 
 The often used high-order functions we are about to look into are `map/2`, `filter/2`, `zip/2` and `reduce/3`.
@@ -121,8 +126,6 @@ iex> Enum.zip(list, tl(list))
 
 ```
 
-**TODO** better examples, maybe with streams?
-
 Generally speaking, the purpose of the `zip/2` function is simply what we stated, but the use cases are endless. You sometimes might require the index of the element while performing a `map/2`, the solution is to call `zip/2` on the original list with a second list containing the indices.
 
 #### <a name="high_order_reduce"></a> Enum.reduce/3
@@ -144,11 +147,6 @@ iex> Enum.reduce(names, "", fn(name, acc) -> acc <> name <> "!!!11 " end)
 ```
 
 Like the other functions introduced, the `reduce/3` can work with any data type, and reduce the data to any kind of value.
-
-**Exercise** Return the first letters of a list of strings as a single string
-
-**Exercise** Reverse a list using fold
-
 
 ## <a name="pipe_operator"></a> The pipe operator
 
@@ -179,120 +177,8 @@ iex> people
 ...> |> Enum.map(fn(nn) -> hd(nn) end)
 ...> |> Enum.reduce("", fn(n, acc) -> acc <> n <> " OMG!!! " end)
 "Matti OMG!!! Teppo OMG!!! "
-````
+```
 
 We can start seeing the benefits of the pipe operator here `|>`. The first step is to extract the names from the persons in people using `map/2`, then we use `filter/2` to check if the name contains the string `"Ruohonen"`, after which we split it to two parts with the `String.split/2`, drop the tail using `hd/1` on the split values and finally use `reduce/3` to reduce the result to a string.
 
 Piping is by no means limited to the functions from the `Enum` module and you can use it any time you need to pass the result of the previous function as the first argument to the next function.
-
-## <a name="pattern_matching"></a> Pattern matching
-<div class="key-concept">
-![Key concept][lambda]<span>Pattern matching</span>
-<p>Pattern matching in functional languages is a mechanism often used for implementing control flows and guard expressions within functions and expressions. We have seen the operator `=` used earlier for assignment of variables. In reality, the `=` operator in Elixir is called the <b>match operator</b>.</p>
-
-<p>As like pattern matching in other functional languages in general, pattern matching is used to match simple values to a format pattern, pattern matching can also be used to destructure complex data types.</p>
-</div>
-
-```elixir
-iex> hello = "Perfect match!"
-"Perfect match!"
-```
-
-The example above matches the right-hand side of the match operator `=` to the left-hand side variable hello, which as en expression, evaluates to the value "Perfect match!" and assigns the value to the variable hello.
-
-```elixir
-iex> x = 1
-1
-iex> 1 = x
-1
-```
-
-The use of match operator `=` looks a lot like assignments familiar from other programming languages when extracting values from the right-hand side of the match operator. It's good to keep in mind that whatever assigned to the left-hand side of the operator is also a constraint for the right-hand side. Using a variable is like saying "match anything from the right", using a value or a partial value is equivalent to saying "The data should look a lot like the value 1", as presented in the example above.
-
-```elixir
-iex> 2 = x
-** (MatchError) no match of right hand side value: 1
-
-```
-
-An invalid match will raise an exception. The exceptions are expected behavior and they act as a motivator to handle both valid and invalid cases in matching.
-
-```elixir
-iex> {a, b, c} = {"Mickey", "Donald", "Zappa"}
-{"Mickey", "Donald", "Zappa"}
-iex> a
-"Mickey"
-iex> b
-"Donald"
-iex> c
-"Zappa"
-```
-
-Destructuring values using the match operator `=` works by comparing the right-hand side data structure (a tuple in this case) to the pattern `{a, b ,c}` on the left-hand side. Because the pattern matches, the variables a, b, c are assigned the values obtained from the destructured data structure.
-
-```elixir
-iex> {"Mickey", b, c} = {"Mickey", "Donald", "Zappa"}
-{"Mickey", "Donald", "Zappa"}
-iex> b
-"Donald"
-iex> c
-"Zappa"
-iex> {"Mike", b, c} = {"Mickey", "Donald", "Zappa"}  
-** (MatchError) no match of right hand side value: {"Mickey", "Donald", "Zappa"}
-```
-
-The patttern can also be more specific, than just multiple variables. The matching can be constrained to require specific values to be present in the match pattern, or the match will result in a `MatchError`, which usually does not need to be handled in match chains, which we will be looking in to the next chapter.
-
-```elixir
-iex> [a, b, c] = [1, 2, 3]
-[1, 2, 3]
-iex> a
-1
-iex> b
-2
-iex> c
-3
-
-```
-
-Matching and destructuring works also for other data types than tuples. A list can effectively be destructured in order to extract values. This is a nice shorthand syntax for accessing the values of the list data structure.
-
-```elixir
-iex> [a | b] = [1, 2, 3]
-[1, 2, 3]
-iex> a
-1
-iex> b
-[2, 3]
-```
-
-It is also possible to extract the head and tail of the list using the match operator `=` in combination with the `[head | tail]` format, which we already looked in to in the [lists](#data_structures_list) chapter.
-
-```elixir
-iex> [a | b] = []
-** (MatchError) no match of right hand side value: []
-
-iex> [a | [] ] = [1]
-[1]
-iex> a
-1
-iex> [a| [] ] = [1,2,3]
-** (MatchError) no match of right hand side value: [1, 2, 3]
-
-iex> [1 | b] = [1, 2, 3]
-[1, 2, 3]
-iex> b
-[2, 3]
-
-```
-
-It's worth noticing, that pattern matching can effectively be used to extract information of more information than just the values of the list. It's a very convenient way to find out i the list is empty or contains a single element, or the head of the list matches a specific value.
-
-```elixir
-iex> [1 | [2, b] ] = [1, 2, 3]
-[1, 2, 3]
-iex> b
-3
-```
-
-Nested lists are also valid patterns to match against. The pattern above inspects the two leading values of the list and gives you access to the rest with the variable `b`.

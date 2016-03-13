@@ -1,4 +1,11 @@
 [lambda]: img/lambda.png
+<div class="warning">
+  <span>TODOS</span
+  <ul>
+    <li>Functions as parameters needs to be written</li>
+    <li>Function guards could be elaborated more</li>
+  </ul>
+</div>
 
 ## <a name="modules"></a> Modules
 

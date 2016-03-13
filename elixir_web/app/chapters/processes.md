@@ -1,4 +1,10 @@
 [lambda]: img/lambda.png
+<div class="warning">
+  <span>TODOS</span
+  <ul>
+    <li>The page looks a little boring</li>
+  </ul>
+</div>
 
 <div class="quote"><p>Processes are a part of the language - they do not belong to the operating system. That's really what's wrong in languages such as Java or C++ that, threads are not in the language, they are something that's in the operating system. They inherit all the problems they have in the the operating system.</p>
     <span class="quotee">-Joe Armstrong, The principal inventor of Erlang</span>
@@ -63,7 +69,7 @@ Let's imagine our actor is modelled as a a state-machine. We first create an act
 
 ### An actor can create new actors
 
-The actor `parent` receives our initiating message `{:do_something_expensive, sender, dataset}`. Upon receiving the message, the `parent`actor is programmed to create new actors, called `workers` that are effectively it's children.
+The actor `parent` receives our initiating message `{:do_something, sender, dataset}`. Upon receiving the message, the `parent`actor is programmed to create new actors, called `workers` that are effectively it's children.
 
 ### An actor can send messages to other actors
 
@@ -81,7 +87,7 @@ When the `parent` receives the first results back from a `worker` the parent tra
 
 ## Spawning processes
 
-It turns out we have been working inside a BEAM process this whole time! That means, the thread we are working in can be used to spawn processes. Let's confirm this fact immediately!
+It turns out we have been working inside a BEAM process this whole time! That means, the thread we are working in can be used to spawn processes. Let's confirm this fact immediately.
 
 ### The keys to the kingdom with `spawn/1`
 
@@ -124,7 +130,7 @@ iex> receive do
 "Yey! We got mail"
 ```
 
-There is no shame in talking to your self, everybody does it sometimes. By obtaining the process handle with `self/0` we can send a message consisting of the atom `:you_have_mail`. The expression `receive` works just like conditional structure `case`. Unlike `case` `receive` does not take an explicit parameter, but it reads the next message from the mailbox. 
+There is no shame in talking to your self, everybody does it sometimes. By obtaining the process handle with `self/0` we can send a message consisting of the atom `:you_have_mail`. The expression `receive` works just like conditional structure `case`. Unlike `case`, the `receive` expression does not take an explicit parameter, but it blocks the process until it reads the next message from the process' mailbox. 
 
 The message is then matched against the patterns provided for the `receive` expression and again our results are sort of predictable.
 
@@ -150,7 +156,7 @@ iex> receive do
 "Received a response {:hey_there, #PID<0.112.0>}"
 ```
 
-Holy Uncanny Process! It really is this easy! We first assign the variable `parent` to point to the `iex` shell session. Then we spawn an anonymous function, which uses `send/2` to send the parent a message with the payload of the atom `:hey_there` and a reference to the sender, which is the anonymous function.
+Holy Uncanny Process! Yes, it really is this easy. We first assign the variable `parent` to point to the `iex` shell session. Then we spawn an anonymous function, which uses `send/2` to send the parent a message with the payload of the atom `:hey_there` and a reference to the sender, which is the anonymous function.
 
 The `parent` process defines the expression received that just assigns the response to the variable `res` and interpolates the response within a string using the `inspect/2` function from the Kernel module. The result is a string informing us of a received response. 
 
@@ -238,7 +244,7 @@ end
 
 Let's start by defining a really simple implementation for the behavior of `parent` we discussed earlier. The parent has a public function `start/0` which calls the `spawn_link/1` function with an anonymous function calling the other function `ready_to_receive/0`. The `ready_to_receive` defines the expression `receive` with two patterns to match the incoming data against. 
 
-The first pattern defined by the expression matches the incoming data to the atom `:do_something`. If the data doesn't match, the any `_` pattern will output an error message. Both patterns recursively call `ready_to_receive/0` recursively to enable us to do a little bit of test-driving our fancy new process!
+The first pattern defined by the expression matches the incoming data to the atom `:do_something`. If the data doesn't match, the any `_` pattern will output an error message. Both patterns recursively call `ready_to_receive/0` recursively to enable us to do a little bit of test-driving our fancy new process.
 
 ```elixir
 iex> parent = Parent.start()
@@ -255,7 +261,7 @@ Task received
 :do_something
 ```
 
-Looking good! The parent reacted to our messages as expected, and even better, handled more than a single message! Now let's allow the parent to transition to a different state.
+Looking good! The parent reacted to our messages as expected, and even better, handled more than a single message. Now let's allow the parent to transition to a different state.
 
 At this point, working in the `iex` interpreter is getting a little challenging. I recommended you to create a new elixir script `state_machine.exs`, which can be executed by entering the command `elixir state_machine.exs` in the directory the file was saved in.
 
@@ -406,7 +412,7 @@ $ elixir state_machine.exs
 Received a result [1, 4, 9, 16, 25]
 ```
 
-Nice! We basically implemented a map-reduce type of action using a finite state machine! Our FSM first splits the task, collects the results and reports them back to the sender. Although it feels a little shameful that the `do_square/1` function we implemented in the `Worker` module would have performed a lot faster had we implemented it as an inline lambda, but let's not get stuck on the minor details.
+Nice! We basically implemented a map-reduce type of action using a finite state machine. Our FSM first splits the task, collects the results and reports them back to the sender. Although it feels a little shameful that the `do_square/1` function we implemented in the `Worker` module would have performed a lot faster had we implemented it as an inline lambda, but let's not get stuck on the minor details.
 
 ```elixir
       msg -> IO.puts("I am busy, bother me later")

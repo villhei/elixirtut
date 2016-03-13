@@ -1,4 +1,10 @@
 [lambda]: img/lambda.png
+<div class="warning">
+  <span>TODOS</span
+  <ul>
+    <li>More comprehensive guide in building a project needed </li>
+  </ul>
+</div>
 
 ## <a name="building_applications"></a>Throwing a project into the mix
 Elixir uses the `mix` application to build and manage projects. In this chapter we wiill familiarize ourselves with the use of `mix`.

@@ -2,10 +2,6 @@
 [backus]: img/backus2.gif
 
 ## <a name="about_material"></a>About the material
-<div class="warning">
-<span>**This guide is a work in progress.**</span
-<p>This aims to be a comperehensive guide to the funcional programming paradigm using the Elixir programming language as an example.</p>
-</div>
 
 This material is being prepared for a course in functional programming in the Computer Science department of Helsinki University.
 

@@ -1,3 +1,10 @@
+<div class="warning">
+<span>TODOS</span
+  <ul>
+    <li>Guards could be more exhaustive</li>
+  </ul>
+</div>
+
 [lambda]: img/lambda.png
 Elixir supports `if` ... `else`, `unless`, `cond` and `case` structures for controlling the flow of an application. The `if` ... `else` structures work much like in other languages. `unless` is syntactic sugar for negation of an `if` condition. `case` is used to match patterns extracted from variables or values, `cond` is used for complex chains of `if` ... `else` conditions.
 
@@ -192,4 +199,47 @@ iex> case 666 do
 
 The guard condition can also match against ranges, which can prove itself useful with it's elegant short-hand syntax.
 
-### <a name="pin_operator"></a> Pin operator
+## <a name="pin_operator"></a> Pin operator
+
+As Elixir allows variables existing in a given scope to be rebound, the conditional statements can sometimes be a little risky and yield unpredictable results. The allow matching against the values bound to variables, Elixir provides an operator `^`, commonly referred to as the pin operator.
+
+```elixir
+iex> name = "Seppo"
+"Seppo"
+iex> ^name = "Seppo"
+"Seppo"
+iex> ^name = "Turo"
+** (MatchError) no match of right hand side value: "Turo"
+```
+
+When the pin operator `^` is prepended to a variable, it causes the match `=` operator along with the clauses of `if`, `cond` and `case` operators to match against the value bound to the variable.
+
+The match will, like usual, raise an error if no match in clause was found.
+
+```elixir
+iex> y = 4
+iex> {x, ^y} = {2, 4}
+{2, 4}
+iex> x
+2
+```
+
+The pin operator plays nicely with all sorts of matching conditions, including matching against partial tuples.
+
+```elixir
+iex> {x, ^y} = {2, 1}
+** (MatchError) no match of right hand side value: {2, 1}
+```
+
+As like with other other match patterns, the usual errors are raised also for partial matches.
+
+```elixir
+iex> _ = [1, 2, 3]
+[1, 2, 3]
+iex> _
+** (CompileError) iex:11: unbound variable _
+```
+
+Elixir also provides a special match condition with the underscore symbol `_`. The underscore reads: Match against whatever value and ignore the results. The condition will always yield a match but the underscore is always unbound.
+
+The underscore is a syntactic sugar to allow the programmer easily produce an exhaustive match condition and to be explicit about the intention to ignore a value.

@@ -1,7 +1,19 @@
 [lambda]: img/lambda.png
+
+<div class="warning">
+  <span>TODOS</span
+  <ul>
+    <li>Structs missing</li>
+  </ul>
+</div>
+
 ## <a name="data_structures_tuples"></a> Tuples
 
-Functional programmers often find the need to return more than a single value from a function. These sets of values can be represented as tuples, which are ordered pairs of n elements. 
+Functional programmers often find the need to return more than a single value from a function. These sets of values can be represented as tuples, which are ordered pairs of n elements.
+
+The elements of a tuple are stored contiguously in memory, which means that accessing the elements of a tuple by index, or getting the size of a tuple is a fast operation.
+
+Tuples are commonly used as return values from different kinds of functions, as a tuple is a handy tool to communicate for example both a status code and a result value.
 
 ```elixir
 iex> cat = {:cat, 'Brown', 5}
@@ -10,7 +22,18 @@ iex> tuple_size(cat)
 3
 ```
 
-Tuples are defined by using curly brackets. The elements in a tuple are stored contiguously in memory, which means that accessing the elements of a tuple by index, or getting the size of a tuple is a fast operation. Tuples are indexed from zero.
+Tuples are defined by using curly brackets and the values do not need to be of the same type. The `tuple_size/1` can be used to find the count of elements stored in a tuple. 
+
+```elixir
+iex> cat = {:cat, 'Brown', 5}
+{:cat, 'Brown', 5}
+iex> tuple_size(cat)
+iex elem(cat, 4)
+** (ArgumentError) argument error
+    :erlang.element(5, {:cat, 'Brown', 5})
+```
+
+An individual element can be fetched from a tuple by calling the function `elem/2` with the tuple and the index o a desired element. Attempting to access an out-of-bounds element will raise an error.
 
 ```elixir
 iex> cat = {:cat, 'Brown', 5}
@@ -23,10 +46,12 @@ iex> cat
 Use the `put_elem/3` function to modify an element of a tuple. Notice that all declared variables in Elixir are immutable, and the `put_elem/3` returns a new copy of the original tuple rather than modifying the original element like typically done in eg. Java.
 
 ## <a name="data_structures_list"></a> Lists
+<div class="key-concept">
+    ![Key concept][lambda]<span>Lists of lists of lists</span>
+    <p>Lists play an important role in functional programming in general. The first functional language [LISP](https://en.wikipedia.org/wiki/Lisp_(programming_language)) (1958) is in fact an acronym for LISt Processor.</p>
 
-Lists play an important role in functional programming in general. The first functional language [LISP](https://en.wikipedia.org/wiki/Lisp_(programming_language)) (1958) is in fact an acronym for LISt Processor.
-
-Lists in Elixir, as like with most other functional languages, are implemented internally as linked lists. It's good to keep this in mind, as it means prepending to a list runs in constant time `O(1)` and thus populating a list from left to right runs in linear time `O(N)`. List is an ordered collection.
+    <p>Lists in Elixir, as like with most other functional languages, are implemented internally as linked lists. It's good to keep this in mind, as it means prepending to a list runs in constant time `O(1)` and thus populating a list from left to right runs in linear time `O(N)`. List is an ordered collection.</p>
+</div>
 
 ```elixir
 iex> [1,2,3,4,5]
@@ -132,8 +157,6 @@ The keyword list allows for creating syntactically pleasant functions in a numbe
 
 When the keyword list is the last argument of a function, the square brackets are optional. This allows passing multiple keyworded parameters to a function expecting a list.
 
-## <a name="data_structures_streams_and_ranges"></a> Streams and ranges
-
 ##  <a name="data_structures_maps"></a> Maps
 
 ```elixir
@@ -154,6 +177,13 @@ iex> Map.get(country_capitals, :sweden)
 ```
 
 The values contained in a map can be retrieved by calling `Map.get/2` function, which accepts a map and a key as it's parameters and retrieves the value associated with that key in constant `O(1)` time.
+
+```elixir
+iex> Map.size(country_capitals)
+4
+```
+
+The size of a map can be obtained by calling the `Map.size/1` function.
 
 ```elixir
 iex> Map.put(country_capitals, :netherlands, "Amsterdam")
