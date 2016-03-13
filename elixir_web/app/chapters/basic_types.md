@@ -23,6 +23,7 @@ Basic types and their typing formats.
 
 ```elixir
 iex> 1          # integer
+iex> 1_000_000  # integer, 1000000
 iex> 0b1010     # integer, binary -> 10
 iex> 0o111      # integer, octal -> 73
 iex> 0x1FF      # integer, hex -> 511
@@ -56,6 +57,17 @@ iex> 10 / 2
 ```
 
 It's worth noticing that the division above returned a float `5.0` instead of an integer, if you want to do division and remainders with integers, you should use the functions `div/2` and `rem/2`
+
+```elixir
+iex> 1_000
+1000
+iex> 1_000_000
+1000000
+iex> 1_2_3
+123
+```
+
+Elixir provides a convenient syntax for writing large numbers. The syntax proves itself quite handy sometimes, and doesn't really care about the structure of the number. The the underscore `_` will join together the trailing numbers with the leading numbers.
 
 ```elixir
 iex> div(10, 2)

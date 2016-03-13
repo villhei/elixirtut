@@ -3,8 +3,7 @@
 <div class="quote"><p>Processes are a part of the language - they do not belong to the operating system. That's really what's wrong in languages such as Java or C++ that, threads are not in the language, they are something that's in the operating system. They inherit all the problems they have in the the operating system.</p>
     <span class="quotee">-Joe Armstrong, The principal inventor of Erlang</span>
 </div>
-
-### Introduction
+## Introduction to processes
 
 Elixir inherits the concept of processes from the Erlang Virtual Machine BEAM. In Elixir all code runs within processes, which area extremely light-weight abstractions over threads. Internally BEAM creates a set of kernel-level threads and schedules the light weight threads (processes) between the more heavy-weight lower level threads. The amount of kernel level threads usually equals the amount of available CPU cores.
 
@@ -18,20 +17,20 @@ More info, motivation: http://www.infoq.com/presentations/erlang-software-for-a-
 
 There are two possible approaches to concurrency, the shared memory model, where processes lock the data for the duration needed to access it and the message passing model selected for use in BEAM.
 
- Shared memory
-  - Problem 1: A thread crashes while doing a write in a shared region of memory making the memory corrupted and thus inaccessible for other threads
-  - Problem 2: High latency for accessing the shared region of memory
+**The problems of shared memory model**
+  - A thread crashes while doing a write in a shared region of memory making the memory corrupted and thus inaccessible for other threads
+  - High latency for accessing the shared region of memory
 
 To be able to utilize these features provided by BEAM, we are going to take a look at the concept of processes in Elixir.
 
-The simplified approach selected by the BEAM and Elixir
+**The message passing approach selected by the BEAM and Elixir**
   - No sharing of data
   - Pure message passing
   - No locks
   - Lots of computers (let one crash)
   - Functional programming (avoid side effects)
 
-## <a name="actors"></a> Actors
+## <a name="actors"></a> Some formalism with actors
 
 Defined more formally, the independent processing units (processes) in Elixir and the BEAM follow the definition of an [Actor](https://en.wikipedia.org/wiki/Actor_model). Actor is a concept introduced by Carl Hewitt in 1973 as an alternative to the object-oriented approach for stucturing of programs. 
 
@@ -74,6 +73,92 @@ When the `parent` receives the first results back from a `worker` the parent tra
 
 ## Spawning processes
 
+It turns out we have been working inside a BEAM process this whole time! That means, the thread we are working in can be used to spawn processes. Let's confirm this fact immediately!
+
+### The keys to the kingdom with `spawn/1`
+
+```elixir
+iex> spawn(fn -> 5 * 5 end)
+#PID<0.62.0> 
+```
+
+We use the function `spawn/1` to fire away a process that does something really simple. In exchange for the anonymous function it starts working with, spawn returns us a process identifier of type `PID`, which we can use has a handle to access to process in case we want some further communication with it.
+
+```elixir
+iex> pid = spawn(fn -> 5 * 5 end)
+#PID<0.80.0>
+iex> Process.alive?(pid)
+false
+```
+
+Assigning the process `PID` to a variable allows us to inspect the process after it has been spawned. Quite unsurprisingly, we weren't fast enough to type in the `Process.alive?/1` expression, and the process lasting just a few instructions terminated, and it's alive status yielded a `false`.
+
+```elixir
+iex> self()
+#PID<0.57.0>
+iex> Process.alive?(self())
+true
+```
+
+Because the `iex` interactive REPL session is also a running process, we can easilly find a living process by calling the `self/0` function in order to obtain the current `PID` of the process we are working in. The `self/0` works also from within child processes.
+
+### Accessing the mailbox with `send/2` and `receive`
+
+The process' mailbox can be read using the `receive` expression inherited from Erlang. The process can send messages to another process using the `send/2` function that takes the target process and the message as arguments. The full documentation for `receive` and `send/2` is available in the Erlang manual's [expression chapter](http://erlang.org/doc/reference_manual/expressions.html).
+
+```elixir
+iex> send(self(), :you_have_mail)
+:you_have_mail
+iex> receive do
+...> :you_have_mail -> "Yey! We got mail"
+...> _ -> "Something unexpected"
+...> end
+"Yey! We got mail"
+```
+
+There is no shame in talking to your self, everybody does it sometimes. By obtaining the process handle with `self/0` we can send a message consisting of the atom `:you_have_mail`. The expression `receive` works just like conditional structure `case`. Unlike `case` `receive` does not take an explicit parameter, but it reads the next message from the mailbox. 
+
+The message is then matched against the patterns provided for the `receive` expression and again our results are sort of predictable.
+
+```elixir
+iex> receive do
+...>  :foo -> msg
+...> after
+...>  1_000 -> "Timeout after a second"
+...> end
+Timeout after a second
+```
+
+When working with the `receive` expression, you sometimes want to make sure (especially in shell sessions) that the `receive` expression doesn't block the thread forever. A timeout can be supplied in an `after` block. The timeout is given in milliseconds, which the Elixir syntax makes quite clear for us with a tendency towards dyslexia. The timeout can also be a `0` in case you are expecting to find mail from the box right away.
+
+```
+iex> parent = self()
+#PID<0.57.0>
+iex> spawn(fn -> send(parent, {:hey_there, self()}) end)
+#PID<0.112.0>
+iex> receive do
+...>   res -> "Received a response #{inspect(res)}"
+...> end
+"Received a response {:hey_there, #PID<0.112.0>}"
+```
+
+Holy Uncanny Process! It really is this easy! We first assign the variable `parent` to point to the `iex` shell session. Then we spawn an anonymous function, which uses `send/2` to send the parent a message with the payload of the atom `:hey_there` and a reference to the sender, which is the anonymous function.
+
+The `parent` process defines the expression received that just assigns the response to the variable `res` and interpolates the response within a string using the `inspect/2` function from the Kernel module. The result is a string informing us of a received response. 
+
+```elixir
+iex> parent = self()
+#PID<0.57.0>
+iex> spawn(fn -> send(parent, {:hey_there, self()}) end)
+#PID<0.117.0>
+iex> flush()
+{:hey_there, #PID<0.117.0>}
+:ok
+```
+
+In practice, especially for debugging purposes, we do not really have to write the `receive` expression every single time. The Elixir Kernel also provides the `flush/0` function that reads every message from the mailbox and calls `inspect/2` for each result.
+
+Now that we have taken a closer look to processes, let's start building something a little more complex and return to the abstract example of `parent` and `worker`s used in the introductory section.
 
 ## Modelling a state machine
 
