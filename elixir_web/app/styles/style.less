@@ -155,3 +155,29 @@ img[alt="John Backus"] {
         font-weight: 400;
     }
 }
+
+.page-controls {
+  @make-col-xs(12);
+}
+
+.chapter-button {
+  padding: 5px;
+  background-color: @gray-lighter;
+  border: 1px solid darken(@gray-lighter, 10%)
+}
+
+.prev-chapter {
+  .chapter-button;
+  float: left;
+  span {
+    display: block;
+  }
+}
+
+.next-chapter {
+  .chapter-button;
+  float: right;
+  span {
+    display: block;
+  }
+}

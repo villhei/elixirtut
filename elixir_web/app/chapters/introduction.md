@@ -1,8 +1,6 @@
 [lambda]: img/lambda.png
 [backus]: img/backus2.gif
 
-# Introduction
-
 ## <a name="about_material"></a>About the material
 <div class="warning">
 <span>**This guide is a work in progress.**</span
@@ -40,7 +38,7 @@ Functional programming avoids mutable state and all kinds of side-effects. Funct
 
 Advances in multi-core and parallel processing have caused a surge of interest in functional languages. The approach of avoidance of side-effects and global, mutable states in functional programming suits this domain extremely well. Parallel processing in eg. Elixir is a very different kind problem when compared to imperative languages. One might argue that it is a hell of a lot easier and fun.
 
-Functional programming is generally known to provide a lot better support for *structured programming* than imperative programming. A structured program is a program where the program is composed of structural abstractions and components. Functional languages allows the programmer to create these abstractions in an easy and clean manner. High-order abstracting loop-structures in Elixir are an excellent example of these elegant abstractions.
+Functional programming is generally known to provide a lot better support for *structured programming* than imperative programming. A structured program is a program where the program is composed of structural abstractions and components. Functional languages allows the programmer to create these abstractions in an easy and clean manner. High-order fundtion abstracting loop-structures in Elixir are an excellent example of these elegant abstractions.
 
 ```elixir
 defmodule Sort do
@@ -52,7 +50,7 @@ defmodule Sort do
 end
 ```
 
-By looking at the exmaple above, it should be obvious that functional applications are often more declarative, clearner and typically a lot shorter than their imperative counterparts. Less code translates to less bugs, higher productivity and a better readability.
+By looking at the example above, it should be obvious that functional applications are often more declarative, clearner and typically a lot shorter than their imperative counterparts. Less code translates to less bugs, higher productivity and a better readability.
 
 An increasing number of programming languages support functional programming features, but they rarely do so very well. In order to understand what the functional programming approach has to offer, one has to really learn a functional programming language and the way applications are built in this paradigm.
 

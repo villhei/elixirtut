@@ -336,6 +336,6 @@ iex>
 "bar"
 ```
 
-Lambda functions are closures, and such they have a private scope that only the anonymous function can access. Any variable declared within the scope of an anonymous function does not affect the higher leven environment.
+Lambda functions are closures, and such they have a private scope that only the anonymous function can access. Any variable declared within the scope of an anonymous function does not affect the higher level environment.
 
 Like any other function or expression, the lambda function evaluates to the value returned by that expression.

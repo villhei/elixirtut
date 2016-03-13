@@ -56,7 +56,7 @@ Let's imagine our actor is modelled as a a state-machine. We first create an act
 
 ### An actor can create new actors
 
-The actor `parent` receives our initiating message `{:do_something_expensive, dataset}`. Upon receiving the message, the `parent`actor is programmed to create new actors, called `workers` that are effectively it's children.
+The actor `parent` receives our initiating message `{:do_something_expensive, sender, dataset}`. Upon receiving the message, the `parent`actor is programmed to create new actors, called `workers` that are effectively it's children.
 
 ### An actor can send messages to other actors
 
@@ -72,4 +72,54 @@ When the `workers` finish the processing they were designated to do, they send b
 
 When the `parent` receives the first results back from a `worker` the parent transitions to (stays in) the receiving state. When the last `worker` sends the results of the task to the `parent`, the `parent` send a message to the initiater of the task and transitions back to the initial state.
 
-### <a name="actors_supervisors"></a> Supervisors
+## Spawning processes
+
+
+## Modelling a state machine
+
+```elixir
+defmodule Parent do
+
+  def start() do
+    spawn_link(fn -> ready_to_receive() end)
+  end
+
+  defp ready_to_receive() do 
+    receive do
+      {:do_something_expensive} ->
+        IO.puts("Task received")
+        ready_to_receive()
+      _ -> 
+        IO.puts("Can't handle this")
+        ready_to_receive()
+    end
+  end
+end
+```
+
+Let's start by defining a really simple implementation for the behavior of `parent` we discussed earlier. The parent has a public function `start/0` which calls the `spawn_link/1` function with an anonymous function calling the other function `ready_to_receive/0`. The `ready_to_receive` defines the expression `receive` with two patterns to match the incoming data against. 
+
+The first pattern defined by the expression matches the incoming data to the tuple `{:do_something_expensive, sender, dataset}`. If the data doesn't match, the any `_` pattern will output an error message. Both patterns recursively call `ready_to_receive/0` recursively to enable us to do a little bit of test-driving our fancy new process!
+
+```elixir
+iex> parent = Parent.start()
+#PID<0.86.0>
+```
+
+First we start a new instance of the parent. The `spawn_link/1` returns us a process handle, represented by the type `PID`, which we match against the variable `parent` for later use.
+
+```elixir
+iex> send(p, :foo)            
+:foo
+iex> send(p, {:do_something_expensive})
+Task received
+{:do_something_expensive}
+```
+
+Looking good! The parent reacted to our messages as expected, and even better, handled more than a single message! Now let's allow the parent to transition to a different state.
+
+```elixir
+
+```
+  - Walk through the previous example illustrated with code without using a supervisor
+

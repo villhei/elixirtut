@@ -191,3 +191,5 @@ iex> case 666 do
 ```
 
 The guard condition can also match against ranges, which can prove itself useful with it's elegant short-hand syntax.
+
+### <a name="pin_operator"></a> Pin operator

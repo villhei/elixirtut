@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router'
-import Chapters from '../chapters.js'
+import {chapters} from '../chapters.js'
 
 export default class Contents extends React.Component {
     render() {
-          let links = Chapters.map(chapter => 
+          let links = chapters.map(chapter => 
              (<li key={chapter.path}><Link to={chapter.path}>{chapter.title}</Link></li>))
         return(
           <div>
