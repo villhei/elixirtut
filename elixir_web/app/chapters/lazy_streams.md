@@ -53,7 +53,7 @@ iex> Stream.unfold({0, 1}, fn {n, m} -> {n, {m, n + m}} end) |> Enum.take(10)
 [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
 ```
 
-Did I hear someone say "fibonacci sequence"? The `Stream.unfold/2` can be used with any kinds of values, not limited to just plain numbers. The above call to `Stream.unfold/2` uses a tuple `{0, 1}` as the initial accumulator. By using pattern matching, the `fn/1` defined as a second parameter extracts the values `{n, m}` from the tuple, and returns another tuple `{n, {m, n + m}}`, where `n` is the number returned in the current evaluation, `m` represents the "next number" and the expression `n + m` represents the one after next. Quite neat, if I may say so.
+Did I hear someone say "fibonacci sequence"? The `Stream.unfold/2` can be used with any kinds of values, not limited to just plain numbers. The above call to `Stream.unfold/2` uses a tuple `{0, 1}` as the initial accumulator. By using pattern matching, the `fn/1` defined as a second parameter extracts the values `{n, m}` from the tuple, and returns another tuple `{n, {m, n + m}}`, where `n` is the number returned in the current iteration. `m` represents the "next number" and the expression `n + m` represents the one after next. Quite neat, if I may say so.
 
 ```elixir
 iex> Stream.unfold(1, fn 10 -> nil; n-> {n, n+1} end) |> Enum.to_list()
@@ -97,7 +97,7 @@ iex> last
 10
 ```
 
-A range can also be used in match with the match operator `=` as a left-hand side pattern. We also demonstrated using the range in pattern matching earlier.
+A range can also be used in pattern matching with the match operator `=` as a left-hand side pattern. We also demonstrated using the range in guard expressions earlier.
 
 ```elixir
 iex> squares = 1..10 |> Stream.map(fn n -> n * n end)

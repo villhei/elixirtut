@@ -4,16 +4,20 @@
 @import "theme/variables.less";
 
 body {
+  background-color: @gray-lighter;
   padding-top: 50px;
+  padding-bottom: 21px;
+  min-height: 100%;
 }
 
 #content-container {
+  background-color: #fff;
   font-family: 'Merriweather', serif;
   font-weight: 300; 
   font-size: 10pt;
   background-color: #fff;
-  padding-left: 40px;
-  padding-right: 40px;
+  padding: 40px 40px 80px 40px;
+  min-height: 100%;
 
   p {
     line-height: 1.9em;
@@ -25,7 +29,15 @@ body {
 }
 
 footer {
-    background-color: #fff;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    color: #fff;
+    padding-left: 40px;
+    line-height: 1.5em;
+    border-top: 1px solid @gray-dark;
+    background-color: @brand-primary;
 }
 
 .col-centered{
