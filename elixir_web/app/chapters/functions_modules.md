@@ -2,7 +2,6 @@
 <div class="warning">
   <span>TODOS</span
   <ul>
-    <li>Functions as parameters needs to be written</li>
     <li>Function guards could be elaborated more</li>
   </ul>
 </div>
@@ -151,24 +150,24 @@ In Elixir everything is an expression, as in everything has an identifiable valu
 
 <div class="key-concept">
 ![Key concept][lambda]<span>Recursion is looping</span>
-<p>Recursion plays an important part in functional programming. Recursion is equivalent to looping, so expect to see no `for` or `while` loops when looking at functionally written code, but expect to see lots and lots of recursion.</p>
+<p>Recursion plays an important part in functional programming. Recursion is equivalent to looping, so expect to see no `for` or `while` loops when looking at functionally written code. Expect to see and use lots and lots of recursion when programming in Elixir.</p>
 
-<p>Recursive function is a function that calculates it's final value by repeated application of the function - in other words - function calling itself over and over again.</p>
+<p>Recursive function is a function that calculates it's final value by repeated application of the function - in other words - function calling itself over and over again. If you do not understand recursion is, read this paragraph again.</p>
 
-<p>Recursion and thinking recursively might feel a little strange for those used to the imperative programming paradigm. In the end, recursion is no different from using for or while loops.</p>
+<p> Playing with recursion in imperative languages feels somewhat having a conversation with your Australian cousin. The language is fun and refreshing for a while, but you usually want to go back to speaking real English after a while. In the end, recursion is no different from using `for` or `while` loops.</p>
 </div>
 
 ```java
 static int factorial(int n) {
-  if(n < 2) {
-    return n;
-  }
-  int res = 1;
-  while(n > 1) {
-    res = n * res;
-    n--;
-  }
-  return res;
+    if(n < 2) {
+        return n;
+    }
+    int res = 1;
+    while(n > 1) {
+        res = n * res;
+        n--;
+    }
+    return res;
 }
 
 ```
@@ -190,17 +189,14 @@ end
 The factorial function can be easily re-written to use a recursive approach. The principle of operation is the same, if `n < 2`, return `n`. Otherwise  multiply `n` with the result of the function `fact(n-1)`.
 
 ```elixir
-iex> MathEx.fact(5)
-120
-
-# What happens in the function is:
+# When called, the function expands as follows:
 
 iex> MathEx.fact(5)
     --> 5 * fact(4)
-      --> 4 * fact(3)
-        --> 3 * fact(2)
-          --> 2 * fact(1)
-            --> 1 # Recursion-terminating return value of fact(1)
+    --> 5 * 4 * fact(3)
+    --> 5 * 4 * 3 * fact(2)
+    --> 5 * 4 * 3 * 2 * fact(1) # Recursion-terminating return value of fact(1)
+    --> 5 * 4 * 3 * 2 * 1
 120
 ```
 
@@ -210,13 +206,13 @@ It is always important to have a terminating condition for recursion (`n < 2`) o
 int[] array = {1,2,3,4,5};
 
 static int[] squareArray(int[] array) {  
-  int[] result = new int[array.length];
+    int[] result = new int[array.length];
 
-  for(int i = 0 ; i < ; array.length ; ++i) {
-    result[i] = array[i] * array[i];
-  }
+    for(int i = 0 ; i < ; array.length ; ++i) {
+        result[i] = array[i] * array[i];
+    }
 
-  return result;
+    return result;
 }
 
 int[] result = squareArray(array); // Yields an array of {1, 4, 9, 16, 25};
@@ -226,7 +222,45 @@ int[] result = squareArray(array); // Yields an array of {1, 4, 9, 16, 25};
 The Java code above represents a simple algorithm filling a result array with the squared values of the input array. Let's make a recursive rewrite of the function:
 
 ```elixir
-defmodule ArrayOps do
+defmodule ListOps do
+  def list_length([]) do
+    0
+  end
+
+  def list_length([head|tail]) do
+    1 + list_length(tail)
+  end
+end
+
+iex> ListOps.list_length([1,2,3,4,5])
+5
+```
+
+Here we already play with a new concept called pattern matching, which we will discuss in more detail in a later chapter.
+
+We defined a module `ListOps` with a two variants of the function `list_length/1`. The first variant accepts a pattern matching an empty list. The pattern matching is also used in the function parameters with the syntax `[head|tail]` to extract the head element from the tail of the list, as introduced in the lists-chapter earlier. 
+
+The second variant accepts a pattern for a non-empty list. Remember that the function `hd\1`, which the syntax used maps to, raises an exception for an empty list, so an empty list does not match the pattern provided.
+
+The former variant of `list_length/1` returns a zero for an empty list, and the latter adds the result of a recursive call to `list_length/1` with the number one.
+
+```elixir
+# When called, the function expands as follows:
+
+iex> ListOps.list_length([1, 2, 3, 4, 5])
+    --> 1 + list_length([2, 3, 4, 5])
+    --> 1 + 1 + list_length([3, 4, 5]) 
+    --> 1 + 1 + 1 + list_length([4, 5])
+    --> 1 + 1 + 1 + 1 + list_length([5])
+    --> 1 + 1 + 1 + 1 + 1 + list_length([]) # The recursion terminates and returns a zero
+    --> 1 + 1 + 1 + 1 + 1 + 0
+5
+```
+
+The expansion of the `list_length/1` behaves quite similarily to the factorial function.
+
+```elixir
+defmodule ListOps do
   def square_list([]) do
     []
   end
@@ -235,17 +269,43 @@ defmodule ArrayOps do
   end
 end
 
-iex> ArrayOps.square_list [1,2,3,4,5]
+iex> ListOps.square_list([1,2,3,4,5])
 [1, 4, 9, 16, 25]
 ```
 
-Here we already play with a new concept called pattern matching, which we will discuss in more detail in a later chapter.
+Defining functions with multiple patterns is common practice in Elixir programming. The idea is to rule out cases on as high a level as possible, leaving the function with less clutter, so they can sort of focus on expressing their behavior instead of performing checks on the parameters.
 
-We defined a module `ArrayOps` with a two variants of the function `square_list/1`. The first variant accepts a pattern matching an empty list. The second variant accepts a pattern for a non-empty list (remember from the lists-section, that the function `hd\1` raises an exception for an empty list).
+The latter definition of `square_list/1` multiplies the head of the list with itself, and prepends the result to the result produced by a recursive call to the same function `square_list/1`. The recursive call can now match against either of the functions by the same name.
 
-The second function multiplies the head of the list with itself, and prepends the result to the result produced by a recursive call to the same function `square_list/1`. The recursive call can now match against either of the functions by the same name.
+```elixir
+defmodule ListOps do
+  def reverse([]) do
+    []
+  end
 
-The pattern matching is also used in the function parameters with the syntax `[head|tail]` to extract the head element from the tail of the list, as introduced in the lists-chapter earlier.
+  def reverse([head|tail]) do
+    reverse(tail) ++ [head]
+  end
+end
+
+iex> ListOps.reverse([1,2,3,4,5])
+[5, 4, 3, 2, 1]
+```
+
+The position of the recursive call sometimes has a significant effect on the result of recursion. As an example of this we define a new function `reverse/1` that accepts two patterns, either an empty list `[]` or a list with at least the `head` element present. The both the `head` and the `tail` are extracted from the pattern `[head|tail]`. The head is then prepended with the result of a recursive call to `reverse/1` applied to the lists tail. As a result the function `reverse/1` produces us a reversed copy of the list.
+
+```elixir
+iex> ListOps.reverse([1, 2, 3, 4, 5])
+    --> reverse([2, 3, 4, 5]) ++ [1]
+    --> reverse([3, 4, 5]) ++ [2] ++ [1]
+    --> reverse([4, 5]) ++ [3] ++ [2] ++ [1]
+    --> reverse([5]) ++ [4] ++ [3] ++ [2] ++ [1]
+    --> reverse([]) ++ [5] ++ [4] ++ [3] ++ [2] ++ [1] # The recursion terminates and returns an empty list
+    --> [] ++ [5] ++ [4] ++ [3] ++ [2] ++ [1]
+[5, 4, 3, 2, 1]
+```
+
+The expansion of the `reverse/1` differs slightly from the earlier functions, but in principle works in a same way. The main difference is, that the the extracted `head` value is kept on the right-hand side of the join `++` operator. When prepended, the empty result from the call of `reverse([])` does not add in item to the front of the resulting list. 
 
 ## <a name="tail_call_optimization"></a> Tail call optimization
 <div class="key-concept">
@@ -279,10 +339,52 @@ The rewritten `square_list\1` uses a helper function to enable the elimination o
 
 `do_squaring/2` takes two parameters, an accumulator list that holds the squared values and the list with the values to square. The function iterates over the list element-by-element, and finally when the list runs out of elements, the `do_squaring/2` returns the accumulated value.
 
-<div name="exercises_week1" class="exercise-container">
-    <span class="group-name">Week1 exercises</span>
-    <p>The exercises for this set can be previewed in exercise_drafts/week1.ex</p>
-</div>
+```elixir
+defmodule MathEx do
+  def fact(n) do
+    if(n < 2) do
+      n
+    else
+      n * fact(n-1)
+    end
+  end
+end
+```
+
+Let's visit again the earlier example of the `fact/1` function. We also showed how the calls of the function rolled out. It's important to realize, that our implementation of `fact/1` is not tail-recursive, as the expression `n * fact(n-1)` cannot release the call stack, but expects a return value from the successive call on each iteration. Let's remedy the situation.
+
+```elixir
+defmodule MathEx do
+  def fact_rec(n), do: do_fact(n, n)
+
+  defp do_fact(n, 1) do
+    n
+  end
+
+  defp do_fact(acc, n) do
+    m = n - 1
+    do_fact(acc * m, m)
+  end
+end
+```
+
+We achieve the tail-recursiveness by implementing a helper function `do_fact/2` accepting to parameters, the accumulated state `acc` and the number `n` acting as the multiplier. The first call to `do_fact/2` assigns the initial parameter `n` as the accumulator `acc` and on each call to `do_fact/2` the `n` is subtracted by 1 to obtain a new multiplier. The recursion-terminates, when `n` reaches the number 1 and the accumulated value is returned.
+
+```elixir
+iex> MathEx.fact(5)
+120
+
+# What happens in the function is:
+
+iex> MathEx.fact(5)
+    --> do_fact(5, 5)  
+    --> do_fact(20, 4)
+    --> do_fact(60, 3)
+    --> do_fact(120, 1) # Call matches the terminating pattern
+120
+```
+
+The tail-recursive variant of `fact/1` passes the state of calculation between the function calls, and the calls are optimized to an iterative loop by the compiler. The previous call stack is re-used between successive function calls. As a wrap up, elimination of tail-recursion allows a function to operate in constant (stack) space.
 
 ## Guards in functions
 
@@ -304,8 +406,6 @@ iex> MathEx.fact("a")
 ```
 
 The function definitions can also be decorated with guards in order to allow the function to yield safe and predictable results. The factorial function does not work for numbers less than zero so we decorate the function definition with a guard with the `when <cond>` just before the block initiated by the `do` keyword. Our guard makes sure that the function receives a number and the function is of valid magnitude.
-
-**TODO** Write a larger block about guards
 
 ## <a name="lambda_functions"></a> λ (lambda) functions 
 <div class="key-concept">
@@ -348,7 +448,7 @@ Like any other function or expression, the lambda function evaluates to the valu
 One of the more interesting features of functional languages is the ability to use functions (typically lambda functions) as parameters to functions generalizing some sort of behavior. Let's take a look at some examples. 
 
 ```elixir
-iex> defmodule MyListOps do
+iex> defmodule ListOps do
        def my_map([], _) do
          []
        end
@@ -358,36 +458,36 @@ iex> defmodule MyListOps do
      end
 ```
 
-Let's use the module `MyListOps` as a container for some generalized operations for lists. We start by defining a function called `my_map/2`. `my_map/2` is generalizes a behavior of iterating through a list of items, applying a function for each element and returning a new copy of a list with those items as a a result.
+Let's use the module `ListOps` as a container for some generalized operations for lists. We start by defining a function called `my_map/2`. `my_map/2` is generalizes a behavior of iterating through a list of items, applying a function for each element and returning a new copy of a list with those items as a a result.
 
 The first parameter is a list, for which we provide two patterns for. The first pattern matches an empty list `[]` and "some value". The pattern returns an empty list `[]` and effectively ignores both parameters.
 
 The second pattern matches a list with at least one element and applies the function `fun` received as a second parameter. It creates a new list from the `head` element of the list with the `fun` applied by calling `fun.(head)` and prepends the result to a list received by a successive call to `my_map` with the list's `tail` and `fun` as it's parameters. 
 
 ```elixir
-iex> MyListOps.my_map([1,2,3,4,5], fn n -> n * 2 end)
+iex> ListOps.my_map([1,2,3,4,5], fn n -> n * 2 end)
 [2, 4, 6, 8, 10]
-iex> MyMap.my_map([1,2,3,4,5], fn n -> n * n end)
+iex> ListOps.my_map([1,2,3,4,5], fn n -> n * n end)
 [1, 4, 9, 16, 25]
 ```
 
 The function `my_map` is already proving itself really hand by allowing us to abstract away the tedious and labory iteration of lists. The anonymous function `fn/1` accepted by `my_map` is the one that is used to define the functions behavior within the iterative calls.
 
 ```elixir
-iex> MyMap.my_map(["jack", "of", "all", "trades"], fn str -> String.upcase(str) end)
+iex> ListOps.my_map(["jack", "of", "all", "trades"], fn str -> String.upcase(str) end)
 ["JACK", "OF", "ALL", "TRADES"]
 ```
 
 We did not use any function guards, so the map can be used for different kinds of lists. 
 
 ```elixir
-iex> MyMap.map([1,2,3,4,5], fn 
+iex> ListOps.map([1,2,3,4,5], fn 
   n when rem(n, 2) == 0 -> div(n, 2)
   n -> n * 2
   end)
 [2, 1, 6, 2, 10]
 ```
 
-As a cherry on top, Elixir also allows for us to match patterns from within anonymous functions. We define two patterns for the `fn/1` which uses a guard in the first pattern the check if the remained from the `rem(n, 2)` is zero indicating the number is an odd number. Those numbers are divided by two. The second pattern multiplies the odd numbers we supplied.
+As a cherry on top, Elixir also allows us to match patterns from within anonymous functions. We define two patterns for the `fn/1` which uses a guard in the first pattern the check if the remained from the `rem(n, 2)` is zero indicating the number is an odd number. Those numbers are divided by two. The second pattern multiplies the odd numbers we supplied.
 
 The possibility to accept functions as function parameters proves itself a really powerful way of creating complex abstractions with a very little code time after time. The functionality implemented here is in reality provided by the [Enum module](http://elixir-lang.org/docs/stable/elixir/Enum.html). It's an uncommon case that a common behavior such as the one presented above needs to implemented by the programmer. Now that we've gotten our hands dirty with functions and their behavior, let's take a look at some of the commonly used functions provided by the Elixir API.
