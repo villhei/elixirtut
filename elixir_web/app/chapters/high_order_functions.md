@@ -16,7 +16,7 @@
 
 The often used high-order functions we are about to look into are `map/2`, `filter/2`, `zip/2` and `reduce/3`.
 
-The high-order functions here are supplied by the [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module, and equivalent lazy functions can be found from the [Stream](http://elixir-lang.org/docs/stable/elixir/Stream.html) module. When working with collections, you can think of these functions as generalizations or replacements of loop constructs.
+The high-order functions here are supplied by the [Enum module](http://elixir-lang.org/docs/stable/elixir/Enum.html), and equivalent lazy functions can be found from the [Stream module](http://elixir-lang.org/docs/stable/elixir/Stream.html). When working with collections, you can think of these functions as generalizations or replacements of loop constructs.
 
 High order functions and lambda functions are best friends, as the loop-abstracting nature of high-order functions is commonly complemented with throw-away lambda functions expressing the action of the loop. Using lambda functions with common high-order functions is good practice, as a lambda is often more explicit about it's actions than a named function as a parameter.
 

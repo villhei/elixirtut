@@ -9,7 +9,7 @@
 
 ## <a name="data_structures_tuples"></a> Tuples
 
-Functional programmers often find the need to return more than a single value from a function. These sets of values can be represented as tuples, which are ordered pairs of n elements.
+Functional programmers often find the need to return more than a single value from a function. These sets of values can be represented as tuples, which are ordered pairs of n elements. In impreative programming, whenever you want to represent some structured data you normally implement a construct such as a `class` or a `struct` for that purpose. The heavy-weight constructs don't always feel that necessary. That's why most functional languages implement a `tuple` that can act as a container values.
 
 The elements of a tuple are stored contiguously in memory, which means that accessing the elements of a tuple by index, or getting the size of a tuple is a fast operation.
 

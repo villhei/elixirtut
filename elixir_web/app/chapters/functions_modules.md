@@ -345,6 +345,49 @@ Like any other function or expression, the lambda function evaluates to the valu
 
 ## Functions as function parameters
 
-**TODO** Write a block about the use of functions as parameters.
+One of the more interesting features of functional languages is the ability to use functions (typically lambda functions) as parameters to functions generalizing some sort of behavior. Let's take a look at some examples. 
 
-Implement the map function here using recursion, demonstrate the ability to supply a pattern of functions. 
+```elixir
+iex> defmodule MyListOps do
+       def my_map([], _) do
+         []
+       end
+       def my_map([head|tail], fun) do
+         [fun.(head)] ++ my_map(tail, fun)
+       end
+     end
+```
+
+Let's use the module `MyListOps` as a container for some generalized operations for lists. We start by defining a function called `my_map/2`. `my_map/2` is generalizes a behavior of iterating through a list of items, applying a function for each element and returning a new copy of a list with those items as a a result.
+
+The first parameter is a list, for which we provide two patterns for. The first pattern matches an empty list `[]` and "some value". The pattern returns an empty list `[]` and effectively ignores both parameters.
+
+The second pattern matches a list with at least one element and applies the function `fun` received as a second parameter. It creates a new list from the `head` element of the list with the `fun` applied by calling `fun.(head)` and prepends the result to a list received by a successive call to `my_map` with the list's `tail` and `fun` as it's parameters. 
+
+```elixir
+iex> MyListOps.my_map([1,2,3,4,5], fn n -> n * 2 end)
+[2, 4, 6, 8, 10]
+iex> MyMap.my_map([1,2,3,4,5], fn n -> n * n end)
+[1, 4, 9, 16, 25]
+```
+
+The function `my_map` is already proving itself really hand by allowing us to abstract away the tedious and labory iteration of lists. The anonymous function `fn/1` accepted by `my_map` is the one that is used to define the functions behavior within the iterative calls.
+
+```elixir
+iex> MyMap.my_map(["jack", "of", "all", "trades"], fn str -> String.upcase(str) end)
+["JACK", "OF", "ALL", "TRADES"]
+```
+
+We did not use any function guards, so the map can be used for different kinds of lists. 
+
+```elixir
+iex> MyMap.map([1,2,3,4,5], fn 
+  n when rem(n, 2) == 0 -> div(n, 2)
+  n -> n * 2
+  end)
+[2, 1, 6, 2, 10]
+```
+
+As a cherry on top, Elixir also allows for us to match patterns from within anonymous functions. We define two patterns for the `fn/1` which uses a guard in the first pattern the check if the remained from the `rem(n, 2)` is zero indicating the number is an odd number. Those numbers are divided by two. The second pattern multiplies the odd numbers we supplied.
+
+The possibility to accept functions as function parameters proves itself a really powerful way of creating complex abstractions with a very little code time after time. The functionality implemented here is in reality provided by the [Enum module](http://elixir-lang.org/docs/stable/elixir/Enum.html). It's an uncommon case that a common behavior such as the one presented above needs to implemented by the programmer. Now that we've gotten our hands dirty with functions and their behavior, let's take a look at some of the commonly used functions provided by the Elixir API.
