@@ -306,10 +306,6 @@ iex> MathEx.fact("a")
 The function definitions can also be decorated with guards in order to allow the function to yield safe and predictable results. The factorial function does not work for numbers less than zero so we decorate the function definition with a guard with the `when <cond>` just before the block initiated by the `do` keyword. Our guard makes sure that the function receives a number and the function is of valid magnitude.
 
 **TODO** Write a larger block about guards
- 
-## Functions as function parameters
-
-**TODO** Write a block about the use of functions as parameters.
 
 ## <a name="lambda_functions"></a> λ (lambda) functions 
 <div class="key-concept">
@@ -346,3 +342,9 @@ iex>
 Lambda functions are closures, and such they have a private scope that only the anonymous function can access. Any variable declared within the scope of an anonymous function does not affect the higher level environment.
 
 Like any other function or expression, the lambda function evaluates to the value returned by that expression.
+
+## Functions as function parameters
+
+**TODO** Write a block about the use of functions as parameters.
+
+Implement the map function here using recursion, demonstrate the ability to supply a pattern of functions. 

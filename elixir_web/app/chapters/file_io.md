@@ -1,0 +1,2 @@
+- Will include Streams for resources
+- Basic File IO with lots of unix references
