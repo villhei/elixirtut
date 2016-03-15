@@ -10,60 +10,66 @@ import functions_modules from '../chapters/functions_modules.md'
 import high_order_fun from '../chapters/high_order_functions.md'
 import pattern_matching from '../chapters/pattern_matching.md'
 import lazy_streams from '../chapters/lazy_streams.md'
+import file_io from '../chapters/file_io.md'
 
 
 let raw_chapters = [{
-        title: "Introduction",
+        title: "Introduction (70% done)",
         path: "/introduction",
         content: introduction,
       },
       {
-        title: "Basic types",
+        title: "Basic types (95% done)",
         path: "/basic_types",
         content: basic_types
       },
       {
-        title: "Data structures",
+        title: "Data structures (80% done)",
         path: "/data_structures",
         content: data_structures
       },
       {
-        title: "Conditional structures",
+        title: "Conditional structures (95% done)",
         path: "/conditionals",
         content: conditionals
       },
       {
-        title: "Functions and modules",
+        title: "Functions and modules (90% done)",
         path: "/functions_modules",
         content: functions_modules
       },
       {
-        title: "Pattern matching",
+        title: "Pattern matching (70% done)",
         path: "/pattern_matching",
         content: pattern_matching
       },
       {
-        title: "High-order functions",
+        title: "High-order functions (90% done)",
         path: "/high_order_fun",
         content: high_order_fun
       },
       {
-        title: "Lazy evaluation and streams",
+        title: "Lazy evaluation and streams (80% done)",
         path: "/lazy_streams",
         content: lazy_streams
       },
       {
-        title: "Parallelism with processes",
+        title: "Hello outside world! Input and output (0% done)",
+        path: "/file_io",
+        content: file_io
+      },
+      {
+        title: "Parallelism with processes (90% done)",
         path: "/processes",
         content: processes
       },
       {
-        title: "Supervisors and process abstractions",
+        title: "Supervisors and process abstractions (5% done)",
         path: "/supervisors_abstractions",
         content: process_abstractions
       },
       {
-        title: "Language tools",
+        title: "Language tools (40% done)",
         path: "/language_tools",
         content: language_tools
       },

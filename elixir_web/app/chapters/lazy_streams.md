@@ -49,6 +49,54 @@ Streams can be easily used as generator values to generate infinite lists of res
 `Stream.unfold/2` accepts two parameters: an initial accumulator value and a function `fn/1` accepting the accumulator value and returning an tuple with the left-hand side containing the result of the expression, and the right-hand side providing an accumulator value for the next successive evaluation. 
 
 ```elixir
+iex> [1, 2, 3] |> Enum.map(fn n ->
+      IO.puts("First: #{n}")
+      n
+    end) |> Enum.map(fn n ->
+      m = n * 2
+      IO.puts("Second: #{m}")
+      m
+    end)
+First: 1
+First: 2
+First: 3
+Second: 2
+Second: 4
+Second: 6
+[2, 4, 6]
+```
+
+Consider the above example of the function `Enum.map/2` applied sequentially on the list `[1, 2, 3]`. The first call to `Enum.map/2` is defined to return the value `n` as-is while using `IO.puts/1` for printing the value `n`. `Enum.map/2` iterates through the entire list, returning a new, yet value-wise identical list `[1, 2, 3]`. 
+
+The second call to `Enum.map/2` is defined to multiply the value `n` by a factor of 2, print the value using `IO.puts/2` and to return the multiplied value.
+
+The printed output clearly shows, that the order of evaluation was precisely what we expected. Now let's try the same with functions from the `Stream` module. 
+
+```elixir
+iex> [1, 2, 3] |> Stream.map(fn n ->
+      IO.puts("First: #{n}")
+      n
+    end) |> Stream.map(fn n ->
+      m = n * 2
+      IO.puts("Second: #{m}")
+      m
+    end) |> Enum.to_list
+First: 1
+Second: 2
+First: 2
+Second: 4
+First: 3
+Second: 6
+[2, 4, 6]
+```
+
+We pipe the results of the lazy `Stream.map/2` calls to the eager `Enum.to_list` function in order to force the evaluation of the streams. Now that the evaluation was required, we see some interesting results: The order of evaluation changed, and quite radically if I may say so!
+
+Like we saw on previous examples, an unevaluated stream is a sequence of functions defining the value of the elements of the stream. Whenever we apply an eager function (`Enum.to_list` in this case) that accesses an element in the stream, this causes the defined sequence of functions to be applied for each element in order to obtain the stream's final, resulting value. 
+
+This is the feature in streams that allow you to define infinite sequences of values - the unneeded trailing values are just never evaluated. 
+
+```elixir
 iex> Stream.unfold({0, 1}, fn {n, m} -> {n, {m, n + m}} end) |> Enum.take(10)
 [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
 ```

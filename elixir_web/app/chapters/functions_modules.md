@@ -202,25 +202,6 @@ iex> MathEx.fact(5)
 
 It is always important to have a terminating condition for recursion (`n < 2`) otherwise the recursive function will call itself indefinitely, eventually resulting in a stack overflow.
 
-```java
-int[] array = {1,2,3,4,5};
-
-static int[] squareArray(int[] array) {  
-    int[] result = new int[array.length];
-
-    for(int i = 0 ; i < ; array.length ; ++i) {
-        result[i] = array[i] * array[i];
-    }
-
-    return result;
-}
-
-int[] result = squareArray(array); // Yields an array of {1, 4, 9, 16, 25};
-
-```
-
-The Java code above represents a simple algorithm filling a result array with the squared values of the input array. Let's make a recursive rewrite of the function:
-
 ```elixir
 defmodule ListOps do
   def list_length([]) do
@@ -259,6 +240,25 @@ iex> ListOps.list_length([1, 2, 3, 4, 5])
 
 The expansion of the `list_length/1` behaves quite similarily to the factorial function.
 
+```java
+int[] array = {1,2,3,4,5};
+
+static int[] squareArray(int[] array) {  
+    int[] result = new int[array.length];
+
+    for(int i = 0 ; i < ; array.length ; ++i) {
+        result[i] = array[i] * array[i];
+    }
+
+    return result;
+}
+
+int[] result = squareArray(array); // Yields an array of {1, 4, 9, 16, 25};
+
+```
+
+The Java code above represents a simple algorithm filling a result array with the squared values of the input array. Let's make a recursive rewrite of the function:
+
 ```elixir
 defmodule ListOps do
   def square_list([]) do
@@ -273,7 +273,7 @@ iex> ListOps.square_list([1,2,3,4,5])
 [1, 4, 9, 16, 25]
 ```
 
-Defining functions with multiple patterns is common practice in Elixir programming. The idea is to rule out cases on as high a level as possible, leaving the function with less clutter, so they can sort of focus on expressing their behavior instead of performing checks on the parameters.
+Defining functions with multiple patterns is common practice in Elixir programming. The idea is to rule out cases on as high a level as possible, leaving the function with less clutter, so they can focus on expressing their behavior instead of performing checks on their inputs.
 
 The latter definition of `square_list/1` multiplies the head of the list with itself, and prepends the result to the result produced by a recursive call to the same function `square_list/1`. The recursive call can now match against either of the functions by the same name.
 

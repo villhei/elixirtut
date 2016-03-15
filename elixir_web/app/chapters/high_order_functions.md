@@ -1,12 +1,5 @@
 [lambda]: img/lambda.png
 
-<div class="warning">
-  <span>TODOS</span
-  <ul>
-    <li>Enum.takeWhile / Enum.dropWhile, Enum.take / Enum.drop</li>
-  </ul>
-</div>
-
 <div class="key-concept">
 ![Key concept][lambda]<span>High-order functions</span>
 <p>High-order functions are functions that accept functions as their arguments or return a function as their result.</p> 
@@ -20,19 +13,217 @@ The high-order functions here are supplied by the [Enum module](http://elixir-la
 
 High order functions and lambda functions are best friends, as the loop-abstracting nature of high-order functions is commonly complemented with throw-away lambda functions expressing the action of the loop. Using lambda functions with common high-order functions is good practice, as a lambda is often more explicit about it's actions than a named function as a parameter.
 
-#### Summary of the common high order functions
+Usage of the functions found in the `Enum` and `Stream` module is highly encouraged. Usage of these functions is in favor of your own implementations is good programming practice and their semantics explicit to other programmers. The implemenations of library functions are also optimized by a varying degree, so their execution time is also faster than their manually implemented counterparts.
 
-| Function   | Parameters | Description |
-| ---------- | ---------- | ----------- |
-| `Enum.map/2`    | 1. Enumerable  2. `function/1` with an element passed as a parameter | Transform (map) all elements of an enumerable from type A to type B |
-| `Enum.filter/2` | 1. Enumerable  2. `function/1` returning a condition with an element passed as a parameter | Create a new enumerable of the same type from the elements that satisfy a given condition |
-| `Enum.zip/2`    | 1. Enumerable A  2. Enumerable B | Merge all elements of two enumerables A and B to an enumerable of tuples `{A, B}`. The `zip/2` terminates when either one runs out of elements. |  
-| `Enum.reduce/3` | 1. Enumerable  2. An initial value  3. `function/2` with the accumulator value and an element of a list as parameters. | Reduce all the elements of an enumerable to a single element. The reducer function starts with the initial value and the first item, and passes the return value as the accumulator to the subsequent call|
+### Summary of common sample sizer functions
 
+<table class="table">
+  <thead>
+    <tr>
+      <td>Function</td><td>Parameters</td><td>Description</td>
+    </tr>   
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+         `Enum.filter/2`
+      </td>
+      <td>
+        1. Enumerable  <br>
+        2. `function/1` returning a condition with an element passed as a parameter 
+      </td>
+      <td>
+        Create a new enumerable of the same type from the elements that satisfy a given condition
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `Enum.take/2`
+      </td>
+      <td>
+        1. Enumerable <br>
+        2. `n` elements to take
+      </td>
+      <td>
+        Returns a new Enumerable with `n` first elements 
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `Enum.drop/2`
+      </td>
+      <td>
+        1. Enumerable <br>
+        2. `n` elements to take
+      </td>
+      <td>
+        Returns a new Enumerable without `n` first elements 
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `Enum.take_while/2`
+      </td>
+      <td>
+        1. Enumerable <br>
+        2. Predicate function `function/1`
+      </td>
+      <td>
+         Return an Enumerable with first elements until the predicate `function/1` finds an element it yields a false for 
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `Enum.drop_while/2`
+      </td>
+      <td>
+        1. Enumerable <br>
+        2. Predicate `function/1`
+      </td>
+      <td>
+        Return a new Enumerable without the first elements until the predicate `function/1` yields a false
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+### Summary of sample manipulation functions
+
+<table class="table">
+  <thead>
+    <tr>
+      <td>Function</td><td>Parameters</td><td>Description</td>
+    </tr>   
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        `Enum.map/2`
+      </td>
+      <td>
+        1. Enumerable <br>
+        2. `function/1` with an element passed as a parameter, returns a transformed value
+      </td>
+      <td>
+        Transform (map) all elements of an enumerable from type A to type B
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `Enum.flat_map/2`
+      </td>
+      <td>
+        1. Enumerable <br>
+        2. `function/1` with an element passed as a parameter, returns an Enumerable
+      </td>
+      <td>
+        Just like map, transform (map) all elements of an Enumerable returning a flat list of joined Enumerables
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `Enum.zip/2`
+      </td>
+      <td>
+        1. Enumerable A<br>
+        2. Enumerable B
+      </td>
+      <td>
+        Merge all elements of two enumerables A and B to an enumerable of tuples `{A, B}`. The `zip/2` terminates when either one runs out of elements.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `Enum.reduce/3`
+      </td>
+      <td>
+      1. Enumerable  <br>
+      2. An initial value  <br>
+      3. `function/2` with the accumulator value and an element of a list as parameters.
+      </td>
+      <td>
+       Reduce all the elements of an enumerable to a single element. The reducer function starts with the initial value and the first item, and passes the return value as the accumulator to the subsequent call
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 A more complete list of functions is documented in the [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module. 
 
-#### <a name="high_order_map"></a> Enum.map/2
+
+## <a name="sample_sizers"></a> Sample sizer functions
+
+Let's take a look at functions that are used to limit the sample size of an `Enumerable`. These functions are used to create sublists of `Enumerables`, either by removing leading or trailing elements, or removing elements until they fulfill or fail a condition given by a predicate function. 
+
+### <a name="high_order_take"></a> Enum.take/2
+
+```elixir
+iex> list = [1, 2, 3, 4, 5, 6]
+iex> Enum.take(list, 2)
+[1, 2]
+iex> map = %{:wafu => :steak, :wagyu => :beef}
+iex> Enum.take(map, 1)
+[wafu: :steak]
+iex> length(Enum.take(map, 1))
+1
+```
+
+One of the simplest functions in the `Enum` module is the `Enum.take/2`, which can be used to create a new sublist of a `Enumerable` from the `n` first elements. Notice that applying `Enum.take/2` on a translates to a keyword list.
+
+```
+iex> Enum.take(list, 6)
+[1, 2, 3, 4, 5, 6]
+iex> Enum.take([], 1)
+[]
+```
+
+Attempting to call `Enum.take/2` on a enumerable with less than `n` elements will return all the elements of the `Enumerable` as a list or an empty list.
+
+### <a name="high_order_drop"></a> Enum.drop/2
+
+```elixir
+iex> list = [1, 2, 3, 4, 5, 6]
+iex> Enum.drop(list, 2)
+[3, 4, 5, 6]
+```
+
+`Enum.drop/2`, is just like `Enum.take/2`, but it is used to create a new list of an `Enumerable` without `n` first elements. 
+
+```
+iex> Enum.drop(list, 7)
+[]
+iex> Enum.drop([], 1)
+[]
+```
+
+For empty `Enumerables`, `Enum.drop/2` on a enumerable with less than `n` elements will return all the elements of the `Enumerable` as a list or an empty list.
+
+### <a name="high_order_take_while"></a> Enum.take_while/2
+
+```elixir
+iex> Enum.take_while([1, 2, 3, 4, 5, 6], fn n -> n < 4 end)
+[1, 2, 3]
+```
+
+`Enum.take_while/2` is a similar function to `Enum.take/2`, but instead of a count, it takes a predicate function `fn/1` that is used to test each of the values in the input `Enumerable`. `Enum.take/2` returns a list with all the preceding elements to the element it first yielded a `false` or `nil` for. In our example, the number 4 was the first one to fail the test `n < 4`, so we receive a list with the numbers `[1, 2, 3]`
+
+```elixir
+iex> Enum.take_while(["a", "b", "c", "d", "e", "g", "a"], fn str -> str !== "e" end)
+["a", "b", "c", "d"]
+```
+
+The use of `Enum.take_while/2` is in no way limited to numbers, but can be applied to use any kinds of values you can imagine a boolean expression for.
+
+### <a name="high_order_drop_while"></a> Enum.drop_while/2
+
+```elixir
+iex> Enum.drop_while([1, 2, 3, 4, 5, 6], fn n -> n < 4 end)
+[4, 5, 6]
+```
+
+`Enum.drop_while/2` is a function similar to `Enum.take_while/2`, but instead of taking, it drops values until the predicate function `fn/1` yields a `false`.  `
+
+## <a name="high_order_map"></a> Enum.map/2
 
 ```elixir
 iex> list = [1,2,3,4,5]
@@ -74,7 +265,7 @@ iex> Enum.map(names, fn(n) -> String.upcase(n) end)
 
 `map/2` is often used to formulate *functional pipelines* where the value is transformed multiple times to a new format or type suitable for the next operation. The second call to `map/2` uses the function `upcase/1` from the [String](http://elixir-lang.org/docs/stable/elixir/String.html) module.
 
-#### <a name="high_order_filter"></a> Enum.filter/2
+## <a name="high_order_filter"></a> Enum.filter/2
 
 ```elixir
 iex> list = [1,2,3,4,5]
@@ -101,7 +292,7 @@ iex> Enum.map(matches, fn(n) ->
 
 The `filter/2` function is often used together with other high order functions, like with the `map/2` used in this example. First the list of people is transformed to list of names. We are only interested in the names that include the string "Ruohonen", which we check for with the `String.contains?/2` function from the [String](http://elixir-lang.org/docs/stable/elixir/String.html) module. For the filtered list, we perform yet another `map/2` to split the names in to parts, of which we grab the first elements of.
 
-#### <a name="high_order_zip"></a> Enum.zip/2
+## <a name="high_order_zip"></a> Enum.zip/2
 
 ```elixir
 iex> numbers = [1,2,3,4,5]
@@ -128,7 +319,7 @@ iex> Enum.zip(list, tl(list))
 
 Generally speaking, the purpose of the `zip/2` function is simply what we stated, but the use cases are endless. You sometimes might require the index of the element while performing a `map/2`, the solution is to call `zip/2` on the original list with a second list containing the indices.
 
-#### <a name="high_order_reduce"></a> Enum.reduce/3
+## <a name="high_order_reduce"></a> Enum.reduce/3
 
 ```elixir
 iex> numbers = [1,2,3,4,5]

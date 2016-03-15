@@ -1,12 +1,5 @@
 [lambda]: img/lambda.png
 
-<div class="warning">
-  <span>TODOS</span
-  <ul>
-    <li>Streams and ranges are missing</li>
-  </ul>
-</div>
-
 ## <a name="hello_elixir"></a>Hello Elixir!
 
 ```elixir
