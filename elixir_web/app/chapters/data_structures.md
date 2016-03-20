@@ -218,13 +218,15 @@ iex> animal_sounds =  %{cow: "Moo!", dog: "Woof!", cat: "Meeoow!"}
 iex> animal_sounds.cow
 "Moo!"
 iex> animal_sounds.snake
-** (KeyError) key :snake not found in: %{cat: "Meeoow!", cow: "Moo!", dog: "Woof!"} 
+** (KeyError) key :snake not found in: %{cat: "Meeoow!", cow: "Moo!", dog: "Woof!"}
 
+iex> Map.get(animal_sounds, :snake)
+nil
 ```
 
-When all the keys in a map are atoms, you can also use the `keyword:` syntax for associating keys with values in a map. Also, one can access the map with a special syntax `map.key` instead of using the `Map.get/2` function. 
+When all the keys in a map are atoms, you can also use the `keyword:` syntax for associating keys with values in a map. Also when all your keys are atoms, one can access the map with a special syntax `map.key` instead of using the `Map.get/2` function. 
 
-Accessing the map with a non-existant key will raise an error.
+Notice that the `map.key` syntax for accessing the map is strict. A non-existant key will raise an error, unlike the non-strict `Map.get/2` that will instead return a `nil`.
 
 ```elixir
 iex> %{ animal_sounds | :snake => "Hsssst!"}
