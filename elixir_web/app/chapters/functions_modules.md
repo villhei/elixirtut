@@ -357,8 +357,8 @@ Let's visit again the earlier example of the `fact/1` function. We also showed h
 defmodule MathEx do
   def fact_rec(n), do: do_fact(n, n)
 
-  defp do_fact(n, 1) do
-    n
+  defp do_fact(acc, 1) do
+    acc
   end
 
   defp do_fact(acc, n) do
@@ -443,6 +443,33 @@ Lambda functions are closures, and such they have a private scope that only the 
 
 Like any other function or expression, the lambda function evaluates to the value returned by that expression.
 
+```elixir
+iex> fact = fn(_, 1) -> 1
+                (fun, n) -> n * fun.(fun, n-1)
+              end
+
+iex(4)> fact.(fact, 5)
+120
+
+```
+
+Unlike recent versions of Erlang, Elixir 1.2 series comes with a slight caveat of not supporting named anonymous functions. This issue might be solved in future releases. Currently, if you need recursion as a part of your function, you need to pass the function name as a parameter of the anonymous function, as the function is evaluated before the actual function is constructed.
+
+In the example above we define a function `fact` for calculating factorials. The `fn/2` accepts two parameters, a function name `fun` to apply recursion to, and the number `n` to be calculated. The first pattern is a stop condition for when the number reaches 1, it returns the number 1 and stops recursion. The other pattern multiplies the `n` with the result of the call to the anonymous `fn/2` `fun` with `n` subtracted by 1. 
+
+This pattern, and it's use pattern is far from elegant. As the call takes the form of `fn/2.(fn/2, n)`, the function defined is hardly useful anywhere.
+
+```elixir
+iex> fact = fn n ->
+    do_fact = fn(_, 0)   -> 1
+                (fun, n) -> n * fun.(fun, n-1)
+              end
+              do_fact.(do_fact, n) end
+iex> fact.(5)
+```
+
+In the opinion of the author, the recursive anonymous function would be best defined as named function in a module. If you really insist on writing a recursive anonymous function, you can wrap it inside a wrapper function that defines a recusive inner function and hides away the nasty implementation and provides a regular call pattern of `fn/1.(args)`.
+
 ## Functions as function parameters
 
 One of the more interesting features of functional languages is the ability to use functions (typically lambda functions) as parameters to functions generalizing some sort of behavior. Let's take a look at some examples. 
@@ -490,4 +517,60 @@ iex> ListOps.map([1,2,3,4,5], fn
 
 As a cherry on top, Elixir also allows us to match patterns from within anonymous functions. We define two patterns for the `fn/1` which uses a guard in the first pattern the check if the remained from the `rem(n, 2)` is zero indicating the number is an odd number. Those numbers are divided by two. The second pattern multiplies the odd numbers we supplied.
 
-The possibility to accept functions as function parameters proves itself a really powerful way of creating complex abstractions with a very little code time after time. The functionality implemented here is in reality provided by the [Enum module](http://elixir-lang.org/docs/stable/elixir/Enum.html). It's an uncommon case that a common behavior such as the one presented above needs to implemented by the programmer. Now that we've gotten our hands dirty with functions and their behavior, let's take a look at some of the commonly used functions provided by the Elixir API.
+The possibility to accept functions as function parameters proves itself a really powerful way of creating complex abstractions with a very little code time after time. The functionality implemented here is in reality provided by the [Enum module](http://elixir-lang.org/docs/stable/elixir/Enum.html). It's an uncommon case that a common behavior such as the one presented above needs to implemented by the programmer. 
+
+
+### <a name="advanced_techniques_currying"></a> Functions returning functions
+<div class="key-concept">
+![Key concept][lambda]<span>Currying</span>
+<p>Currying is an often used technique in functional programming languages to translate functions with multiple parameters (arity of n where n > 1) into a sequence of functions that accept a single parameter (arity of 1).</p>
+
+<p>The function returned from a curried function is called a *partially applied function*. A partially applied function is a function that has some of it's arguments replaced by values and is returned as a function with a smaller arity that the original function.</p>
+
+<p>Currying is not built in to the Elixir core language, so we define a module for transforming functions.</p>
+</div>
+
+```elixir
+iex> people = [%{name: "Matti Ruohonen", born: 1949},
+...> %{name: "Teppo Ruohonen", born: 1948}, 
+...> %{name: "Seppo Räty", born: 1962}]
+```
+
+Let's define a list people represented by map objects.
+
+```elixir
+iex> names = Enum.map(people, fn(map) -> Map.get(map, :name) end)
+["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
+```
+
+The names can be fetched from the map objects by calling `Map.get(map, key)` in an anonomyous function, but having to do this repeatedly can get a bit labory. The library function `Enum.map/2` is a function, that takes as it's input a sequence (Enumerable) of elements and a transformation function and returns a list of transformed elements. We will look in to the `Enum.map/2` in more detail in the next chapter.
+
+```elixir
+defmodule MapOps do
+   def get_key(key) do
+     fn(map) -> Map.get(map, key) end
+   end
+end
+```
+
+We start the currying by defining a module `MapOps` which is used to contain our function `get_key/1`. The `get_key/1` takes the key we are interested as it's parameter. The `get_key/1` function returns an anonymous `fn/1` that accepts a map as it's parameter.
+
+```elixir
+iex> get_name = MapOps.get_key(:name)
+#Function<0.89557173/1 in MapOps.get/1>
+iex> get_born = MapOps.get_key(:born)
+#Function<0.89557173/1 in MapOps.get/1>
+```
+
+When calling the `MapOps.get_key/1` the function returns the anonymous inner function, that is now ready to accept a parameter.
+
+```elixir
+iex> names = Enum.map(people, get_name)
+["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
+iex> ages = Enum.map(people, get_born)
+[1949, 1948, 1962]
+```
+
+We use the Now the benefit of the curried function is clearly visible, as we reduced the repeated code quite a plenty. The currying can be generalized even further, as shown [in this blog post](http://blog.patrikstorm.com/function-currying-in-elixir).
+
+Now that we've gotten our hands dirty with functions and their behavior, let's take a look at some of the commonly used functions provided by the Elixir API.
