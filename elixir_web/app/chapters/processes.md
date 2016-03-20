@@ -139,6 +139,8 @@ There is no shame in talking to your self, everybody does it sometimes. By obtai
 
 The message is then matched against the patterns provided for the `receive` expression. In the case presented the results are sort of predictable.
 
+![Warning][warning] Be vary of what kind of data you are sending between processes. Elixir and Erlang processes having their own memory (heaps) means that all data sent between processes is always copied. So extensive use of processes might come at a cost of data copying. For example, when building pipelines data pipelines, you might be better off handling the data in a single process instead of moving it around.
+
 ```elixir
 iex> receive do
 ...>  :foo -> msg
