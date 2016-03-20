@@ -15,6 +15,7 @@ export default class Contents extends React.Component {
               <div className="warning">
                 <span><b>This guide is a work in progress.</b></span>
                 <p>This aims to be a comperehensive guide to the funcional programming paradigm using the Elixir programming language as an example.</p>
+                <p>In case of errors, bad or unclear language or of missing things - you are highly encouraged to send feedback to the author by <a href="mailto:ville.heikkinne@gmail.com"> e-mail</a></p>
               </div>
               <h2>Table of contents</h2>
               <ol className="table-of-contents">
