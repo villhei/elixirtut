@@ -3,7 +3,16 @@
     - Have to use phoenix for examples, it's a little too heavyweight for exercises
     - Phoenix has WebSocket channels that can handle communication between subscribers
     - Phoenix fails to run if Node < 4.0 or NPM < 3.0
-    
+
+## Potential chapters
+
+  * Construction of modules, module attributes
+  * Comprehensions
+  * Typespecs
+  * Protocols and behaviours
+  * Sigils
+  * Try, catch, rescue
+  * Distributed computing
 
 ### Game of Life
 
