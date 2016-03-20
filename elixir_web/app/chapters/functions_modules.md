@@ -3,6 +3,7 @@
   <span>TODOS</span
   <ul>
     <li>Function guards could be elaborated more</li>
+    <li>Unsure if function capturing belongs here</li>
   </ul>
 </div>
 
