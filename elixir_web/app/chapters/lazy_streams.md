@@ -112,7 +112,61 @@ One interesting feature of `Stream.unfold/2` is the ability for the programmer t
 
 If the function returns a `nil`, `Stream.unfold/2` will treat it as the end of the stream. In any other case `Stream.unfold/2` will continue evulation as required. 
 
-In addition to manually defining streams, many libraries and modules, such as the [File module](http://elixir-lang.org/docs/stable/elixir/File.html) provide streaming functions to allow for delayed or on-demand access to resources.
+In addition to manually defining streams, many libraries and modules, such as the [File module](http://elixir-lang.org/docs/stable/elixir/File.html) provide streaming functions to allow for delayed or on-demand access to resources. There is a future chapter dedicated to functions from the `File` module, but let's take a look at how streaming a file works.
+
+```elixir
+input = File.stream!("war_and_peace.txt")
+indices = Stream.unfold(1, fn(n) -> {n, n+1} end)
+ 
+result =  Stream.zip(indices, input)
+  |> Stream.filter(fn {_, line} -> Regex.match?(~r/\b[Ww]ar[s]*\b/, line) end)
+  |> Stream.map(fn {i, line} -> {i, String.replace(line, "\n", "")} end)  
+
+line_count = length(Enum.to_list(input))
+line_count_war = length(Enum.to_list(result))
+
+result |> Enum.each(fn {i, line} -> IO.puts("#{i}: #{line}") end)
+
+IO.puts("\nOf #{line_count} lines, #{line_count_war} contained the word \"war\"")
+```
+
+```bash
+$ elixir war_and_peace.exs 
+1: The Project Gutenberg EBook of War and Peace, by Leo Tolstoy
+....
+34796: that, he had experience enough to know that nothing happens in war at
+
+Of 35092 lines, 165 lines contained the word "war"
+```
+
+Our sample script is a program, that reads all the lines from the novel *War and Peace* by Fyodor Dostoyevsky and filters the lines that contain the word war. 
+
+First we use the `File.stream!/1` to open up a file stream from the file `war_and_peace.txt`. Then `Stream.unfold/2` function is called to create a sequence from 1 to infinity in order to keep track of line numbers. `Stream.zip/2` is used to combine the line numbers with the input file, creating a stream of tuples `{n, line}`. 
+
+Then the action starts. `Stream.filter/2` is used to match a given line against a regex test. Lines passing the test, are given to `Stream.map/2`, which removes the newline `\n` characters from the string in order to prettify our printing. The `Stream.map/2` is placed after the filter step, in order to limit the sample size.
+
+Then we transform the streams to lists using `Enum.to_list/1` and obtain their length by calling the `length` function. Finally we print all the matching lines, and the results of our novel analysis (pun intended).
+
+Notice that we are we're doing something ugly here.
+
+```elixir
+line_count = length(Enum.to_list(input))
+line_count_war = length(Enum.to_list(result))
+```
+
+We are transforming both the `input` and the `result` streams to lists, in order to obtain their length. In imperative languages, you probably would have wanted to count the lines while doing a pass over the `input` in the `Enum.filter/2` step, but as we are working in a functional language, we cannot reference a value outside the function scope let alone change it.
+
+We can think, that we have defined `line_count` as the length of the input, and `line_count_war` as the line count of the result. This is quite a much more elegant, than the imperative approaches, but in this specific case, it also comes at a cost of performance as the list needs to be unnecessarily traversed multiple times.
+
+```java
+  int lineCount = 0;
+  for(int i = 0 ; i < lines.length ; ++i) {
+    lineCount++;
+    /** code here **/
+  }
+```
+
+The imperative approach would be better here, as counting the lines would not need the several hundred thousand unnecessary instructions forced upon us by the functional approach.
 
 ## Ranges
 
