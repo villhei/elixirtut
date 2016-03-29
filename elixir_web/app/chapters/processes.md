@@ -227,6 +227,53 @@ The `spawn_link/1` can be used exactly like the `spawn/1` function, but the diff
 
 We don't really have to worry about these linked processes crashing our application all the time. Elixir and Erlang feature a special type of process called the (process) supervisor for this purpose. We will discuss supervisors in a bit more detail in the next chapter.
 
+## Registering a process
+
+Registering a process is basically giving a process a well-known name within an application. The name allows the process to be accessed by other processes by calling it's name. This is a useful property in cases such as implementing application-wide services. The name is represented by an `:atom` value.
+
+```elixir
+defmodule Ponger do
+  def start() do
+    spawn_link(fn -> do_receive() end)
+  end
+
+  defp do_receive() do
+    receive do
+      {:ping, sender} -> 
+        send(sender, :pong)
+        do_receive()
+      _ ->
+        do_receive()
+    end
+  end
+end  
+```
+
+Let's implement a simple module `Ponger`. `Ponger` is a service that doesn't really care where the messages come from, and can interact directly with the any sender process. The `do_receive/0` defines two patterns for incoming messages. The other pattern requires the atom `:ping` and a sender. The other pattern will just call `do_receive/0` again, if the message couldn't be recognized.
+
+```elixir
+iex> pid = Ponger.start()
+#PID<0.77.0>
+iex> Process.register(pid, :ponger)
+true
+iex> Process.register(pid, :ponger)
+** (ArgumentError) argument error
+             :erlang.register(:ponger, #PID<0.77.0>)
+    (elixir) lib/process.ex:338: Process.register/2
+```
+
+We start by spawning a new instance of `Ponger`, assigning it's process identifier to the variable `pid`. The next function, `Process.register/2` accepts the process id and a name represented by an `:atom`. Notice that the first call to `Process.register/2` produces a `true`. The second call raises an error, as the name we attempted to register was already reserved.
+
+```elixir
+iex> send(:ponger, {:ping, self()}) 
+{:ping, #PID<0.58.0>}
+iex> flush()
+:pong
+:ok
+```
+
+After registering the name, we can substitute the process identifier taken as the first parameter of `send/2` with the atom `:ponger`. Using the registered atom in `send/2` calls makes calling `Ponger` quite a bit more convenient.
+
 ## Modelling a state machine
 
 Now that we have taken a closer look to processes, let's start building something a little more complex and return to the abstract example of `parent` and `worker`s used in the introductory section.
