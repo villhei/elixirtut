@@ -65,10 +65,10 @@ The `IO.puts/1` can also accept a variable as it's parameter, if the variable ca
 The interpolated string will evaluate to the result of the enclosed expression, as demonstrated in the latter example of adding 1 to 1.
 
 ```elixir
-iex> dog = {"Mortti", :pyrenese_sheepdog, 2}
-{"Mortti", :pyrenese_sheepdog, 2}
+iex> dog = {"Mortti", :pyrenese_sheepdog}
+{"Mortti", :pyrenese_sheepdog}
 iex> IO.puts("#{dog}")
-** (Protocol.UndefinedError) protocol String.Chars not implemented for {"Mortti", :pyrenese_sheepdog, 2}
+** (Protocol.UndefinedError) protocol String.Chars not implemented for {"Mortti", :pyrenese_sheepdog}
     (elixir) lib/string/chars.ex:3: String.Chars.impl_for!/1
     (elixir) lib/string/chars.ex:17: String.Chars.to_string/1
 ```
@@ -77,15 +77,23 @@ Often when trying to do dumb debug output from applications we face the error of
 
 ``` elixir
 iex> inspect(dog)
-"{\"Mortti\", :pyrenese_sheepdog, 2}"
+"{\"Mortti\", :pyrenese_sheepdog}"
 iex> IO.puts("#{inspect(dog)}")
-{"Mortti", :pyrenese_sheepdog, 2}
+{"Mortti", :pyrenese_sheepdog}
 :ok
 ```
 
 For formatted output of built-in types, the Elixir [Kernel module](http://elixir-lang.org/docs/stable/elixir/Kernel.html) provides a convenient function `inspect/1`. The function `inspect/1` is used to call the `inspect` callback defined for that particular data structure or type. The definition of the `inspect/2` callback is responsible for the string representation of that particular data structure. 
 
 The `inspect` function is a handy utility for debugging, and the values printed by the the `iex` interpreter are results of inspection.
+
+```elixir
+iex> IO.inspect(dog)
+{"Mortti", :pyrenese_sheepdog}
+{"Mortti", :pyrenese_sheepdog}
+```
+
+The IO module also provides a function `IO.inspect/1` for printing the inspection result of a given data structure to the `:stdio` output. `IO.inspect/1` is a useful debug function.
 
 The rest of the functions defined by the [IO module](http://elixir-lang.org/docs/stable/elixir/IO.html) can be found from the official documentation.
 
@@ -94,6 +102,124 @@ The rest of the functions defined by the [IO module](http://elixir-lang.org/docs
 The [File](http://elixir-lang.org/docs/stable/elixir/File.html) module provides a set of functions that enable both read and write access to files and some convenience functions such as for manipulation of files.
 
 Most of the functions are named conveniently after their UNIX counterparts so it's quite easy to guess what `File.ls/1` is going to do.
+
+<table class="table">
+  <thead>
+    <tr>
+      <td>
+        Name
+      </td>
+      <td>
+        Unix equivalent
+      </td>
+      <td>
+        Description
+      </td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        `File.ls(path)/1`
+      </td>
+      <td>
+        ls [path]
+      </td>
+      <td>
+        Lists the contents of a directory.<br>
+        `File.ls("/home/ville")`
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `File.cp(path, to_path)/3`
+      </td>
+      <td>
+        cp [path] [to_path]
+      </td>
+      <td>
+        Copies the contents in the source to destination. Accepts an optional callback as a third argument.<br>
+        `File.cp("file.txt", "to_file.txt")`
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `File.cp_r(path, to_path)/3`
+      </td>
+      <td>
+        cp [path] [to_path]
+      </td>
+      <td>
+        Copies the contents in the source to destination. Accepts an optional callback as a third argument.<br>
+        `File.cp_r("source_dir", "destination_dir")`
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `File.rm/1(file)`
+      </td>
+      <td>
+        rm [file]
+      </td>
+      <td>
+        Removes a file.<br>
+        `File.rm("temp.txt")`
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `File.rm_rf(path)/1`
+      </td>
+      <td>
+        rm -rf [path]
+      </td>
+      <td>
+        Recursively removes the files and directories of a path, ignoring write-protection. Does not follow symbolic links.<br>
+        `File.rm_rf("dir_to_delete")`
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `File.rename(file, new_file)/2`
+      </td>
+      <td>
+        mv [file] [new_file]
+      </td>
+      <td>
+        Moves or renames a path.<br>
+        `File.rename("old_path_name", "new_path_name")`
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `File.mkdir/1`
+      </td>
+      <td>
+        mkdir [path]
+      </td>
+      <td>
+        Creates a new directory.<br>
+        `File.mkdir("dir_name")`
+      </td>
+    </tr>
+    <tr>
+      <td>
+        `File.chown(path, uid)/2`
+      </td>
+      <td>
+        chown [uid] [path]
+      </td>
+      <td>
+        Changes the owner of a file to given UID.<br>
+        `File.chown("some_file", 1000)`
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+The `File` module provides a good coverage of abstractions for UNIX file system operations. Thus working with the `File` module should feel intuitive to most of us.
+
+Let's look at some of these functions and their usage in a bit more detail, to give a general idea on how to work with the filesystem in Elixir. As we will soon find out, it is very easy.
 
 ```elixir
 iex> File.ls("/home/ville/shopping_lists") 
@@ -161,7 +287,12 @@ Then we use `IO.write/2` function to write a string to the file. Because of the 
 
 Finally we call `File.close/1` with the file process identifier in order to release the file.
 
-Let's verify the contents of the file.
+```elixir
+iex> File.read!("new_file.txt")
+"Serious content!\nHästerna springer på sommaren!
+```
+
+By taking a look at the file with `File.read!`, the contents seem to be in place. What if we want to read the file line by line?
 
 ```elixir
 iex> {:ok, file} = File.open("new_file.txt", [:utf8])        
@@ -176,19 +307,17 @@ iex> File.close(file)
 :ok
 ```
 
-First we open the file again with a call to `File.open/2`, but this time we don't pass the `:write` atom. Then we use the `IO.read/2` function to read the file line-by-line. The `IO.read/2` will return the atom `:eof` when the read reaches the end of the file.
+First we open the file again with a call to `File.open/2`, but this time we don't pass the `:write` atom. Then we use the `IO.read/2` function to read the file line by line. The `IO.read/2` will return the atom `:eof` when the read reaches the end of the file.
+
+The `IO.read/2` can also be used to read the file at once by passing the `:all` atom as a parameter. By passing a non-negative integer, you obtain the requested amout of characters.
 
 ```elixir
-iex(27)> {:ok, file} = File.open("new_file.txt")
-{:ok, #PID<0.99.0>}
-iex(28)> IO.read(file, :all)                    
-"Serious content!\nHÃ¤sterna springer pÃ¥ sommaren!"
-iex> File.close(file)
+iex> File.ls!(".")
+["new_file.txt", "ikea.txt", "groceries.txt"]
+iex> File.rm("new_file.txt")
 :ok
-iex> {:ok, file} = File.open("new_file.txt")
-{:ok, #PID<0.103.0>}
-iex> IO.read(file, 7)                       
-"Serious" 
+iex> File.rm("new_file.txt")
+{:error, :enoent}
 ```
 
-The `IO.read/2` can also be used to read the file at once by passing the `:all` atom as a parameter. By passing a non-negative integer, you obtain the desired about of characters.
+Removal of files can be done using the `File.rm/1` function, that accepts a file name as a parameter. The banged variant `File.rm!/1` works veri similarily, as it either returns an `:ok` or raises an exception. The `File` module provides a few more functions for removals.
