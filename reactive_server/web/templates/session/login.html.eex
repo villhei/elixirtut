@@ -2,9 +2,8 @@
     <div class="col-sm-6 col-centered">
         <h2>Login</h2>
 
-        New user? Try to <a href="<%= user_path(@conn, :new) %>">create an account</a> first.
+        New user? Try to <a href="<%= page_path(@conn, :signup) %>">create an account</a> first.
 
-        <%= render "form.html", changeset: @changeset,
-                            action: login_path(@conn, :login) %>
+        <%= render "form.html", changeset: @changeset, action: login_path(@conn, :login) %>
     </div>
 </div>

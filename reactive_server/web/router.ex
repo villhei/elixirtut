@@ -24,9 +24,8 @@ defmodule ReactiveServer.Router do
     pipe_through [:browser, :browser_session]   # Use the default browser stack
 
     get "/", PageController, :index
-
-    get "/hello", HelloController, :index
-    get "/hello/:messenger", HelloController, :show
+    get "/signup", PageController, :signup
+    post "/signup", PageController, :create
 
     get "/login", SessionController, :login_page, as: :login
     post "/login", SessionController, :login, as: :login

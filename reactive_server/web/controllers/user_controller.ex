@@ -3,6 +3,7 @@ defmodule ReactiveServer.UserController do
 
   alias ReactiveServer.User
   alias ReactiveServer.UserQuery
+  alias ReactiveServer.UserService
 
   # https://hexdocs.pm/phoenix/Phoenix.Controller.Pipeline.html#summary
   plug Guardian.Plug.EnsureAuthenticated, handler: ReactiveServer.AuthErrorHandler
@@ -35,26 +36,21 @@ defmodule ReactiveServer.UserController do
     email = user_params["email"] || nil
     changeset = User.create_changeset(%User{}, user_params)
 
-    case email_address_in_use?(email) do
-      false -> do_create(conn, params, current_user, changeset)
+    case UserService.email_address_in_use?(email) do
       true -> conn
-      |> put_flash(:error, "An user exists with the given email address")
-      |> render("new.html", changeset: changeset) 
+        |> put_flash(:error, "An user exists with the given email address")
+        |> render("new.html", changeset: changeset)
+      false -> do_create(conn, params, current_user, changeset)
     end 
-
   end
 
   defp do_create(conn, %{"user" => user_params}, current_user, changeset) do
-    if changeset.valid? do
-      {:ok, user} = Repo.insert(changeset)
-      conn
-      |> put_flash(:info, "User created successfully.")
-      |> sign_in_if_needed(current_user, user)
-      |> put_session(:current_user, user.id)
-      |> redirect(to: user_path(conn, :index))
-    else
-      conn
-      |> render("new.html", changeset: changeset, current_user: current_user)
+    case UserService.create(changeset) do
+      {:ok, user} -> 
+        conn  |> put_flash(:info, "User created")
+              |> redirect(to: user_path(conn, :index))
+      {:error, changeset} -> 
+        conn  |> render("new.html", changeset: changeset,  current_user: current_user)
     end
   end
 

@@ -6,6 +6,6 @@
         <input id="chat-input" type="text"></input>
     <% else %>
         <p><a href="<%= login_path(@conn, :login_page) %>">Sign in</a>
-        <p><a href="<%= user_path(@conn, :new) %>">Register</a>
+        <p><a href="<%= page_path(@conn, :signup) %>">Register</a>
     <% end %>
 </div>
