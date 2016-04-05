@@ -15,7 +15,11 @@ export default class StaticPage extends React.Component {
 
       function getButton(title, cssClass) {
         return function(chapter) {
-          return (<div key={chapter.path} className={cssClass}><Link to={chapter.path}><span className="title">{title}</span>{chapter.title}</Link></div>);
+          return (<div key={chapter.path} className={cssClass}>
+                    <Link to={chapter.path}>
+                      <span className="title">{title}</span>{chapter.title}
+                    </Link>
+                  </div>);
         }
       }
       let prev = prevChapter(this.chapter()).map(getButton("Previous chapter", "prev-chapter"));
