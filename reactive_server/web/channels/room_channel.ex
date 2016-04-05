@@ -5,7 +5,8 @@ defmodule ReactiveServer.RoomChannel do
   def join("room:lobby", %{"guardian_token" => token}, socket) do
       case sign_in(socket, token) do
         {:ok, authed_socket, _guardian_params} ->
-          {:ok, %{message: "Joined"}, authed_socket}
+            {:ok, history} = GenServer.call(ReactiveServer.ChatHistory, {:get_history, "lobby"})
+          {:ok, %{message: "Joined", history: history}, authed_socket}
         {:error, reason} ->
          { :error,  %{reason: :authentication_failed}}
       end
@@ -17,6 +18,7 @@ defmodule ReactiveServer.RoomChannel do
 
   def handle_in("new_msg", %{"body" => body}, socket) do
     user = current_resource(socket)
+    GenServer.cast(ReactiveServer.ChatHistory, {:msg, {"lobby", user.displayname, body}})
     socket |>
         broadcast!("new_msg", %{body: body, from: user.displayname})
     {:noreply, socket}

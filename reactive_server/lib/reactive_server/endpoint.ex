@@ -32,7 +32,7 @@ defmodule ReactiveServer.Endpoint do
 
   plug Plug.Session,
     store: :cookie,
-    key: "_reactive_server_key",
+    key: "_rs_session",
     signing_salt: "64XZUfrB"
 
   plug ReactiveServer.Router
