@@ -3,16 +3,16 @@ defmodule ReactiveServer.SessionController do
   alias ReactiveServer.User
   alias ReactiveServer.UserQuery
 
-  def new(conn, params, current_user, _claims) do
+  def login_page(conn, params, current_user, _claims) do
     if(current_user) do
       conn |> redirect(to: page_path(conn, :index))
     else
       changeset = User.login_changeset(%User{})
-      render(conn, ReactiveServer.SessionView, "new.html", current_user: nil, changeset: changeset)
+      render(conn, ReactiveServer.SessionView, "login.html", current_user: nil, changeset: changeset)
     end
   end
 
-  def create(conn, params = %{}, current_user, _claims) do
+  def login(conn, params = %{}, current_user, _claims) do
     user = Repo.one(UserQuery.by_email(params["user"]["email"] || ""))
     if user do
       changeset = User.login_changeset(user, params["user"])
@@ -23,12 +23,12 @@ defmodule ReactiveServer.SessionController do
         |> Guardian.Plug.sign_in(user, :token)
         |> redirect(to: user_path(conn, :index))
       else
-        render(conn, "new.html", current_user: current_user, changeset: changeset)
+        render(conn, "login.html", current_user: current_user, changeset: changeset)
       end
     else
       changeset = User.login_changeset(%User{})
       |> Ecto.Changeset.add_error(:login, "incorrect")
-      render(conn, "new.html", current_user: current_user, changeset: changeset)
+      render(conn, "login.html", current_user: current_user, changeset: changeset)
     end
   end
 

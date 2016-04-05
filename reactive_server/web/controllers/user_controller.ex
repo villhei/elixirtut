@@ -5,13 +5,19 @@ defmodule ReactiveServer.UserController do
   alias ReactiveServer.UserQuery
 
   # https://hexdocs.pm/phoenix/Phoenix.Controller.Pipeline.html#summary
-  plug Guardian.Plug.EnsureAuthenticated, %{ handler: __MODULE__, typ: "token" } when not action in [:new, :create] 
+  plug Guardian.Plug.EnsureAuthenticated, handler: ReactiveServer.AuthErrorHandler
 
   # Scrub empty params to cause validation errors
   plug :scrub_params, "user" when action in [:create, :update]
 
   defp remove_secrets(user) do
     Map.drop(user, [:passhash, :salt])
+  end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_flash(:error, "Authentication required")
+    |> redirect(to: login_path(conn, :login_page))
   end
 
   def index(conn, _params, current_user, _claims) do
@@ -43,12 +49,20 @@ defmodule ReactiveServer.UserController do
       {:ok, user} = Repo.insert(changeset)
       conn
       |> put_flash(:info, "User created successfully.")
-      |> Guardian.Plug.sign_in(user, :token)
+      |> sign_in_if_needed(current_user, user)
       |> put_session(:current_user, user.id)
       |> redirect(to: user_path(conn, :index))
     else
       conn
       |> render("new.html", changeset: changeset, current_user: current_user)
+    end
+  end
+
+  defp sign_in_if_needed(conn, current_user, user) do
+    if current_user == nil do
+        conn |> Guardian.Plug.sign_in(user, :token)
+      else
+      conn
     end
   end
 
@@ -105,11 +119,5 @@ defmodule ReactiveServer.UserController do
     conn
     |> put_flash(:info, "User deleted successfully.")
     |> redirect(to: user_path(conn, :index))
-  end
-
-  def unauthenticated(conn, _params) do
-    conn
-    |> put_flash(:error, "Authentication required")
-    |> redirect(to: login_path(conn, :new))
   end
 end
