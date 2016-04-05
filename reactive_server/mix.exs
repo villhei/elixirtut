@@ -38,7 +38,8 @@ defmodule ReactiveServer.Mixfile do
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:gettext, "~> 0.9"},
      {:cowboy, "~> 1.0"},
-     {:guardian, "~> 0.10.0"}]
+     {:guardian, "~> 0.10.0"},
+     {:html_sanitize_ex, "~> 0.1.0"}]
   end
 
   # Aliases are shortcut or tasks specific to the current project.

@@ -7,8 +7,6 @@
       <th>Displayname</th>
       <th>Firstname</th>
       <th>Lastname</th>
-      <th>Bio</th>
-
       <th></th>
     </tr>
   </thead>
@@ -19,12 +17,12 @@
       <td><%= user.displayname %></td>
       <td><%= user.firstname %></td>
       <td><%= user.lastname %></td>
-      <td><%= user.bio %></td>
-
-      <td class="text-right">
-        <%= link "Show", to: user_path(@conn, :show, user), class: "btn btn-default btn-xs" %>
-        <%= link "Edit", to: user_path(@conn, :edit, user), class: "btn btn-default btn-xs" %>
-        <%= link "Delete", to: user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+      <td>
+        <%= link "Show", to: user_path(@conn, :show, user), class: "btn btn-default btn-sm" %>
+        <%= link "Edit", to: user_path(@conn, :edit, user), class: "btn btn-default btn-sm" %>
+        <div style="display: inline-block">
+        <%= link "Delete", to: user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-sm" %>
+        </div>
       </td>
     </tr>
 <% end %>

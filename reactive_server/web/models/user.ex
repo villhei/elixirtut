@@ -8,7 +8,6 @@ defmodule ReactiveServer.User do
     field :displayname, :string
     field :firstname, :string
     field :lastname, :string
-    field :salt, :string
     field :passhash, :string
     field :password, :string, virtual: true
     field :bio, :string
