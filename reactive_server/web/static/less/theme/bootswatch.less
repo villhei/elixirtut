@@ -162,6 +162,23 @@ h1, h2, h3, h4, h5, h6 {
     color: #fff;
   }
 
+  thead {
+    tr {
+      th {
+        border-bottom: 1px solid @gray-darker;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      td {
+        border-top: none;
+        border-bottom: 1px solid @gray-darker;
+      }
+    }
+  }
+
   &-bordered tbody {
 
     tr.success,
@@ -338,6 +355,10 @@ legend {
     background-color: transparent;
     .btn-shadow(@btn-default-bg);
   }
+}
+
+.btn-back {
+  .btn-warning;
 }
 
 .pager {

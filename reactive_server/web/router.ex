@@ -28,8 +28,8 @@ defmodule ReactiveServer.Router do
     get "/hello", HelloController, :index
     get "/hello/:messenger", HelloController, :show
 
-    get "/login", SessionController, :new, as: :login
-    post "/login", SessionController, :create, as: :login
+    get "/login", SessionController, :login_page, as: :login
+    post "/login", SessionController, :login, as: :login
     get "/logout", SessionController, :logout, as: :logout
 
     resources "/users", UserController

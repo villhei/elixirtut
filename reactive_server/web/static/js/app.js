@@ -1,6 +1,6 @@
 
 export var App = {
 	run: function() {
-		console.log('Hello');
+		console.log('** Socket connections **');
 	}
 }

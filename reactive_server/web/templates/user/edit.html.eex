@@ -1,6 +1,13 @@
-<h2>Edit user</h2>
 
-<%= render "form.html", changeset: @changeset,
+<div class="row">
+    <div class="col-sm-6 col-centered">
+        <h2>Edit user</h2>
+        <%= render "form.html", changeset: @changeset,
                         action: user_path(@conn, :update, @user) %>
-
-<%= link "Back", to: user_path(@conn, :index) %>
+     </div>
+</div>
+<div class="row">
+    <div class="col-sm-6 col-centered">
+        <%= link "Back", to: user_path(@conn, :index), class: "btn btn-back" %>
+     </div>
+</div>

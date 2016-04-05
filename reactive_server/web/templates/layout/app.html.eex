@@ -49,6 +49,12 @@
       </main>
 
     </div> <!-- /container -->
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script>
+        <%= if Guardian.Plug.current_token(@conn) do %>
+          window.userToken ="<%= Guardian.Plug.current_token(@conn) %>";
+        <% end %>
+    </script>
     <script src="<%= static_path(@conn, "/js/main.js") %>"></script>
   </body>
 </html>

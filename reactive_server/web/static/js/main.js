@@ -21,6 +21,6 @@ import "phoenix_html"
 // import socket from "./socket"
 
 import {App} from './app.js'
-
+import {socket} from './socket.js'
 
 App.run();

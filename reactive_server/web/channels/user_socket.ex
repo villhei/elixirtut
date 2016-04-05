@@ -2,7 +2,7 @@ defmodule ReactiveServer.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "rooms:*", ReactiveServer.RoomChannel
+  channel "room:*", ReactiveServer.RoomChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

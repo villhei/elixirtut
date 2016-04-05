@@ -1,6 +1,6 @@
 <h2>Listing users</h2>
 
-<table class="table">
+<table class="table table-striped">
   <thead>
     <tr>
       <th>Email</th>
@@ -30,5 +30,4 @@
 <% end %>
   </tbody>
 </table>
-
-<%= link "New user", to: user_path(@conn, :new) %>
+<%= link "New user", to: user_path(@conn, :new), class: "btn btn-default btn-primary" %>
