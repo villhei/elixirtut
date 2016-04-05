@@ -26,6 +26,12 @@ defmodule ReactiveServer.Web do
     end
   end
 
+  def service do
+    quote do
+      alias ReactiveServer.Repo
+    end
+  end
+
   def controller do
     quote do
       use Phoenix.Controller

@@ -24,7 +24,7 @@ defmodule ReactiveServer.ChatHistory do
 
   def handle_cast({:msg, {chat_name, sender, message}}, state) do
     history = get_history(state, chat_name)
-    new_history = [%{:sender => sender, :message, message}] ++ history
+    new_history = [%{:sender => sender, :message => message}] ++ history
     {:noreply, state |> Map.put(chat_name, new_history)}
   end
 

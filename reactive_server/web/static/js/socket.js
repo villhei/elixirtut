@@ -17,12 +17,20 @@ chatInput.on("keypress", event => {
 });
 
 channel.on("new_msg", payload => {
-  messagesContainer.append(`<br/>${payload.from}: ${payload.body}`);
+  messagesContainer.append(`<br/>${payload.sender}: ${payload.message}`);
 });
+
+function appendChatMessage(msg) {
+  messagesContainer.append(`<br/>${msg.sender}: ${msg.message}`);
+}
 
 channel.join()
     .receive("ok", resp => {
       console.log("Joined successfully", resp)
+
+      let history = resp.history;
+      history.forEach(appendChatMessage);
+
     })
     .receive("error", resp => {
       console.log("Unable to join", resp)

@@ -1,6 +1,7 @@
 defmodule ReactiveServer.RoomChannel do
   use Phoenix.Channel
   import Guardian.Phoenix.Socket
+  import HtmlSanitizeEx
 
   def join("room:lobby", %{"guardian_token" => token}, socket) do
       case sign_in(socket, token) do
@@ -18,9 +19,12 @@ defmodule ReactiveServer.RoomChannel do
 
   def handle_in("new_msg", %{"body" => body}, socket) do
     user = current_resource(socket)
-    GenServer.cast(ReactiveServer.ChatHistory, {:msg, {"lobby", user.displayname, body}})
+    message = strip_tags(body)
+    sender = strip_tags(user.displayname)
+
+    GenServer.cast(ReactiveServer.ChatHistory, {:msg, {"lobby", sender, message}})
     socket |>
-        broadcast!("new_msg", %{body: body, from: user.displayname})
+        broadcast!("new_msg", %{message: message, sender: sender})
     {:noreply, socket}
   end
 
