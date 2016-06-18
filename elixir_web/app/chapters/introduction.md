@@ -26,7 +26,7 @@ building new programs from existing ones, and their lack of useful mathematical 
     <span class="quotee">-John Backus, 1977, The creator of FORTRAN</span>
 </div>
 
-Functional programming is a [programming paradigm](https://en.wikipedia.org/wiki/Programming_paradigm) that treats computation as evulation of mathematical functions or expressions and avoids changing state and mutable data. Functional programming has it's roots on lambda calculus, a formal system developed in the 1930s to investiage computability.
+Functional programming is a [programming paradigm](https://en.wikipedia.org/wiki/Programming_paradigm) that treats computation as evaluation of mathematical functions or expressions and avoids changing state and mutable data. Functional programming has it's roots on lambda calculus, a formal system developed in the 1930s to investiage computability.
 
 Functionally written programs are executed by evaluating expressions, as opposed to the imperative approach of composing programs from both statements and expressions. In imperative programming languages, the program state is global and can be mutated or changed.
 
