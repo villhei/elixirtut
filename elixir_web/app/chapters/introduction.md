@@ -46,6 +46,14 @@ defmodule Sort do
 end
 ```
 
+```elixir
+iex> Sort.merge_sort([5, 2, 4, 7, 1, 2, 6])
+[1, 2, 2, 4, 5, 6, 7]
+iex> Sort.merge_sort([:cat, :eagle, :elephant, :rhino, :kangaroo, :dog])
+[:cat, :dog, :eagle, :elephant, :kangaroo, :rhino]
+
+```
+
 By looking at the example above, it should be obvious that functional applications are often more declarative, clearner and typically a lot shorter than their imperative counterparts. A functionally biased programmer such as the author might argue that less code translates to less bugs, higher productivity and a better readability.
 
 An increasing number of programming languages support functional programming features, but they rarely do so very well. In order to understand what the functional programming approach has to offer, one has to really learn a functional programming language and the way applications are built in this paradigm.
