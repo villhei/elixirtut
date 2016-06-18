@@ -110,3 +110,134 @@ iex> b
 ```
 
 Nested lists are also valid patterns to match against. The pattern above inspects the two leading values of the list and gives you access to the rest with the variable `b`.
+
+### The `with` special form
+
+Pattern matching expressions can become a little untidy, when we are working with nested data structures such as nested maps, a common case when working with JSON objects. The Elixir Kernel's [Special Forms](http://elixir-lang.org/docs/stable/elixir/Kernel.SpecialForms.html) module provides a convenient `with/1` macro that comes to our help. `with/1` is used to combine or chain multiple matching clauses. 
+
+```elixir
+iex> great_bands = %{ 
+    kvelertak: %{
+        name: "Kvelertak",
+        albums: 
+            [
+                %{name: "Kvelertak", year: 2010}, 
+                %{name: "Meir", year: 2013},
+                %{name: "Nattesferd"}
+            ]
+        },
+    bloodred_hourglass: %{
+        name: "Bloodred Hourglass",
+        albums: 
+            [
+                %{name: "Lifebound", year: 2012}, 
+                %{name: "Where the Oceans Burn", year: 2016}
+            ]
+        }
+}
+```
+
+Consider a scenario where we have set up an instance of `Map` in order to perform programmatic searches of great music. The `Map` above is filled with band keys pointing to instances of `Map` offering detailed information on the given artist. 
+
+```elixir
+iex> %{kvelertak: band_detail} = great_bands
+%{bloodred_hourglass: %{albums: [%{name: "Lifebound", year: 2012},
+     %{name: "Where the Oceans Burn", year: 2016}], name: "Bloodred Hourglass"},
+  kvelertak: %{albums: [%{name: "Kvelertak", year: 2010},
+     %{name: "Meir", year: 2013}, %{name: "Nattesferd"}], name: "Kvelertak"}}
+```
+
+The details of the band can be extracted from the `Map` with ease and efficiency using pattern matching. The keyword `kvelertak` fetches the detail of that band, and the left-hand side expression assigns the details of the band to the variable `band_detail`.
+
+```elixir
+iex> %{albums: albums} = band_detail
+%{albums: [%{name: "Kvelertak", year: 2010}, %{name: "Meir", year: 2013},
+   %{name: "Nattesferd"}], name: "Kvelertak"}
+iex> albums
+[%{name: "Kvelertak", year: 2010}, %{name: "Meir", year: 2013},
+ %{name: "Nattesferd"}]
+```
+
+Going a bit deeper, we fetch a list of albums of the band by matching against the keyword `albums`, and assigning the associated map in the slightly confusing variable `albums`. The albums contains a list of the band's albums represented by `Map`s.
+
+```elixir
+defmodule Bands do
+  def get_albums(bands, band) do
+    case bands do
+      %{^band => band_detail} ->
+        case band_detail do
+          %{albums: albums} -> albums
+      end
+    end
+  end
+end 
+```
+
+If we wanted to perform the same steps programmatically in order to provived general set of functions for working with bands, we could nest two pattern matching expressions to a chained action like demonstarted in the example above. Notice the use of the pin operator `^` when matching against the `:atom` bound to the variable `band`. 
+
+```elixir
+iex> Bands.get_albums(great_bands, :kvelertak)
+[%{name: "Kvelertak", year: 2010}, %{name: "Meir", year: 2013},
+ %{name: "Nattesferd"}]
+ 
+iex)> Bands.get_albums(great_bands, :justin_bieber)
+** (CaseClauseError) no case clause matching: %{bloodred_hourglass: %{albums: [%{name: "Lifebound", year: 2012}, %{name: "Where the Oceans Burn", year: 2016}], name: "Bloodred Hourglass"}, kvelertak: %{albums: [%{name: "Kvelertak", year: 2010}, %{name: "Meir", year: 2013}, %{name: "Nattesferd"}], name: "Kvelertak"}}
+    iex:16: Bands.get_albums/2
+```
+
+Now we have a convenient interface for extracting information about bands. When given a key that exists in the `Map` of great bands, our function yields as a list of albums. When a key wasn't included in the list of great bands, the condition raises an error, as we only defined the happy path functionality.
+
+We shouldn't be completely satisfied with the condition, as it already requires us it's quite a heavily indented one. Let's clean it up a little bit using the `with` operator. 
+
+```elixir
+defmodule Bands do
+  def get_albums(bands, band) do
+    with %{^band => band_detail} <- bands,
+         %{albums: albums} <- band_detail,
+         do: albums
+  end
+end 
+```
+
+The flat list of conditions in our function `get_albums/2` looks a lot cleaner already. The `with/1` macro takes multiple matching clauses as it's arguments, and if all the matches yield a result, it executes the `do` block.  
+
+```elixir
+iex(18)> Bands.get_albums(great_bands, :kvelertak)
+[%{name: "Kvelertak", year: 2010}, %{name: "Meir", year: 2013},
+ %{name: "Nattesferd"}]
+
+iex> Bands.get_albums(great_bands, :justin_bieber)
+%{bloodred_hourglass: %{albums: [%{name: "Lifebound", year: 2012},
+     %{name: "Where the Oceans Burn", year: 2016}], name: "Bloodred Hourglass"},
+  kvelertak: %{albums: [%{name: "Kvelertak", year: 2010},
+     %{name: "Meir", year: 2013}, %{name: "Nattesferd"}], name: "Kvelertak"}}
+
+```
+
+Our redefined `get_albums/2` works as expected in the case of happy path, but in case of a non-match, the function now returns the parameter `bands`, which can lead to awkward situations for the caller of the function. `with/1` is defined to return the right-hand side of the first match, if the some of the match clauses fail. 
+
+```elixir
+defmodule Bands do
+  def get_albums(bands, band) do
+    with %{^band => band_detail} <- bands,
+         %{albums: albums} <- band_detail
+         do
+             albums
+         end
+    |> case do
+        ^bands -> raise "Not found"
+        albums -> albums
+       end
+  end
+end
+```
+
+```elixir
+iex> Bands.get_albums(great_bands, :justin_bieber)
+** (RuntimeError) Not found
+    iex:41: Bands.get_albums/2
+iex> 
+```
+In order to raise an error in case of match failure, we use the pipe operator `|>` to direct the result of the match to another `case` expression, in which we test if the result of the `with/1` block equals the the value bound to the input variable `bands` and `raise/1` an error in order to stop the execution.
+
+From this behavior we can deduce, that using the `with/1` block comes in handy, when the matches or nested expressions run deeper than two levels. 
