@@ -1,5 +1,3 @@
-- Will include Streams for resources
-- Basic File IO with lots of unix references
 
 Most of the times programs need to interact with the surrounding world in order to produce useful results. 
 
@@ -17,7 +15,7 @@ All your output are belong to IO processes
 :ok
 ```
 
-The `IO` module allows for for printing and reading values to and from the `:stdio` input stream. Printing text in Elixir is very easy compared to languages such as haskell, as the return value `:ok` from the *side-effecting* `IO.puts/1` function can effectively be ignored.
+The `IO` module allows for for printing and reading values to and from the `:stdio` input stream. Printing text in Elixir is very easy compared to languages such as Haskell, as the return value `:ok` from the *side-effecting* `IO.puts/1` function can effectively be ignored.
 
 The `IO.puts/1` is a side-effecting function, as from the programmers perspective the manipulation of the standard output stream is not very measurable, although it yields the `:ok` as a result. Were you to change the parameters to some other string, you would still get the result `:ok` but the resulting side-effect of printing wouldn't be equivalent.
 
@@ -122,7 +120,7 @@ iex> File.ls("does_not_exist")
 {:error, :enoent}
 ```
 
-If the `File.ls/1` fails to perform it's task, it will output a tuple  `{:error, :error_code}` where the error code is the actual error that occured. 
+If the `File.ls/1` fails to perform it's task, it will output a tuple  `{:error, :error_code}` where the error code is the actual error that occurred. 
 
 ```elixir
 iex> File.ls!(".")             
@@ -196,7 +194,7 @@ iex> File.close(file)
 
 First we open the file again with a call to `File.open/2`, but this time we don't pass the `:write` atom. Then we use the `IO.read/2` function to read the file line by line. The `IO.read/2` will return the atom `:eof` when the read reaches the end of the file.
 
-The `IO.read/2` can also be used to read the file at once by passing the `:all` atom as a parameter. By passing a non-negative integer, you obtain the requested amout of characters.
+The `IO.read/2` can also be used to read the file at once by passing the `:all` atom as a parameter. By passing a non-negative integer, you obtain the requested count of characters.
 
 ```elixir
 iex> File.ls!(".")
@@ -207,11 +205,11 @@ iex> File.rm("new_file.txt")
 {:error, :enoent}
 ```
 
-Removal of files can be done using the `File.rm/1` function, that accepts a file name as a parameter. The banged variant `File.rm!/1` works very similarily, as it either returns an `:ok` or raises an exception. 
+Removal of files can be done using the `File.rm/1` function, that accepts a file name as a parameter. The banged variant `File.rm!/1` works very similarly, as it either returns an `:ok` or raises an exception. 
 
 ### Partial table of File operations
 
-The `File` module provides a comprehensive set of file opreations with lots of UNIX-familiarity. Below is a partial table with common operations in daily UNIX use to give you an idea of what can be done with the built-in functions.
+The `File` module provides a comprehensive set of file operations with lots of UNIX-familiarity. Below is a partial table with common operations in daily UNIX use to give you an idea of what can be done with the built-in functions.
 
 <table class="table">
   <thead>

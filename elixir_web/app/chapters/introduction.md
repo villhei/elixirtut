@@ -26,15 +26,15 @@ building new programs from existing ones, and their lack of useful mathematical 
     <span class="quotee">-John Backus, 1977, The creator of FORTRAN</span>
 </div>
 
-Functional programming is a [programming paradigm](https://en.wikipedia.org/wiki/Programming_paradigm) that treats computation as evaluation of mathematical functions or expressions and avoids changing state and mutable data. Functional programming has it's roots on lambda calculus, a formal system developed in the 1930s to investiage computability.
+Functional programming is a [programming paradigm](https://en.wikipedia.org/wiki/Programming_paradigm) that treats computation as evaluation of mathematical functions or expressions and avoids changing state and mutable data. Functional programming has it's roots in lambda calculus, a formal system developed in the 1930s to investigate computability.
 
 Functionally written programs are executed by evaluating expressions, as opposed to the imperative approach of composing programs from both statements and expressions. In imperative programming languages, the program state is global and can be mutated or changed.
 
 Functional programming avoids mutable state and all kinds of side-effects. Functions are first-class citizens, which means they can be treated like any value, passed around as arguments or returned as return values from expressions or functions. Functions can also be manipulated by other functions. 
 
-Advances in multi-core and parallel processing have caused a surge of interest in functional languages. The approach of avoidance of side-effects and global, mutable states in functional programming suits this domain extremely well. Parallel processing in eg. Elixir is a very different kind problem when compared to imperative languages. One might argue that it is a hell of a lot easier and fun.
+Especially the relatively recent advances in multi-core and parallel processing have caused a surge of interest in functional languages. The approach of avoidance of side-effects and global, mutable state in functional programming suits this domain extremely well. Parallel processing in eg. Elixir is a very different kind problem when compared to imperative languages. One might argue that it is a lot easier, to the point it's even fun.
 
-Functional programming is generally known to provide a lot better support for *structured programming* than imperative programming. A structured program is a program where the program is composed of structural abstractions and components. Functional languages allows the programmer to create these abstractions in an easy and clean manner. High-order fundtion abstracting loop-structures in Elixir are an excellent example of these elegant abstractions.
+Functional programming is generally known to provide a lot better support for *structured programming* than imperative programming. A structured program is a program where the program is composed of structural abstractions and components. Functional languages allows the programmer to create these abstractions in an easy and clean manner. High-order functions abstracting loop-structures in Elixir are an excellent example of these elegant abstractions.
 
 ```elixir
 defmodule Sort do
@@ -54,7 +54,9 @@ iex> Sort.merge_sort([:cat, :eagle, :elephant, :rhino, :kangaroo, :dog])
 
 ```
 
-By looking at the example above, it should be obvious that functional applications are often more declarative, clearner and typically a lot shorter than their imperative counterparts. A functionally biased programmer such as the author might argue that less code translates to less bugs, higher productivity and a better readability.
+By looking at the sorting example above, it should be obvious that functional applications are often more declarative, cleaner and typically a lot shorter than their imperative counterparts. A functionally biased programmer such as the author might argue that less code translates to less bugs, higher productivity and a better readability.
+
+The simple code example demonstrates several features of the Elixir language and functional programming: pattern matching with additional guard expressions, implicit return values, extensive use of functions, leverage of Erlang features and dynamic typing. No reason to worry, we will take a closer look at each of these one at a time.
 
 An increasing number of programming languages support functional programming features, but they rarely do so very well. In order to understand what the functional programming approach has to offer, one has to really learn a functional programming language and the way applications are built in this paradigm.
 
@@ -62,7 +64,7 @@ An increasing number of programming languages support functional programming fea
 
 Elixir is a functional programming language for the Erlang virtual machine BEAM. Elixir is a functional and concurrent general purpose language deriving from Erlang. Elixir decorates Erlang's extremely powerful concurrency model with features such as macros and support metaprogramming. 
 
-Elixir is a relatively new language. The first version of the language was released in 2012. Elixir is the brainchild of José Valim. José Valim is one of the the authors of the Rails project for the Ruby language, and syntactical influence from Ruby is obvious in Elixir.
+Elixir is a relatively new language. The first version of the language was released in 2012. Elixir is the brainchild of José Valim. José Valim is one of the authors of the Rails project for the Ruby language and syntactical influence from Ruby is obvious in Elixir.
 
 Elixir was chosen for this guide instead of languages such as `haskell`, `clojure` or `scala` for it's clean syntax, ease of use and small, understandable language core and for it's powerful Erlang-adopted features for parallel processing. 
 
@@ -84,6 +86,7 @@ Elixir was chosen for this guide instead of languages such as `haskell`, `clojur
 * Avoidance of side-effects
 * Extensive use of high order functions
 * Lambda (anonymous) functions
+* Decoupling of data and program logic
 
 ## <a name="elixir_installation"></a>Installation
 
@@ -91,7 +94,7 @@ Elixir was chosen for this guide instead of languages such as `haskell`, `clojur
 
 * Using version 1.2.3
 * [Installation instructions](http://elixir-lang.org/install.html)
-* Sublime as an editor works reasonably well
+* Sublime and Visual Studio Code as editors work reasonably well
 
 ## <a name="elixir_usage"></a>Usage
 
