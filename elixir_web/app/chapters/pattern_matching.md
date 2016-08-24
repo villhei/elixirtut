@@ -225,7 +225,7 @@ defmodule Bands do
              albums
          end
     |> case do
-        ^bands -> raise "Not found"
+        ^bands -> raise "Albums not found"
         albums -> albums
        end
   end
@@ -234,10 +234,27 @@ end
 
 ```elixir
 iex> Bands.get_albums(great_bands, :justin_bieber)
-** (RuntimeError) Not found
+** (RuntimeError) Albums not found
     iex:41: Bands.get_albums/2
 iex> 
 ```
 In order to raise an error in case of match failure, we use the pipe operator `|>` to direct the result of the match to another `case` expression, in which we test if the result of the `with/1` block equals the the value bound to the input variable `bands` and `raise/1` an error in order to stop the execution.
 
 From this behavior we can deduce, that using the `with/1` block comes in handy, when the matches or nested expressions run deeper than two levels. 
+
+### Improvements to `with` in Elixir 1.3
+
+```elixir
+defmodule Bands do
+  def get_albums(bands, band) do
+    with %{^band => band_detail} <- bands,
+         %{albums: albums} <- band_detail
+      do albums
+    else
+        _ -> raise "Albums not found"
+    end
+  end
+end
+```
+
+Elixir 1.3 improves in this situation by introducing an `else` block defining matchers for different error patterns. We resort to matching everything by using the underscore `_` as the left-hand side value.
