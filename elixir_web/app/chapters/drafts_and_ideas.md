@@ -91,7 +91,7 @@ ages = people |> Enum.map(get_born)
 Now the benefit of the curried function is clearly visible, as we reduced the repeated code quite a plenty. The currying can be generalized even further, as shown [in this blog post](http://blog.patrikstorm.com/function-currying-in-elixir).
 
 
-### Bitstrings are fucking awesome
+### Bitstrings are way too awesome to be ignored
 
 ```elixir
 iex> tcp = <<0b11001010, 0b11100010, 0b00000000, 0b01010000, 0b01000010, 0b11110001>>
