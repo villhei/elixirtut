@@ -209,7 +209,7 @@ iex> File.rm("new_file.txt")
 
 Removal of files can be done using the `File.rm/1` function, that accepts a file name as a parameter. The banged variant `File.rm!/1` works very similarily, as it either returns an `:ok` or raises an exception. 
 
-### Partial table for File operations
+### Partial table of File operations
 
 The `File` module provides a comprehensive set of file opreations with lots of UNIX-familiarity. Below is a partial table with common operations in daily UNIX use to give you an idea of what can be done with the built-in functions.
 
@@ -242,7 +242,7 @@ The `File` module provides a comprehensive set of file opreations with lots of U
     </tr>
     <tr>
       <td>
-        `File.cp(path, to_path)/3`
+        `File.cp(path, to_path, callback)/3`
       </td>
       <td>
         cp [path] [to_path]
@@ -254,7 +254,7 @@ The `File` module provides a comprehensive set of file opreations with lots of U
     </tr>
     <tr>
       <td>
-        `File.cp_r(path, to_path)/3`
+        `File.cp_r(path, to_path, callback)/3`
       </td>
       <td>
         cp [path] [to_path]
@@ -266,7 +266,7 @@ The `File` module provides a comprehensive set of file opreations with lots of U
     </tr>
     <tr>
       <td>
-        `File.rm/1(file)`
+        `File.rm(file)/1`
       </td>
       <td>
         rm [file]
@@ -302,14 +302,14 @@ The `File` module provides a comprehensive set of file opreations with lots of U
     </tr>
     <tr>
       <td>
-        `File.mkdir/1`
+        `File.mkdir(dir_name)/1`
       </td>
       <td>
         mkdir [path]
       </td>
       <td>
         Creates a new directory.<br>
-        `File.mkdir("dir_name")`
+        `File.mkdir("new_directory")`
       </td>
     </tr>
     <tr>
