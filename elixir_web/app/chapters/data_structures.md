@@ -122,6 +122,17 @@ iex> Enum.reverse([1,2,3,4,5])
 
 The module [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) comes with handful of helpful functions for working with lists. Here we apply the `Enum.reverse/1` function for the list `[1,2,3,4,5]` and unsprisingly we receive a reversed copy of the list.
 
+```elixir
+iex(4)> 3 in [1,2,3,4,5]
+true
+iex> :cat in [:dog, :pig, :horse]
+false
+iex> :cat in [:dog, :pig, :horse, :cat]
+true
+```
+
+Using the `in` operator to check for a value in a list is a convenient way to do searches. Bear in mind that searching a list is a O(n) operation.
+
 ## <a name="data_structures_keyword_lists"></a> Keyword lists
 
 Elixir also provides a variant of the list, where each element in a list is associated with an atom acting as a keyword. Internally, keyword lists combine the two previous data structures as being lists of tuples.
@@ -141,6 +152,7 @@ iex> [name: "Bill", name: "Hillary", name: "Donald"] ++ [name: "Abe"]
 [name: "Bill", name: "Hillary", name: "Donald", name: "Abe"]
 
 ```
+Keyword lists support the same operations as regular lists, such as joining two lists using the `++` operator.
 
 ```elixir
 iex> people = [name: "Bill", last_name: "Clinton", name: "Donald", last_name: "Trump"]
