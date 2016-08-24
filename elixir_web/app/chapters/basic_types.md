@@ -63,9 +63,14 @@ iex> 1_000_000
 1000000
 iex> 1_2_3
 123
+iex> 1_000_000_000_000_000
+1000000000000000
+
 ```
 
 Elixir provides a convenient syntax for writing large numbers. The syntax proves itself quite handy sometimes, and doesn't really care about the structure of the number. The the underscore `_` will join together the trailing numbers with the leading numbers.
+
+It's also worth noticing, that Elixir allows for really large integer numbers. In the common case, when the size of the number does not exceed 30 or 60 bytes (32/64 bit systems), the number is stored as 4 or 8 bytes. Larger numbers are stored using N bytes, depending on the number.
 
 ```elixir
 iex> div(10, 2)
@@ -201,7 +206,7 @@ iex> :cat
 :cat
 ```
 
-Atoms or are constants, which's name is their value. Atoms are sometimes called symbols in other languages.
+Atoms or are constants, whose names are their values. Atoms are sometimes called symbols in other languages. Every atom created during the programs life cycle is stored in an in-memory atom table and never removed. Creating atoms dynamically, say from incoming socket data, is highly discouraged as they might very well consume all your available memory.
 
 ```elixir
 iex> is_atom(:cat)
