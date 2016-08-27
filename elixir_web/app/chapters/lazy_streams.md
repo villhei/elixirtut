@@ -4,9 +4,9 @@
     ![Key concept][lambda]<span>Laziness as a virtue</span>
     <p>In addition to lists Elixir provides a list-like structure called a stream. A stream is a lazily evulated counterpart of a list. The laziness means, that after declaration, the value of a list is not necessarily evaluated immediately, but will be accessible when some eager function requires it.</p>
 
-    <p>Eager in this context refers to functions that demand a result right away. All the high-order functions found from the Enum module are examples of eager functions. The module `Stream` provides for lazy counterparts of the functions in the `Enum` module. Unlike eager functions, the evaluation of lazy functions does not require (often a chain of) expressions to be evaluated right away. The evaluation of expressions defined using lazy constructs is delayed until something eager wants to access them. </p>
+    <p>Eager in this context refers to functions that demand a result right away. All the high-order functions found from the Enum module are examples of eager functions. The module `Stream` provides for the lazy counterparts of the functions in the `Enum` module. Unlike eager functions, the evaluation of lazy functions does not require (often a chain of) expressions to be evaluated right away. The evaluation of expressions defined using lazy constructs is delayed until something eager wants to access them. </p>
 
-    <p>Laziness proves itself useful in many situations. The programmer can defined never-ending streams (lists) of data and access only the portions of the data one needs. They can be, for example be used as generators for fibonacci numbers or primes.</p>
+    <p>Laziness proves itself useful in many situations. The programmer can define never-ending streams (lists) of data and access only the subset of the data one needs. For example, they can be used as infinite generators for fibonacci numbers or primes.</p>
 </div>
 
 ## Streams
@@ -32,7 +32,7 @@ The `Stream.drop/2`, like it's eager counterpart `Enum.drop/2` drops `n` element
 
 ```elixir
 iex> abc_cycle |> Stream.drop(2) |> Enum.take(4)
-[:b, :c, :a, :b]
+[:c, :a, :b, :c]
 ```
 
 It's about time to prove the stream really works as advertised. Now that we are applying an eager function `Enum.take/2` on the stream, we are starting to see some results, as it returns a good old fashioned list of items.
@@ -44,9 +44,9 @@ iex> powers_of_two |> Enum.take(8)
 [2, 4, 8, 16, 32, 64, 128, 256]
 ```
 
-Streams can be easily used as generator values to generate infinite lists of results of arithmetic expressions. The addition to the `Stream.cycle/1` the function `Stream.unfold/2` is an example of a generator function that is sort of a reversed version of the `Enum.reduce/2` function.
+Streams can be easily used as generator values to generate infinite lists of results of arithmetic expressions. In addition to the `Stream.cycle/1` the function `Stream.unfold/2` is an excellent example of a generator function. `Stream.unfold/2` is, in a way, a reversed version of the `Enum.reduce/2` function.
 
-`Stream.unfold/2` accepts two parameters: an initial accumulator value and a function `fn/1` accepting the accumulator value and returning an tuple with the left-hand side containing the result of the expression, and the right-hand side providing an accumulator value for the next successive evaluation. 
+`Stream.unfold/2` accepts two parameters: an initial accumulator value and a function `fn/1`. The anonymous function `fn/1` accepts an accumulator value and returns a tuple with the left-hand side containing the result of the expression and the right-hand side providing an accumulator value for the next successive evaluation. 
 
 ```elixir
 iex> [1, 2, 3] |> Enum.map(fn n ->
@@ -90,11 +90,11 @@ Second: 6
 [2, 4, 6]
 ```
 
-We pipe the results of the lazy `Stream.map/2` calls to the eager `Enum.to_list` function in order to force the evaluation of the streams. Now that the evaluation was required, we see some interesting results: The order of evaluation changed, and quite radically if I may say so!
+We pipe the results of the lazy `Stream.map/2` calls to the eager `Enum.to_list` function in order to force the evaluation of the streams. Now that the evaluation was required, we see some interesting results: The order of evaluation changed and quite radically if I may say so!
 
-Like we saw on previous examples, an unevaluated stream is a sequence of functions defining the value of the elements of the stream. Whenever we apply an eager function (`Enum.to_list` in this case) that accesses an element in the stream, this causes the defined sequence of functions to be applied for each element in order to obtain the stream's final, resulting value. 
+Like we saw in previous examples, an unevaluated stream is a sequence of functions defining the value of the elements of the stream. Whenever we apply an eager function (`Enum.to_list` in this case) that accesses an element in the stream, this causes the defined sequence of functions to be applied for each element in order to obtain the stream's final, resulting value. 
 
-This is the feature in streams that allow you to define infinite sequences of values - the unneeded trailing values are just never evaluated. 
+This is the feature in streams that allows you to define infinite sequences of values - the unneeded trailing values are just never evaluated. 
 
 ```elixir
 iex> Stream.unfold({0, 1}, fn {n, m} -> {n, {m, n + m}} end) |> Enum.take(10)

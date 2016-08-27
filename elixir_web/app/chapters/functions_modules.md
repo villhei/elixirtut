@@ -222,7 +222,7 @@ Here we already play with a new concept called pattern matching, which we will d
 
 We defined a module `ListOps` with a two variants of the function `list_length/1`. The first variant accepts a pattern matching an empty list. The pattern matching is also used in the function parameters with the syntax `[head|tail]` to extract the head element from the tail of the list, as introduced in the lists-chapter earlier. 
 
-The second variant accepts a pattern for a non-empty list. Remember that the function `hd\1`, which the syntax used maps to, raises an exception for an empty list, so an empty list does not match the pattern provided.
+The second variant accepts a pattern of a non-empty list. Remember that the function `hd\1`, which the syntax used maps to, raises an exception for an empty list, so an empty list does not match the pattern provided.
 
 The former variant of `list_length/1` returns a zero for an empty list, and the latter adds the result of a recursive call to `list_length/1` with the number one.
 
@@ -239,7 +239,7 @@ iex> ListOps.list_length([1, 2, 3, 4, 5])
 5
 ```
 
-The expansion of the `list_length/1` behaves quite similarily to the factorial function.
+The expansion of the `list_length/1` behaves quite similarly to the factorial function.
 
 ```java
 int[] array = {1,2,3,4,5};
@@ -369,7 +369,7 @@ defmodule MathEx do
 end
 ```
 
-We achieve the tail-recursiveness by implementing a helper function `do_fact/2` accepting to parameters, the accumulated state `acc` and the number `n` acting as the multiplier. The first call to `do_fact/2` assigns the initial parameter `n` as the accumulator `acc` and on each call to `do_fact/2` the `n` is subtracted by 1 to obtain a new multiplier. The recursion-terminates, when `n` reaches the number 1 and the accumulated value is returned.
+We achieve tail-recursiveness by implementing a helper function `do_fact/2` accepting to parameters, the accumulated state `acc` and the number `n` acting as the multiplier. The first call to `do_fact/2` assigns the initial parameter `n` as the accumulator `acc` and on each call to `do_fact/2` the `n` is subtracted by 1 to obtain a new multiplier. The recursion-terminates, when `n` reaches the number 1 and the accumulated value is returned.
 
 ```elixir
 iex> MathEx.fact(5)
@@ -469,7 +469,7 @@ iex> fact = fn n ->
 iex> fact.(5)
 ```
 
-In the opinion of the author, the recursive anonymous function would be best defined as named function in a module. If you really insist on writing a recursive anonymous function, you can wrap it inside a wrapper function that defines a recusive inner function and hides away the nasty implementation and provides a regular call pattern of `fn/1.(args)`.
+In the opinion of the author, the recursive anonymous function would be best defined as named function in a module. If you really insist on writing a recursive anonymous function, you can wrap it inside a wrapper function that defines a recursive inner function and hides away the nasty implementation and provides a regular call pattern of `fn/1.(args)`.
 
 ## Functions as function parameters
 
@@ -486,7 +486,7 @@ iex> defmodule ListOps do
      end
 ```
 
-Let's use the module `ListOps` as a container for some generalized operations for lists. We start by defining a function called `my_map/2`. `my_map/2` is generalizes a behavior of iterating through a list of items, applying a function for each element and returning a new copy of a list with those items as a a result.
+Let's use the module `ListOps` as a container for some generalized operations for lists. We start by defining a function called `my_map/2`. `my_map/2` is generalizes a behavior of iterating through a list of items, applying a function for each element and returning a new copy of a list with those items as a result.
 
 The first parameter is a list, for which we provide two patterns for. The first pattern matches an empty list `[]` and "some value". The pattern returns an empty list `[]` and effectively ignores both parameters.
 
@@ -516,7 +516,7 @@ iex> ListOps.map([1,2,3,4,5], fn
 [2, 1, 6, 2, 10]
 ```
 
-As a cherry on top, Elixir also allows us to match patterns from within anonymous functions. We define two patterns for the `fn/1` which uses a guard in the first pattern the check if the remained from the `rem(n, 2)` is zero indicating the number is an odd number. Those numbers are divided by two. The second pattern multiplies the odd numbers we supplied.
+As a cherry on top, Elixir also allows us to match patterns from within anonymous functions. We define two patterns for the `fn/1` which uses a guard in the first pattern the check if the remained from the `rem(n, 2)` is zero indicating the number is an even number. Those numbers are divided by two. The second pattern multiplies the odd numbers we supplied.
 
 The possibility to accept functions as function parameters proves itself a really powerful way of creating complex abstractions with a very little code time after time. The functionality implemented here is in reality provided by the [Enum module](http://elixir-lang.org/docs/stable/elixir/Enum.html). It's an uncommon case that a common behavior such as the one presented above needs to implemented by the programmer. 
 
@@ -524,11 +524,11 @@ The possibility to accept functions as function parameters proves itself a reall
 ### <a name="advanced_techniques_currying"></a> Functions returning functions
 <div class="key-concept">
 ![Key concept][lambda]<span>Currying</span>
-<p>Currying is an often used technique in functional programming languages to translate functions with multiple parameters (arity of n where n > 1) into a sequence of functions that accept a single parameter (arity of 1).</p>
+<p>Currying is an often used technique in functional programming languages for translating functions with multiple parameters (arity of n where n > 1) into a sequence of functions that accept a reduced numbers of parameters (arity of n-1).</p>
 
-<p>The function returned from a curried function is called a *partially applied function*. A partially applied function is a function that has some of it's arguments replaced by values and is returned as a function with a smaller arity that the original function.</p>
+<p>The function returned from a curried function is called a *partially applied function*. A partially applied function is a function that has some of it's arguments replaced by values and is returned as a function with a smaller arity compered to the original function.</p>
 
-<p>Currying is not built in to the Elixir core language, so we define a module for transforming functions.</p>
+<p>Currying is not built in to the Elixir core language, so we define approach the matter by defining a module for a transformational function, as in, defining a function that returns instances of a function</p>
 </div>
 
 ```elixir
@@ -544,7 +544,7 @@ iex> names = Enum.map(people, fn(map) -> Map.get(map, :name) end)
 ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
 ```
 
-The names can be fetched from the map objects by calling `Map.get(map, key)` in an anonomyous function, but having to do this repeatedly can get a bit labory. The library function `Enum.map/2` is a function, that takes as it's input a sequence (Enumerable) of elements and a transformation function and returns a list of transformed elements. We will look in to the `Enum.map/2` in more detail in the next chapter.
+The names can be fetched from the map objects by calling `Map.get(map, key)` in an anonomous function, but having to do this repeatedly can get a bit labory. The library function `Enum.map/2` is a function, that takes as it's input a sequence (Enumerable) of elements and a transformation function and returns a list of transformed elements. We will look in to the `Enum.map/2` in more detail in the next chapter.
 
 ```elixir
 defmodule MapOps do
@@ -572,6 +572,6 @@ iex> ages = Enum.map(people, get_born)
 [1949, 1948, 1962]
 ```
 
-We use the Now the benefit of the curried function is clearly visible, as we reduced the repeated code quite a plenty. The currying can be generalized even further, as shown [in this blog post](http://blog.patrikstorm.com/function-currying-in-elixir).
+When working with multiple similar problems, the benefit of the curried function is clearly visible, as we reduced the amount of repeated code quite a plenty. The currying can be generalized even further, as shown [in this blog post](http://blog.patrikstorm.com/function-currying-in-elixir).
 
 Now that we've gotten our hands dirty with functions and their behavior, let's take a look at some of the commonly used functions provided by the Elixir API.

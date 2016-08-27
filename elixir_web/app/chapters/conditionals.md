@@ -1,5 +1,5 @@
 <div class="warning">
-<span>TODOS</span
+<span>TODOS</span>
   <ul>
     <li>Guards could be more exhaustive</li>
   </ul>
@@ -159,7 +159,7 @@ iex> case {1, 2, 3} do
 "Will match"
 ```
 
-The clauses listet in the `case` construct need not be exhaustive. The clauses can be a combination of bound variables or they can be ignored. The second clause in addition to the last one is the only one that has a properly matching pattern.
+The clauses listed in the `case` construct need not be exhaustive. The clauses can be a combination of bound variables or they can be ignored. The second clause in addition to the last one is the only one that has a properly matching pattern.
 
 ## <a name="conditions_case"></a>A case of guards
 
@@ -199,7 +199,7 @@ iex> case 666 do
 
 The guard condition can also match against ranges, which can prove itself useful with it's elegant short-hand syntax.
 
-## <a name="pin_operator"></a> Pin operator
+## <a name="pin_operator"></a>The pin operator
 
 As Elixir allows variables existing in a given scope to be rebound, the conditional statements can sometimes be a little risky and yield unpredictable results. The allow matching against the values bound to variables, Elixir provides an operator `^`, commonly referred to as the pin operator.
 
@@ -231,7 +231,7 @@ iex> {x, ^y} = {2, 1}
 ** (MatchError) no match of right hand side value: {2, 1}
 ```
 
-As like with other other match patterns, the usual errors are raised also for partial matches.
+As like with other match patterns, the usual errors are raised also for partial matches.
 
 ```elixir
 iex> _ = [1, 2, 3]
@@ -240,6 +240,6 @@ iex> _
 ** (CompileError) iex:11: unbound variable _
 ```
 
-Elixir also provides a special match condition with the underscore symbol `_`. The underscore reads: Match against whatever value and ignore the results. The condition will always yield a match but the underscore is always unbound.
+Elixir also provides a special match condition with the underscore symbol `_`. The underscore reads: "Match against whatever value and ignore the results." The condition will always yield a match but the underscore is always unbound and the right-hand side of the match is discarded.
 
-The underscore is a syntactic sugar to allow the programmer easily produce an exhaustive match condition and to be explicit about the intention to ignore a value.
+The underscore is syntactic sugar to allow the programmer easily produce an exhaustive match condition and to be explicit about the intention to ignore a value.

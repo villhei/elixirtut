@@ -9,7 +9,7 @@ The material is licensed under the **Creative Commons Attribution-NonCommercial-
 
 ## <a name="material_notes"></a>Notes for the reader
 
-* When introducing functions, we use a notation `fun_name/1` where 1 indicates the number of parameters accepted by that function
+* When introducing functions, we use a notation `fun_name/1` where the number `1` indicates the number of parameters accepted by that function. In Erlang terminology, this is called the function's *arity*
 * This material follows the conventions from [Elixir style guide](https://github.com/niftyn8/elixir_style_guide)
 
 <div class="key-concept">

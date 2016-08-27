@@ -153,7 +153,7 @@ A more complete list of functions is documented in the [Enum](http://elixir-lang
 
 ## <a name="sample_sizers"></a> Sample sizer functions
 
-Let's take a look at functions that are used to limit the sample size of an `Enumerable`. These functions are used to create sublists of `Enumerables`, either by removing leading or trailing elements, or removing elements until they fulfill or fail a condition given by a predicate function. 
+Let's take a look at functions that are used to limit the sample size of an `Enumerable`. These functions are used to create subcollections of `Enumerables`, either by removing leading or trailing elements, or removing elements that fulfill or fail a condition given by a predicate function. 
 
 ### <a name="high_order_take"></a> Enum.take/2
 
@@ -168,7 +168,7 @@ iex> length(Enum.take(map, 1))
 1
 ```
 
-One of the simplest functions in the `Enum` module is the `Enum.take/2`, which can be used to create a new sublist of a `Enumerable` from the `n` first elements. Notice that applying `Enum.take/2` on a translates to a keyword list.
+One of the simplest functions in the `Enum` module is the `Enum.take/2`, which can be used to create a new sublist of a `Enumerable` from the `n` first elements. Notice that applying `Enum.take/2` on a `Map` translates to a keyword list.
 
 ```
 iex> Enum.take(list, 6)
@@ -187,7 +187,7 @@ iex> Enum.drop(list, 2)
 [3, 4, 5, 6]
 ```
 
-`Enum.drop/2`, is just like `Enum.take/2`, but it is used to create a new list of an `Enumerable` without `n` first elements. 
+`Enum.drop/2`, is just like `Enum.take/2`, but it is used to create a new list from the input's contents without the `n` first elements. 
 
 ```
 iex> Enum.drop(list, 7)
@@ -236,7 +236,7 @@ The `map/2` is a function that accepts a variable of a type implementing the [En
 
 `map/2` iterates over the `Enumerable` collection and executes the function for each of the elements within the collection, creating a new transformed instance of the collection as a result. Notice that operations performed within the `map/2` operation do not affect the original collection, but create a new transformed collection.
 
-More formally, `map/2` is a function used to *map* (transform) an Enumerable of type A to type B.
+More formally, `map/2` is a function used to *map* (transform) an `Enumerable` of type A to type B.
 
 ```elixir
 people = [%{name: "Matti Ruohonen", born: 1949},
@@ -337,11 +337,11 @@ iex> Enum.reduce(names, "", fn(name, acc) -> acc <> name <> "!!!11 " end)
 "Matti Ruohonen!!!11 Teppo Ruohonen!!!11 Seppo Räty!!!11 "
 ```
 
-Like the other functions introduced, the `reduce/3` can work with any data type, and reduce the data to any kind of value.
+Like with other functions introduced, the function accepted as a parameter to `reduce/3` can work with any input data data type, and reduce the input  to any kind of value.
 
 ## <a name="pipe_operator"></a> The pipe operator
 
-We noticed that when applying several high-order functions sequentially, the code starts to lose some of it's beautiful, minimalistic elegance. Luckily we have the pipe operator `|>` that is used to chain or pass the value on the left-hand side of the operator to the function on the right-hand side. The pipe operator `|>` is very similar to the traditional UNIX `|` opertor. 
+We noticed that when applying several high-order functions sequentially, the code starts to lose some of it's beautiful, minimalistic elegance. Luckily we have the pipe operator `|>` that is used to chain or pass the value on the left-hand side of the operator to the function on the right-hand side. In it's behavior the pipe operator `|>` is very similar to the traditional UNIX `|` operator. 
 
 ```elixir
 iex> sum_of_squares = [1,2,3,4,5] 
@@ -350,7 +350,7 @@ iex> sum_of_squares = [1,2,3,4,5]
 55
 ```
 
-In the example above, the pipe `|>` passes the array of numbers to the `map/2` function. The `map/2` passes the resulting array of squared values to the `reduce/3` function that calculates the sum of squares.
+In the example above, the pipe `|>` passes an array of numbers to the `map/2` function. The `map/2` passes the resulting array of squared values to the `reduce/3` function that calculates the sum of squares.
 
 ```elixir
 people = [%{name: "Matti Ruohonen", born: 1949},
@@ -372,4 +372,4 @@ iex> people
 
 We can start seeing the benefits of the pipe operator here `|>`. The first step is to extract the names from the persons in people using `map/2`, then we use `filter/2` to check if the name contains the string `"Ruohonen"`, after which we split it to two parts with the `String.split/2`, drop the tail using `hd/1` on the split values and finally use `reduce/3` to reduce the result to a string.
 
-Piping is by no means limited to the functions from the `Enum` module and you can use it any time you need to pass the result of the previous function as the first argument to the next function.
+The use of the pipe `|>` operator is by no means limited to the functions from the `Enum` module. You can use it any time you need to pass the result of the previous function as the first argument to the next function.

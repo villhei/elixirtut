@@ -6,7 +6,7 @@
 IO.puts("Hello Elixir!")
 ```
 
-Elixir scripts use the extension `.exs` by convention, and elixir source files user the extension `.ex`. Create a file `hello.exs` with the content above. Executing the `elixirc
+Elixir scripts use the extension `.exs` by convention, and elixir source files user the extension `.ex`. Create a file `hello.exs` with the content above. Executing the `elixirc`.
 
 ```bash
 $ elixir hello.exs 
@@ -17,7 +17,7 @@ An Elixir script can be executed by using the command `elixir <filename.exs>` . 
 
 ## <a name="basic_types"></a>Basic types
 
-Basic types and their typing formats.
+The primitive types in Elixir are a bit different from imperative languages. Like most functional languages, Elixir introduces a simple syntax for tuples and lists. Let's take a look at some common types and their typing formats.
 
 ```elixir
 iex> 1          # integer
@@ -54,7 +54,7 @@ iex> 10 / 2
 5.0
 ```
 
-It's worth noticing that the division above returned a float `5.0` instead of an integer, if you want to do division and remainders with integers, you should use the functions `div/2` and `rem/2`
+It's worth noticing that the division above returned a float `5.0` instead of an integer, if you want to do division and remainders with integers, you should use the functions `div/2` and `rem/2`.
 
 ```elixir
 iex> 1_000
@@ -81,7 +81,7 @@ iex> rem 10, 3
 1
 ```
 
-In Elixir, parentheses are optional in function invocation. Parentheses are preferred most of the time in these examples. 
+In Elixir, parentheses are optional in function invocation. For explicitness and to promoto best practices, parentheses are preferred most of the time in these examples. 
 
 ```elixir
 iex> round(3.55)

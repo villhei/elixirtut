@@ -33,7 +33,7 @@ iex elem(cat, 4)
     :erlang.element(5, {:cat, 'Brown', 5})
 ```
 
-An individual element can be fetched from a tuple by calling the function `elem/2` with the tuple and the index o a desired element. Attempting to access an out-of-bounds element will raise an error.
+An individual element can be fetched from a tuple by calling the function `elem/2` with the tuple and the index of the desired element. Attempting to access an out-of-bounds element will raise an error.
 
 ```elixir
 iex> cat = {:cat, 'Brown', 5}
@@ -91,7 +91,9 @@ iex> tl(list)
 iex> tl([1])
 []
 ```
+
 The tail function returns all the elements but the first of a non-empty list. If the list only has a single element, `tl\1` returns an empty list. Like the head function, tail raises an error if the list is empty.
+
 ```elixir
 iex> [head | tail] = [1,2,3]
 [1, 2, 3]
@@ -120,7 +122,7 @@ iex> Enum.reverse([1,2,3,4,5])
 [5, 4, 3, 2, 1]
 ```
 
-The module [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) comes with handful of helpful functions for working with lists. Here we apply the `Enum.reverse/1` function for the list `[1,2,3,4,5]` and unsprisingly we receive a reversed copy of the list.
+The module [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) comes with handful of helpful functions for working with lists. Here we apply the `Enum.reverse/1` function for the list `[1,2,3,4,5]` and unsurprisingly we receive a reversed copy of the list.
 
 ```elixir
 iex(4)> 3 in [1,2,3,4,5]
@@ -179,7 +181,7 @@ iex> country_capitals = %{:sweden =>  "Stockholm",
 %{finland: "Helsinki", germany: "Berlin", spain: "Madrid", sweden: "Stockholm"}
 ```
 
-Map is a data structure used as a container for pairs with a key and a value. Maps are often used as a sort of dictionary, and it's an efficient way of indexing values for different types of searches and retriavals. 
+Map is a data structure used as a container for pairs with a key and a value. Maps are often used as a sort of dictionary, and it's an efficient way of indexing values for different types of searches and retrievals. 
 
 Unlike lists, maps are not ordered collections.
 
@@ -238,7 +240,7 @@ nil
 
 When all the keys in a map are atoms, you can also use the `keyword:` syntax for associating keys with values in a map. Also when all your keys are atoms, one can access the map with a special syntax `map.key` instead of using the `Map.get/2` function. 
 
-Notice that the `map.key` syntax for accessing the map is strict. A non-existant key will raise an error, unlike the non-strict `Map.get/2` that will instead return a `nil`.
+Notice that the `map.key` syntax for accessing the map is strict. A non-existent key will raise an error, unlike the non-strict `Map.get/2` that will instead return a `nil`.
 
 ```elixir
 iex> %{ animal_sounds | :snake => "Hsssst!"}
@@ -251,4 +253,4 @@ iex> %{ animal_sounds | :dog => "WOOOF!"}
 
 ```
 
-The syntax `%{map_name | :key => value}` can be used to *update* a value in a map. The update requires the value to be present and for non-existant keys an error will be raised.
+The syntax `%{map_name | :key => value}` can be used to *update* a value in a map. The update requires the value to be present. An error will be raised for non-existent keys.
