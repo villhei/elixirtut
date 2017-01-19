@@ -281,7 +281,7 @@ The elements returned by the filter function are of the same type as the input e
 ```elixir
 iex> names = Enum.map(people, fn(person) -> person.name end)
 ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
-iex> Enum.filter(names, fn(n) -> String.contains?(n, "Ruohonen") end)
+iex> matches = Enum.filter(names, fn(n) -> String.contains?(n, "Ruohonen") end)
 ["Matti Ruohonen", "Teppo Ruohonen"]
 iex> Enum.map(matches, fn(n) ->       
 ...>   name_parts = String.split(n, " ")
@@ -317,14 +317,22 @@ iex> Enum.zip(list, tl(list))
 
 ```
 
-Generally speaking, the purpose of the `zip/2` function is simply what we stated, but the use cases are endless. You sometimes might require the index of the element while performing a `map/2`, the solution is to call `zip/2` on the original list with a second list containing the indices.
+```elixir
+iex> Enum.zip(["a", "b", "c", "d"], 0..3)
+[{"a", 0}, {"b", 1}, {"c", 2}, {"d", 3}]
+
+iex> Enum.with_index(["a", "b", "c", "d"])
+[{"a", 0}, {"b", 1}, {"c", 2}, {"d", 3}]
+
+```
+Generally speaking, the purpose of the `zip/2` function is simply what we stated, but the use cases are endless. For example, one might require to merge two lists of arbitrary values together, in order to process them further with other high-order functions, or one simply might require an index element of every item in the list, which would be case for `zip/2`. The `zip/2` function is so commonly used for indexing, that there exists a short-hand function `with_index/1` for this purpose.
 
 ## <a name="high_order_reduce"></a> Enum.reduce/3
 
 ```elixir
 iex> numbers = [1,2,3,4,5]
 [1, 2, 3, 4, 5]
-iex> Enum.reduce(numbers, 0, fn(n, acc) -> acc + n end)
+iex> sum = Enum.reduce(numbers, 0, fn(n, acc) -> acc + n end)
 15
 ```
 
@@ -338,6 +346,23 @@ iex> Enum.reduce(names, "", fn(name, acc) -> acc <> name <> "!!!11 " end)
 ```
 
 Like with other functions introduced, the function accepted as a parameter to `reduce/3` can work with any input data data type, and reduce the input  to any kind of value.
+
+```java
+int sum = 0;
+for(int i = 1 ; i < 6 ; ++i) {
+    sum += i;
+}
+// sum = 15
+```
+
+An imperative example of a use case for `reduce/3` is a side-effecting `for`-loop (the loop has effects outside it's own block) used to calculate a sum of a range, using value accumulation. The final value of the sum is 15, just like shown in the first example of the `reduce/3` function.
+
+```elixir
+iex> [1,2,3,4,5] |> Enum.reduce(&(&1 + &2))
+15
+```
+
+The Elixir shown initially is such an messy example of Elixir and functional programming, that an alternative syntax has to be shown here. Elixir sports a feature called *function capturing*, which makes the situation quite a bit neater. We'll introduce function capturing in better detail in a later chapter, but rest assured - there is light at the end of the tunnel.
 
 ## <a name="pipe_operator"></a> The pipe operator
 
