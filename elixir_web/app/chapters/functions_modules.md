@@ -4,6 +4,7 @@
   <ul>
     <li>Function guards could be elaborated more</li>
     <li>Unsure if function capturing belongs here</li>
+    <li>Structs belong here, as they are defined by modules</li>
   </ul>
 </div>
 
