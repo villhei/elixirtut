@@ -1,16 +1,17 @@
 import introduction from '../chapters/01_introduction.md'
 import basic_types from '../chapters/02_basic_types.md'
-import data_structures from '../chapters/data_structures.md'
-import processes from '../chapters/processes.md'
-import process_abstractions from '../chapters/process_abstractions.md'
-import language_tools from '../chapters/language_tools.md'
+import data_structures from '../chapters/03_data_structures.md'
+import conditionals from '../chapters/04_conditionals.md'
+import functions_modules from '../chapters/05_functions_modules.md'
+import pattern_matching from '../chapters/06_pattern_matching.md'
+import high_order_fun from '../chapters/07_high_order_functions.md'
+import lazy_streams from '../chapters/08_lazy_streams.md'
+import file_io from '../chapters/09_file_io.md'
+import processes from '../chapters/10_processes.md'
+import process_abstractions from '../chapters/11_supervisors_and_otp.md'
+import language_tools from '../chapters/12_mix_hex_docs.md'
+import composing_an_application from '../chapters/13_composing_an_application.md'
 import drafts_and_ideas from '../chapters/drafts_and_ideas.md'
-import conditionals from '../chapters/conditionals.md'
-import functions_modules from '../chapters/functions_modules.md'
-import high_order_fun from '../chapters/high_order_functions.md'
-import pattern_matching from '../chapters/pattern_matching.md'
-import lazy_streams from '../chapters/lazy_streams.md'
-import file_io from '../chapters/file_io.md'
 
 
 let raw_chapters = [{
@@ -84,6 +85,12 @@ let raw_chapters = [{
         done: "40%",
         path: "/language_tools",
         content: language_tools
+      },
+      {
+        title: "Composing an application",
+        done: "50%",
+        path: "/composing_an_application",
+        content: composing_an_application
       },
       {
         title: "Drafts and ideas",
