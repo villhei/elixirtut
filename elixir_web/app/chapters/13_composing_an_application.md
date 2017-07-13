@@ -1,3 +1,7 @@
+<!-- TOC -->
+
+
+<!-- /TOC -->
 
 
 ```elixir
@@ -48,7 +52,7 @@ defmodule Example.Registry do
   def send(name, message) do
     case whereis_name(name) do
       :not_found -> {:bad_arguments, {name, message}}
-    pid -> 
+    pid ->
       Kernel.send(pid, message)
       pid
     end
@@ -108,4 +112,4 @@ defmodule Example.ChatServer do
 
 end
 ```
-Atoms are no good 
+Atoms are no good

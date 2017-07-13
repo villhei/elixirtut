@@ -1,7 +1,15 @@
 
-Most of the times programs need to interact with the surrounding world in order to produce useful results. 
+<!-- TOC -->
 
-The basic IO functions are provided by the [IO module](http://elixir-lang.org/docs/stable/elixir/IO.html). We have already played around with the function `IO.puts/1` in order to produce some output from our code snippets. 
+- [The IO module](#the-io-module)
+- [The File module](#the-file-module)
+  - [Partial table of File operations](#partial-table-of-file-operations)
+
+<!-- /TOC -->
+
+Most of the times programs need to interact with the surrounding world in order to produce useful results.
+
+The basic IO functions are provided by the [IO module](http://elixir-lang.org/docs/stable/elixir/IO.html). We have already played around with the function `IO.puts/1` in order to produce some output from our code snippets.
 
 The functions provided by the `IO` module in fact take use of named IO processes running on the BEAM virtual machine. These processes include `:stdio` for the standard io stream and `:stderr` for the standard error stream.
 
@@ -29,16 +37,16 @@ The `IO.puts/2` accepts an additional parameter specifying the desired output st
 
 ```elixir
 iex> IO.gets("Give me a yes or a no? yes/no \n")
-Give me a yes or a no? yes/no 
+Give me a yes or a no? yes/no
 yes
 "yes\n"
 ```
 
-The `IO.gets/1` function is used to read user input from the `:stdio`process, in addition to command-line arguments this is probably the easiest way to implement some sort of interaction in your Elixir application. 
+The `IO.gets/1` function is used to read user input from the `:stdio`process, in addition to command-line arguments this is probably the easiest way to implement some sort of interaction in your Elixir application.
 
 ```elixir
 iex> IO.gets("Give me a yes or a no? yes/no \n") |> String.replace("\n", "")
-Give me a yes or a no? yes/no 
+Give me a yes or a no? yes/no
 yes
 "yes"
 ```
@@ -58,7 +66,7 @@ iex> IO.puts("1 + 1 = #{1 + 1}")
 
 ```
 
-The `IO.puts/1` can also accept a variable as it's parameter, if the variable can be recognized as `chardata`. Elixir also supports a nice thing called string interpolation. The string interpolation allows us to write an expression within the string with the syntax `#{expr}`. 
+The `IO.puts/1` can also accept a variable as it's parameter, if the variable can be recognized as `chardata`. Elixir also supports a nice thing called string interpolation. The string interpolation allows us to write an expression within the string with the syntax `#{expr}`.
 
 The interpolated string will evaluate to the result of the enclosed expression, as demonstrated in the latter example of adding 1 to 1.
 
@@ -81,7 +89,7 @@ iex> IO.puts("#{inspect(dog)}")
 :ok
 ```
 
-For formatted output of built-in types, the Elixir [Kernel module](http://elixir-lang.org/docs/stable/elixir/Kernel.html) provides a convenient function `inspect/1`. The function `inspect/1` is used to call the `inspect` callback defined for that particular data structure or type. The definition of the `inspect/2` callback is responsible for the string representation of that particular data structure. 
+For formatted output of built-in types, the Elixir [Kernel module](http://elixir-lang.org/docs/stable/elixir/Kernel.html) provides a convenient function `inspect/1`. The function `inspect/1` is used to call the `inspect` callback defined for that particular data structure or type. The definition of the `inspect/2` callback is responsible for the string representation of that particular data structure.
 
 The `inspect` function is a handy utility for debugging, and the values printed by the the `iex` interpreter are results of inspection.
 
@@ -107,7 +115,7 @@ The `File` module provides a good coverage of abstractions for UNIX file system 
 Let's look at some of these functions and their usage in a bit more detail, to give a general idea on how to work with the filesystem in Elixir. As we will soon find out, it is very easy.
 
 ```elixir
-iex> File.ls("/home/ville/shopping_lists") 
+iex> File.ls("/home/ville/shopping_lists")
 {:ok, ["ikea.txt", "groceries.txt"]}
 ```
 
@@ -120,10 +128,10 @@ iex> File.ls("does_not_exist")
 {:error, :enoent}
 ```
 
-If the `File.ls/1` fails to perform it's task, it will output a tuple  `{:error, :error_code}` where the error code is the actual error that occurred. 
+If the `File.ls/1` fails to perform it's task, it will output a tuple  `{:error, :error_code}` where the error code is the actual error that occurred.
 
 ```elixir
-iex> File.ls!(".")             
+iex> File.ls!(".")
 ["ikea.txt", "groceries.txt"]
 iex> File.ls!("does_not_exist")
 ** (File.Error) could not list directory does_not_exist: no such file or directory
@@ -158,11 +166,11 @@ The file can also be opened as a stream with the `File.stream!` function. The re
 ```elixir
 iex> {:ok, file} = File.open("new_file.txt", [:write, :utf8])
 {:ok, #PID<0.84.0>}
-iex> IO.write(file, "Serious content!\n")                    
+iex> IO.write(file, "Serious content!\n")
 :ok
-iex> IO.write(file, "Hästerna springer på sommaren!")        
+iex> IO.write(file, "Hästerna springer på sommaren!")
 :ok
-iex> File.close(file)                                        
+iex> File.close(file)
 :ok
 ```
 
@@ -180,9 +188,9 @@ iex> File.read!("new_file.txt")
 By taking a look at the file with `File.read!`, the contents seem to be in place. What if we want to read the file line by line?
 
 ```elixir
-iex> {:ok, file} = File.open("new_file.txt", [:utf8])        
+iex> {:ok, file} = File.open("new_file.txt", [:utf8])
 {:ok, #PID<0.89.0>}
-iex> IO.read(file, :line)                                    
+iex> IO.read(file, :line)
 "Serious content!\n"
 iex> IO.read(file, :line)
 "Hästerna springer på sommaren!"
@@ -205,7 +213,7 @@ iex> File.rm("new_file.txt")
 {:error, :enoent}
 ```
 
-Removal of files can be done using the `File.rm/1` function, that accepts a file name as a parameter. The banged variant `File.rm!/1` works very similarly, as it either returns an `:ok` or raises an exception. 
+Removal of files can be done using the `File.rm/1` function, that accepts a file name as a parameter. The banged variant `File.rm!/1` works very similarly, as it either returns an `:ok` or raises an exception.
 
 ### Partial table of File operations
 

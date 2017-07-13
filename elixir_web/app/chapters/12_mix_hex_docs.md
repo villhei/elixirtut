@@ -1,4 +1,15 @@
 [lambda]: img/lambda.png
+
+<!-- TOC -->
+
+- [<a name="building_applications"></a>Throwing a project into the mix](#a-namebuilding_applicationsathrowing-a-project-into-the-mix)
+      - [mix.exs](#mixexs)
+      - [config](#config)
+      - [lib](#lib)
+      - [test](#test)
+
+<!-- /TOC -->
+
 <div class="warning">
   <span>TODOS</span
   <ul>
@@ -35,19 +46,19 @@ You can use "mix" to compile it, test it, and more:
 
 Run "mix help" for more commands.
 ```
-Mix will now create the project structure and some helper files you typically would need to create anyway. 
+Mix will now create the project structure and some helper files you typically would need to create anyway.
 
-##### mix.exs 
+##### mix.exs
 The file `mix.exs` is reponsible for managing your project's dependencies, version information and it's execution environment and top-level configuration.
 
-##### config 
+##### config
 The folder is used to store the project's configuration file `config.exs`, in which you manage configuration of your application and it's dependencies. The configration contains key-value pairs.
 
 ```elixir
 config :example, example_config_key: :configuration_value
 ```
 
-The config can be accessed with the `Application._get.env/2` function during runtime. 
+The config can be accessed with the `Application._get.env/2` function during runtime.
 
 ##### lib
 This folder is used to store the application source code. Mix automatically creates a placeholder file used with the module `Example` defined. The files in the `lib` folder are targets of compilation, and use the `.ex` extension by convention.

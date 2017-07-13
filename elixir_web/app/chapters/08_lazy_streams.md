@@ -1,5 +1,12 @@
 [lambda]: img/lambda.png
 
+<!-- TOC -->
+
+- [Streams](#streams)
+- [Ranges](#ranges)
+
+<!-- /TOC -->
+
 <div class="key-concept">
     ![Key concept][lambda]<span>Laziness as a virtue</span>
     <p>In addition to lists Elixir provides a list-like structure called a stream. A stream is a lazily evulated counterpart of a list. The laziness means, that after declaration, the value of a list is not necessarily evaluated immediately, but will be accessible when some eager function requires it.</p>
@@ -18,7 +25,7 @@ iex> abc_cycle = Stream.cycle([:a, :b, :c])
 #Function<59.71479995/2 in Stream.unfold/2>
 ```
 
-We start by defining a stream with `Stream.cycle/1`. The function takes an enumerable as parameter and cycles through it infinitely. In these case, the stream produces a list `[:a, :b, :c, :a, :b ...]`. 
+We start by defining a stream with `Stream.cycle/1`. The function takes an enumerable as parameter and cycles through it infinitely. In these case, the stream produces a list `[:a, :b, :c, :a, :b ...]`.
 
 Observe that instead of the `iex` shell displaying a value like usual, the `Stream.cycle/1` returns a function representing the underlying evaluation.
 
@@ -46,7 +53,7 @@ iex> powers_of_two |> Enum.take(8)
 
 Streams can be easily used as generator values to generate infinite lists of results of arithmetic expressions. In addition to the `Stream.cycle/1` the function `Stream.unfold/2` is an excellent example of a generator function. `Stream.unfold/2` is, in a way, a reversed version of the `Enum.reduce/2` function.
 
-`Stream.unfold/2` accepts two parameters: an initial accumulator value and a function `fn/1`. The anonymous function `fn/1` accepts an accumulator value and returns a tuple with the left-hand side containing the result of the expression and the right-hand side providing an accumulator value for the next successive evaluation. 
+`Stream.unfold/2` accepts two parameters: an initial accumulator value and a function `fn/1`. The anonymous function `fn/1` accepts an accumulator value and returns a tuple with the left-hand side containing the result of the expression and the right-hand side providing an accumulator value for the next successive evaluation.
 
 ```elixir
 iex> [1, 2, 3] |> Enum.map(fn n ->
@@ -66,11 +73,11 @@ Second: 6
 [2, 4, 6]
 ```
 
-Consider the above example of the function `Enum.map/2` applied sequentially on the list `[1, 2, 3]`. The first call to `Enum.map/2` is defined to return the value `n` as-is while using `IO.puts/1` for printing the value `n`. `Enum.map/2` iterates through the entire list, returning a new, yet value-wise identical list `[1, 2, 3]`. 
+Consider the above example of the function `Enum.map/2` applied sequentially on the list `[1, 2, 3]`. The first call to `Enum.map/2` is defined to return the value `n` as-is while using `IO.puts/1` for printing the value `n`. `Enum.map/2` iterates through the entire list, returning a new, yet value-wise identical list `[1, 2, 3]`.
 
 The second call to `Enum.map/2` is defined to multiply the value `n` by a factor of 2, print the value using `IO.puts/2` and to return the multiplied value.
 
-The printed output clearly shows, that the order of evaluation was precisely what we expected. Now let's try the same with functions from the `Stream` module. 
+The printed output clearly shows, that the order of evaluation was precisely what we expected. Now let's try the same with functions from the `Stream` module.
 
 ```elixir
 iex> [1, 2, 3] |> Stream.map(fn n ->
@@ -92,9 +99,9 @@ Second: 6
 
 We pipe the results of the lazy `Stream.map/2` calls to the eager `Enum.to_list` function in order to force the evaluation of the streams. Now that the evaluation was required, we see some interesting results: The order of evaluation changed and quite radically if I may say so!
 
-Like we saw in previous examples, an unevaluated stream is a sequence of functions defining the value of the elements of the stream. Whenever we apply an eager function (`Enum.to_list` in this case) that accesses an element in the stream, this causes the defined sequence of functions to be applied for each element in order to obtain the stream's final, resulting value. 
+Like we saw in previous examples, an unevaluated stream is a sequence of functions defining the value of the elements of the stream. Whenever we apply an eager function (`Enum.to_list` in this case) that accesses an element in the stream, this causes the defined sequence of functions to be applied for each element in order to obtain the stream's final, resulting value.
 
-This is the feature in streams that allows you to define infinite sequences of values - the unneeded trailing values are just never evaluated. 
+This is the feature in streams that allows you to define infinite sequences of values - the unneeded trailing values are just never evaluated.
 
 ```elixir
 iex> Stream.unfold({0, 1}, fn {n, m} -> {n, {m, n + m}} end) |> Enum.take(10)
@@ -108,19 +115,19 @@ iex> Stream.unfold(1, fn 10 -> nil; n-> {n, n+1} end) |> Enum.to_list()
 [1, 2, 3, 4, 5, 6, 7, 8, 9]
 ```
 
-One interesting feature of `Stream.unfold/2` is the ability for the programmer to provide a pattern of functions. The function still accepts two parameters, but instead of a single function as the second parameter, we supply two alternative bodies to choose from by matching the accumulator value. 
+One interesting feature of `Stream.unfold/2` is the ability for the programmer to provide a pattern of functions. The function still accepts two parameters, but instead of a single function as the second parameter, we supply two alternative bodies to choose from by matching the accumulator value.
 
-If the function returns a `nil`, `Stream.unfold/2` will treat it as the end of the stream. In any other case `Stream.unfold/2` will continue evulation as required. 
+If the function returns a `nil`, `Stream.unfold/2` will treat it as the end of the stream. In any other case `Stream.unfold/2` will continue evulation as required.
 
 In addition to manually defining streams, many libraries and modules, such as the [File module](http://elixir-lang.org/docs/stable/elixir/File.html) provide streaming functions to allow for delayed or on-demand access to resources. There is a future chapter dedicated to functions from the `File` module, but let's take a look at how streaming a file works.
 
 ```elixir
 input = File.stream!("war_and_peace.txt")
 indices = Stream.unfold(1, fn(n) -> {n, n+1} end)
- 
+
 result =  Stream.zip(indices, input)
   |> Stream.filter(fn {_, line} -> Regex.match?(~r/\b[Ww]ar[s]*\b/, line) end)
-  |> Stream.map(fn {i, line} -> {i, String.replace(line, "\n", "")} end)  
+  |> Stream.map(fn {i, line} -> {i, String.replace(line, "\n", "")} end)
 
 line_count = length(Enum.to_list(input))
 line_count_war = length(Enum.to_list(result))
@@ -131,7 +138,7 @@ IO.puts("\nOf #{line_count} lines, #{line_count_war} contained the word \"war\""
 ```
 
 ```bash
-$ elixir war_and_peace.exs 
+$ elixir war_and_peace.exs
 1: The Project Gutenberg EBook of War and Peace, by Leo Tolstoy
 ....
 34796: that, he had experience enough to know that nothing happens in war at
@@ -139,9 +146,9 @@ $ elixir war_and_peace.exs
 Of 35092 lines, 165 lines contained the word "war"
 ```
 
-Our sample script is a program, that reads all the lines from the novel *War and Peace* by Fyodor Dostoyevsky and filters the lines that contain the word war. 
+Our sample script is a program, that reads all the lines from the novel *War and Peace* by Fyodor Dostoyevsky and filters the lines that contain the word war.
 
-First we use the `File.stream!/1` to open up a file stream from the file `war_and_peace.txt`. Then `Stream.unfold/2` function is called to create a sequence from 1 to infinity in order to keep track of line numbers. `Stream.zip/2` is used to combine the line numbers with the input file, creating a stream of tuples `{n, line}`. 
+First we use the `File.stream!/1` to open up a file stream from the file `war_and_peace.txt`. Then `Stream.unfold/2` function is called to create a sequence from 1 to infinity in order to keep track of line numbers. `Stream.zip/2` is used to combine the line numbers with the input file, creating a stream of tuples `{n, line}`.
 
 Then the action starts. `Stream.filter/2` is used to match a given line against a regex test. Lines passing the test, are given to `Stream.map/2`, which removes the newline `\n` characters from the string in order to prettify our printing. The `Stream.map/2` is placed after the filter step, in order to limit the sample size.
 
