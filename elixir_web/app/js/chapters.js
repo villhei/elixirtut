@@ -1,5 +1,5 @@
-import introduction from '../chapters/introduction.md'
-import basic_types from '../chapters/basic_types.md'
+import introduction from '../chapters/01_introduction.md'
+import basic_types from '../chapters/02_basic_types.md'
 import data_structures from '../chapters/data_structures.md'
 import processes from '../chapters/processes.md'
 import process_abstractions from '../chapters/process_abstractions.md'
@@ -92,14 +92,14 @@ let raw_chapters = [{
         content: drafts_and_ideas
       }];
 
-let numbered = raw_chapters.map(function(chapter, i) { 
+let numbered = raw_chapters.map(function(chapter, i) {
   chapter.number = i+1;
   return chapter;
 });
 
 export function prevChapter(current) {
   if(current.number < 2) {
-    return [];  
+    return [];
   } else {
     return [numbered[current.number-2]];
   }

@@ -1,6 +1,18 @@
 [lambda]: img/lambda.png
 
-## <a name="hello_elixir"></a>Hello Elixir!
+<!-- TOC -->
+
+- [Hello Elixir!](#hello-elixir)
+- [Basic types](#basic-types)
+  - [Basic arithmetic and numbers](#basic-arithmetic-and-numbers)
+  - [Booleans](#booleans)
+  - [Atoms](#atoms)
+  - [Strings](#strings)
+  - [A few words on immutability](#a-few-words-on-immutability)
+
+<!-- /TOC -->
+
+## Hello Elixir!
 
 ```elixir
 IO.puts("Hello Elixir!")
@@ -9,13 +21,13 @@ IO.puts("Hello Elixir!")
 Elixir scripts use the extension `.exs` by convention, and elixir source files user the extension `.ex`. Create a file `hello.exs` with the content above. Executing the `elixirc`.
 
 ```bash
-$ elixir hello.exs 
+$ elixir hello.exs
 Hello Elixir!
 ```
 
 An Elixir script can be executed by using the command `elixir <filename.exs>` . Execute the file you created.
 
-## <a name="basic_types"></a>Basic types
+## Basic types
 
 The primitive types in Elixir are a bit different from imperative languages. Like most functional languages, Elixir introduces a simple syntax for tuples and lists. Let's take a look at some common types and their typing formats.
 
@@ -35,13 +47,13 @@ iex> {1, 2, 3}  # tuple
 ```
 
 * Floats are 64-bit double precision
-* Elixir is a dynamically typed language so the types are inferred during runtime. 
+* Elixir is a dynamically typed language so the types are inferred during runtime.
 * The [Kernel.TypeSpec](http://elixir-lang.org/docs/v1.1/elixir/Kernel.Typespec.html) module provides macros and functions for working with typespecs that allow static analyzer programs useful for bug hunting.
 * In Elixir, custom types composing of basic types can be defined by using the `@type` directive.
 
 In addition to the basic types listed above, Elixir also provides additional types such as a `Port`,  `PID` and a `Reference`, more about these types later on.
 
-### <a name="basic_arithmetic"></a>Basic arithmetic and numbers
+### Basic arithmetic and numbers
 
 Open up the `iex` REPL and try out the following expressions
 
@@ -81,7 +93,7 @@ iex> rem 10, 3
 1
 ```
 
-In Elixir, parentheses are optional in function invocation. For explicitness and to promoto best practices, parentheses are preferred most of the time in these examples. 
+In Elixir, parentheses are optional in function invocation. For explicitness and to promoto best practices, parentheses are preferred most of the time in these examples.
 
 ```elixir
 iex> round(3.55)
@@ -92,7 +104,7 @@ iex> trunc(3.55)
 
 In case you want to convert integers to floats, you can use either the `round` function to round to the nearest, or `trunc` to get the integer part of the number.
 
-### <a name="basic_types_booleans"></a>Booleans
+### Booleans
 
 ```elixir
 iex> true
@@ -139,7 +151,7 @@ Elixir uses the logical operators `and`, `or` and `not` for boolean values.
 | -------- | ------ | ----- |
 | And      |`and`   | `&& ` |
 | Or       |`or`    | <code>&#124;&#124;</code>  |
-| not      |`not`   | `!`   | 
+| not      |`not`   | `!`   |
 
 ```elixir
 iex> 1 || true
@@ -193,9 +205,9 @@ It is also possible to compare different types, which proves itself useful when 
 number < atom < reference < functions < port < pid < tuple < maps < list < bitstring
 ```
 
-The ordering in comparisons of different data types is represented in the table above. 
+The ordering in comparisons of different data types is represented in the table above.
 
-### <a name="basic_types_atoms"></a>Atoms
+### Atoms
 
 ```elixir
 iex> :foo
@@ -221,7 +233,7 @@ true
 
 It turns out, booleans are implemented as atoms.
 
-### <a name="basic_types_strings"></a>Strings
+### Strings
 
 ```elixir
 iex> "Älämölö"
@@ -263,7 +275,7 @@ Strings can span multiple lines, and they can use escape sequences such as `\n` 
 ### A few words on immutability
 <div class="key-concept">
 ![Key concept][lambda]<span>Immutability</span>
-<p>Like most functional languages, Elixir favors immutable data. Immutability means, that a value cannot, and there is no way to change once a it has been declared. Immutability has lots of benefits to it, especially when it comes to parallel processing. Usually the challenges of parallel and asynchronous computation lies in the mutation of the state. All the writes by different parallel units of processing must carefully lock the data they write to and simultanous access to writable data structures is in practice very error prone.</p> 
+<p>Like most functional languages, Elixir favors immutable data. Immutability means, that a value cannot, and there is no way to change once a it has been declared. Immutability has lots of benefits to it, especially when it comes to parallel processing. Usually the challenges of parallel and asynchronous computation lies in the mutation of the state. All the writes by different parallel units of processing must carefully lock the data they write to and simultanous access to writable data structures is in practice very error prone.</p>
 
 <p>Immutable data completely avoids many shortcomings of using mutable values. Then again immutability is not a silver bullet nor without downsides. Immutability can be very costly, when there is an actual need to update a value, since every time we want to chang data, the previous value needs to be copied to the new value - which can be expensive for complex data structures.</p>
 
@@ -290,7 +302,7 @@ iex> teppo = Map.put(teppo, :name, "some other teppo")
 %{age: 27, name: "some other teppo"}
 iex> teppo
 %{age: 27, name: "some other teppo"}
-iex> teppo_copy 
+iex> teppo_copy
 %{age: 27, name: "teppo"}
 
 ```
