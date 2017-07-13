@@ -1,8 +1,25 @@
 [lambda]: img/lambda.png
 
+<!-- TOC -->
+
+  - [Summary of common sample sizer functions](#summary-of-common-sample-sizer-functions)
+  - [Summary of sample manipulation functions](#summary-of-sample-manipulation-functions)
+- [Sample sizer functions](#sample-sizer-functions)
+    - [Enum.take/2](#enumtake2)
+    - [Enum.drop/2](#enumdrop2)
+    - [Enum.take_while/2](#enumtake_while2)
+    - [Enum.drop_while/2](#enumdrop_while2)
+  - [Enum.map/2](#enummap2)
+  - [Enum.filter/2](#enumfilter2)
+  - [Enum.zip/2](#enumzip2)
+  - [Enum.reduce/3](#enumreduce3)
+- [The pipe operator](#the-pipe-operator)
+
+<!-- /TOC -->
+
 <div class="key-concept">
 ![Key concept][lambda]<span>High-order functions</span>
-<p>High-order functions are functions that accept functions as their arguments or return a function as their result.</p> 
+<p>High-order functions are functions that accept functions as their arguments or return a function as their result.</p>
 
 <p>Elixir's [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module provides a familiar set of high-order functions often found in other functional languages. </p>
 </div>
@@ -21,7 +38,7 @@ Usage of the functions found in the `Enum` and `Stream` module is highly encoura
   <thead>
     <tr>
       <td>Function</td><td>Parameters</td><td>Description</td>
-    </tr>   
+    </tr>
   </thead>
   <tbody>
     <tr>
@@ -30,7 +47,7 @@ Usage of the functions found in the `Enum` and `Stream` module is highly encoura
       </td>
       <td>
         1. Enumerable  <br>
-        2. `function/1` returning a condition with an element passed as a parameter 
+        2. `function/1` returning a condition with an element passed as a parameter
       </td>
       <td>
         Create a new enumerable of the same type from the elements that satisfy a given condition
@@ -45,7 +62,7 @@ Usage of the functions found in the `Enum` and `Stream` module is highly encoura
         2. `n` elements to take
       </td>
       <td>
-        Returns a new Enumerable with `n` first elements 
+        Returns a new Enumerable with `n` first elements
       </td>
     </tr>
     <tr>
@@ -57,7 +74,7 @@ Usage of the functions found in the `Enum` and `Stream` module is highly encoura
         2. `n` elements to take
       </td>
       <td>
-        Returns a new Enumerable without `n` first elements 
+        Returns a new Enumerable without `n` first elements
       </td>
     </tr>
     <tr>
@@ -69,7 +86,7 @@ Usage of the functions found in the `Enum` and `Stream` module is highly encoura
         2. Predicate function `function/1`
       </td>
       <td>
-         Return an Enumerable with first elements until the predicate `function/1` finds an element it yields a false for 
+         Return an Enumerable with first elements until the predicate `function/1` finds an element it yields a false for
       </td>
     </tr>
     <tr>
@@ -93,7 +110,7 @@ Usage of the functions found in the `Enum` and `Stream` module is highly encoura
   <thead>
     <tr>
       <td>Function</td><td>Parameters</td><td>Description</td>
-    </tr>   
+    </tr>
   </thead>
   <tbody>
     <tr>
@@ -148,14 +165,14 @@ Usage of the functions found in the `Enum` and `Stream` module is highly encoura
   </tbody>
 </table>
 
-A more complete list of functions is documented in the [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module. 
+A more complete list of functions is documented in the [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module.
 
 
-## <a name="sample_sizers"></a> Sample sizer functions
+## Sample sizer functions
 
-Let's take a look at functions that are used to limit the sample size of an `Enumerable`. These functions are used to create subcollections of `Enumerables`, either by removing leading or trailing elements, or removing elements that fulfill or fail a condition given by a predicate function. 
+Let's take a look at functions that are used to limit the sample size of an `Enumerable`. These functions are used to create subcollections of `Enumerables`, either by removing leading or trailing elements, or removing elements that fulfill or fail a condition given by a predicate function.
 
-### <a name="high_order_take"></a> Enum.take/2
+#### Enum.take/2
 
 ```elixir
 iex> list = [1, 2, 3, 4, 5, 6]
@@ -179,7 +196,7 @@ iex> Enum.take([], 1)
 
 Attempting to call `Enum.take/2` on a enumerable with less than `n` elements will return all the elements of the `Enumerable` as a list or an empty list.
 
-### <a name="high_order_drop"></a> Enum.drop/2
+#### Enum.drop/2
 
 ```elixir
 iex> list = [1, 2, 3, 4, 5, 6]
@@ -187,7 +204,7 @@ iex> Enum.drop(list, 2)
 [3, 4, 5, 6]
 ```
 
-`Enum.drop/2`, is just like `Enum.take/2`, but it is used to create a new list from the input's contents without the `n` first elements. 
+`Enum.drop/2`, is just like `Enum.take/2`, but it is used to create a new list from the input's contents without the `n` first elements.
 
 ```
 iex> Enum.drop(list, 7)
@@ -198,7 +215,7 @@ iex> Enum.drop([], 1)
 
 For empty `Enumerables`, `Enum.drop/2` on a enumerable with less than `n` elements will return all the elements of the `Enumerable` as a list or an empty list.
 
-### <a name="high_order_take_while"></a> Enum.take_while/2
+#### Enum.take_while/2
 
 ```elixir
 iex> Enum.take_while([1, 2, 3, 4, 5, 6], fn n -> n < 4 end)
@@ -214,7 +231,7 @@ iex> Enum.take_while(["a", "b", "c", "d", "e", "g", "a"], fn str -> str !== "e" 
 
 The use of `Enum.take_while/2` is in no way limited to numbers, but can be applied to use any kinds of values you can imagine a boolean expression for.
 
-### <a name="high_order_drop_while"></a> Enum.drop_while/2
+#### Enum.drop_while/2
 
 ```elixir
 iex> Enum.drop_while([1, 2, 3, 4, 5, 6], fn n -> n < 4 end)
@@ -223,7 +240,7 @@ iex> Enum.drop_while([1, 2, 3, 4, 5, 6], fn n -> n < 4 end)
 
 `Enum.drop_while/2` is a function similar to `Enum.take_while/2`, but instead of taking, it drops values until the predicate function `fn/1` yields a `false`.  `
 
-## <a name="high_order_map"></a> Enum.map/2
+###  Enum.map/2
 
 ```elixir
 iex> list = [1,2,3,4,5]
@@ -240,7 +257,7 @@ More formally, `map/2` is a function used to *map* (transform) an `Enumerable` o
 
 ```elixir
 people = [%{name: "Matti Ruohonen", born: 1949},
-          %{name: "Teppo Ruohonen", born: 1948}, 
+          %{name: "Teppo Ruohonen", born: 1948},
           %{name: "Seppo Räty", born: 1962}]
 ```
 Let's create a list objects representing the most important finnish celebrities and their birth years. Note that celebrities are represented by the `%{}` map *type*.
@@ -253,19 +270,19 @@ iex> Enum.map(people, fn(p) -> Map.get(p, :born) end)
 [1949, 1948, 1962]
 
 ```
-In the first case, the `map/2` transforms a list of `Map`s to a list of strings, without mutating the original collection. In the second case, `map/2` transforms the list of `Map`s to a list of strings using the `Map.get/2` function. 
+In the first case, the `map/2` transforms a list of `Map`s to a list of strings, without mutating the original collection. In the second case, `map/2` transforms the list of `Map`s to a list of strings using the `Map.get/2` function.
 
 ```elixir
 iex> names = Enum.map(people, fn(person) -> person.name end)
 ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
 
-iex> Enum.map(names, fn(n) -> String.upcase(n) end)  
+iex> Enum.map(names, fn(n) -> String.upcase(n) end)
 ["MATTI RUOHONEN", "TEPPO RUOHONEN", "SEPPO RÄTY"]
 ```
 
 `map/2` is often used to formulate *functional pipelines* where the value is transformed multiple times to a new format or type suitable for the next operation. The second call to `map/2` uses the function `upcase/1` from the [String](http://elixir-lang.org/docs/stable/elixir/String.html) module.
 
-## <a name="high_order_filter"></a> Enum.filter/2
+### Enum.filter/2
 
 ```elixir
 iex> list = [1,2,3,4,5]
@@ -283,7 +300,7 @@ iex> names = Enum.map(people, fn(person) -> person.name end)
 ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
 iex> matches = Enum.filter(names, fn(n) -> String.contains?(n, "Ruohonen") end)
 ["Matti Ruohonen", "Teppo Ruohonen"]
-iex> Enum.map(matches, fn(n) ->       
+iex> Enum.map(matches, fn(n) ->
 ...>   name_parts = String.split(n, " ")
 ...>   hd(name_parts)
 ...> end)
@@ -292,7 +309,7 @@ iex> Enum.map(matches, fn(n) ->
 
 The `filter/2` function is often used together with other high order functions, like with the `map/2` used in this example. First the list of people is transformed to list of names. We are only interested in the names that include the string "Ruohonen", which we check for with the `String.contains?/2` function from the [String](http://elixir-lang.org/docs/stable/elixir/String.html) module. For the filtered list, we perform yet another `map/2` to split the names in to parts, of which we grab the first elements of.
 
-## <a name="high_order_zip"></a> Enum.zip/2
+### Enum.zip/2
 
 ```elixir
 iex> numbers = [1,2,3,4,5]
@@ -301,11 +318,11 @@ iex> alphabet = ["a", "b", "c", "d", "e"]
 ["a", "b", "c", "d", "e"]
 iex> Enum.zip(numbers, alphabet)
 [{1, "a"}, {2, "b"}, {3, "c"}, {4, "d"}, {5, "e"}]
-iex> Enum.zip(numbers, numbers) 
+iex> Enum.zip(numbers, numbers)
 [{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}]
 ```
 
-The `zip/2` is a function that takes two lists as parameters and merges their contents to a new list containing the values *zipped* together as tuples. 
+The `zip/2` is a function that takes two lists as parameters and merges their contents to a new list containing the values *zipped* together as tuples.
 
 ```elixir
 iex> Enum.zip(["Matti", "Teppo", "Seppo"], ["Ruohonen", "Ruohonen", "Räty"])
@@ -327,7 +344,7 @@ iex> Enum.with_index(["a", "b", "c", "d"])
 ```
 Generally speaking, the purpose of the `zip/2` function is simply what we stated, but the use cases are endless. For example, one might require to merge two lists of arbitrary values together, in order to process them further with other high-order functions, or one simply might require an index element of every item in the list, which would be case for `zip/2`. The `zip/2` function is so commonly used for indexing, that there exists a short-hand function `with_index/1` for this purpose.
 
-## <a name="high_order_reduce"></a> Enum.reduce/3
+### Enum.reduce/3
 
 ```elixir
 iex> numbers = [1,2,3,4,5]
@@ -341,7 +358,7 @@ The `reduce/3` function is used to reduce the values of an `Enumerable` to a sin
 ```elixir
 iex> names = ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
 ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
-iex> Enum.reduce(names, "", fn(name, acc) -> acc <> name <> "!!!11 " end)            
+iex> Enum.reduce(names, "", fn(name, acc) -> acc <> name <> "!!!11 " end)
 "Matti Ruohonen!!!11 Teppo Ruohonen!!!11 Seppo Räty!!!11 "
 ```
 
@@ -364,12 +381,12 @@ iex> [1,2,3,4,5] |> Enum.reduce(&(&1 + &2))
 
 The Elixir shown initially is such an messy example of Elixir and functional programming, that an alternative syntax has to be shown here. Elixir sports a feature called *function capturing*, which makes the situation quite a bit neater. We'll introduce function capturing in better detail in a later chapter, but rest assured - there is light at the end of the tunnel.
 
-## <a name="pipe_operator"></a> The pipe operator
+## The pipe operator
 
-We noticed that when applying several high-order functions sequentially, the code starts to lose some of it's beautiful, minimalistic elegance. Luckily we have the pipe operator `|>` that is used to chain or pass the value on the left-hand side of the operator to the function on the right-hand side. In it's behavior the pipe operator `|>` is very similar to the traditional UNIX `|` operator. 
+We noticed that when applying several high-order functions sequentially, the code starts to lose some of it's beautiful, minimalistic elegance. Luckily we have the pipe operator `|>` that is used to chain or pass the value on the left-hand side of the operator to the function on the right-hand side. In it's behavior the pipe operator `|>` is very similar to the traditional UNIX `|` operator.
 
 ```elixir
-iex> sum_of_squares = [1,2,3,4,5] 
+iex> sum_of_squares = [1,2,3,4,5]
 ...> |> Enum.map(fn(x) -> x*x end)
 ...> |> Enum.reduce(0, fn(n, acc) -> n + acc end)
 55
@@ -379,16 +396,16 @@ In the example above, the pipe `|>` passes an array of numbers to the `map/2` fu
 
 ```elixir
 people = [%{name: "Matti Ruohonen", born: 1949},
-          %{name: "Teppo Ruohonen", born: 1948}, 
+          %{name: "Teppo Ruohonen", born: 1948},
           %{name: "Seppo Räty", born: 1962}]
 ```
 
 Let's return to the previous example of people and do some function chaining.
 
 ```elixir
-iex> people 
+iex> people
 ...> |> Enum.map(fn(p) -> p.name end)
-...> |> Enum.filter(fn(n) -> String.contains?(n, "Ruohonen") end) 
+...> |> Enum.filter(fn(n) -> String.contains?(n, "Ruohonen") end)
 ...> |> Enum.map(fn(n) -> String.split(n, " ") end)
 ...> |> Enum.map(fn(nn) -> hd(nn) end)
 ...> |> Enum.reduce("", fn(n, acc) -> acc <> n <> " OMG!!! " end)

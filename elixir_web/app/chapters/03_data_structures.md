@@ -1,6 +1,15 @@
 [lambda]: img/lambda.png
 
-## <a name="data_structures_tuples"></a> Tuples
+<!-- TOC -->
+
+- [Tuples](#tuples)
+- [Lists](#lists)
+- [Keyword lists](#keyword-lists)
+- [Maps](#maps)
+
+<!-- /TOC -->
+
+## Tuples
 
 Functional programmers often find the need to return more than a single value from a function. These sets of values can be represented as tuples, which are ordered pairs of n elements. In impreative programming, whenever you want to represent some structured data you normally implement a construct such as a `class` or a `struct` for that purpose. The heavy-weight constructs don't always feel that necessary. That's why most functional languages implement a `tuple` that can act as a container values.
 
@@ -15,7 +24,7 @@ iex> tuple_size(cat)
 3
 ```
 
-Tuples are defined by using curly brackets and the values do not need to be of the same type. The `tuple_size/1` can be used to find the count of elements stored in a tuple. 
+Tuples are defined by using curly brackets and the values do not need to be of the same type. The `tuple_size/1` can be used to find the count of elements stored in a tuple.
 
 ```elixir
 iex> cat = {:cat, 'Brown', 5}
@@ -38,7 +47,7 @@ iex> cat
 
 Use the `put_elem/3` function to modify an element of a tuple. Notice that all declared variables in Elixir are immutable, and the `put_elem/3` returns a new copy of the original tuple rather than modifying the original element like typically done in eg. Java.
 
-## <a name="data_structures_list"></a> Lists
+## Lists
 <div class="key-concept">
     ![Key concept][lambda]<span>Lists of lists of lists</span>
     <p>Lists play an important role in functional programming in general. The first functional language [LISP](https://en.wikipedia.org/wiki/Lisp_(programming_language)) (1958) is in fact an acronym for LISt Processor.</p>
@@ -53,7 +62,7 @@ iex> length([1,2,3])
 3
 ```
 
-A list can be introduced by enclosing a set of comma separated values within brackets `[]`. You can get the length of a list by calling the function `length\1`. Remember, calculating the length of a linked list runs in linear `O(N)` time. 
+A list can be introduced by enclosing a set of comma separated values within brackets `[]`. You can get the length of a list by calling the function `length\1`. Remember, calculating the length of a linked list runs in linear `O(N)` time.
 
 ```elixir
 iex> [1,2,3] ++ [4,5,6]
@@ -73,7 +82,7 @@ iex> hd([])
     :erlang.hd([])
 ```
 
-Two important functions for working with lists are the head `hd/1` and tail `tl/1` functions. 
+Two important functions for working with lists are the head `hd/1` and tail `tl/1` functions.
 
 The head `hd\1`function returns the first element of a non-empty list. `hd/1` raises an error for en empty list.
 
@@ -128,14 +137,14 @@ true
 
 Using the `in` operator to check for a value in a list is a convenient way to do searches. Bear in mind that searching a list is a O(n) operation.
 
-## <a name="data_structures_keyword_lists"></a> Keyword lists
+## Keyword lists
 
 Elixir also provides a variant of the list, where each element in a list is associated with an atom acting as a keyword. Internally, keyword lists combine the two previous data structures as being lists of tuples.
 
 It is important to understand that keyworded lists are precisely lists, and all the list functions and all the normal functions and linear performance characteristics apply as usual.
 
 ```elixir
-iex> [name: "Bill", name: "Hillary", name: "Donald"]                   
+iex> [name: "Bill", name: "Hillary", name: "Donald"]
 [name: "Bill", name: "Hillary", name: "Donald"]
 
 ```
@@ -155,7 +164,7 @@ iex> people = [name: "Bill", last_name: "Clinton", name: "Donald", last_name: "T
 iex> people[:name]
 "Bill"
 iex> people[:last_name]
-"Clinton" 
+"Clinton"
 ```
 
 A keyword can be looked up from the keyword list with the syntax `list_name[:keyword]`. Upon lookup, the first item matching the condition will be returned.
@@ -164,17 +173,17 @@ The keyword list allows for creating syntactically pleasant functions in a numbe
 
 When the keyword list is the last argument of a function, the square brackets are optional. This allows passing multiple keyworded parameters to a function expecting a list.
 
-##  <a name="data_structures_maps"></a> Maps
+## Maps
 
 ```elixir
-iex> country_capitals = %{:sweden =>  "Stockholm", 
-...> :finland => "Helsinki", 
-...> :germany => "Berlin", 
+iex> country_capitals = %{:sweden =>  "Stockholm",
+...> :finland => "Helsinki",
+...> :germany => "Berlin",
 ...> :spain => "Madrid"}
 %{finland: "Helsinki", germany: "Berlin", spain: "Madrid", sweden: "Stockholm"}
 ```
 
-Map is a data structure used as a container for pairs with a key and a value. Maps are often used as a sort of dictionary, and it's an efficient way of indexing values for different types of searches and retrievals. 
+Map is a data structure used as a container for pairs with a key and a value. Maps are often used as a sort of dictionary, and it's an efficient way of indexing values for different types of searches and retrievals.
 
 Unlike lists, maps are not ordered collections.
 
@@ -204,9 +213,9 @@ iex> country_capitals
 The `Map.put/3` function can be used to create an updated copy of a map provided as the first argument. The second argument is the new key to be inserted, and the third is the value associated with that key. The original map is on updated by the `Map.put/3` function.
 
 ```elixir
-iex> Map.delete(country_capitals, :germany)               
+iex> Map.delete(country_capitals, :germany)
 %{finland: "Helsinki", spain: "Madrid", sweden: "Stockholm"}
-iex> Map.drop(country_capitals, [:spain, :sweden])  
+iex> Map.drop(country_capitals, [:spain, :sweden])
 %{finland: "Helsinki", germany: "Berlin"}
 ```
 
@@ -231,7 +240,7 @@ iex> Map.get(animal_sounds, :snake)
 nil
 ```
 
-When all the keys in a map are atoms, you can also use the `keyword:` syntax for associating keys with values in a map. Also when all your keys are atoms, one can access the map with a special syntax `map.key` instead of using the `Map.get/2` function. 
+When all the keys in a map are atoms, you can also use the `keyword:` syntax for associating keys with values in a map. Also when all your keys are atoms, one can access the map with a special syntax `map.key` instead of using the `Map.get/2` function.
 
 Notice that the `map.key` syntax for accessing the map is strict. A non-existent key will raise an error, unlike the non-strict `Map.get/2` that will instead return a `nil`.
 
@@ -241,7 +250,7 @@ iex> %{ animal_sounds | :snake => "Hsssst!"}
     (stdlib) :maps.update(:snake, "Hsssst!", %{cat: "Meeoow!", cow: "Moo!", dog: "Woof!"})
     (stdlib) erl_eval.erl:255: anonymous fn/2 in :erl_eval.expr/5
     (stdlib) lists.erl:1262: :lists.foldl/3
-iex> %{ animal_sounds | :dog => "WOOOF!"}   
+iex> %{ animal_sounds | :dog => "WOOOF!"}
 %{cat: "Meeoow!", cow: "Moo!", dog: "WOOOF!"}
 
 ```

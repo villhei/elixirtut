@@ -5,10 +5,20 @@
   </ul>
 </div>
 
+<!-- TOC -->
+
+- [If .. else](#if--else)
+- [Cond](#cond)
+- [Case](#case)
+- [A case of guards](#a-case-of-guards)
+- [The pin operator](#the-pin-operator)
+
+<!-- /TOC -->
+
 [lambda]: img/lambda.png
 Elixir supports `if` ... `else`, `unless`, `cond` and `case` structures for controlling the flow of an application. The `if` ... `else` structures work much like in other languages. `unless` is syntactic sugar for negation of an `if` condition. `case` is used to match patterns extracted from variables or values, `cond` is used for complex chains of `if` ... `else` conditions.
 
-## <a name="conditions_if_else"></a>If .. else
+## If .. else
 
 ```elixir
 iex> if true do
@@ -30,7 +40,7 @@ true
 
 The behavior of the `if/2` macro and it's keyword-list parameters is demonstrated with the example above. The condition is truthful, so the  which evaluates to true. The macro has two clauses, the `do:` block for a truthful condition and the `else:` block for a falsy condition. This syntax is rarely used, but is demonstrated here for better understanding of the implementation of the `if/2` macro.
 
-```elixir 
+```elixir
 iex> iex(7)> if(false, do: "hello")
 nil
 ```
@@ -50,13 +60,13 @@ iex> hello
 ![Warning][warning] It turns out that the macro implementation of the `if/2` has a slight gotcha! It's good to bear in mind that the `do:` or `else:` keyworded blocks are bound to their outer scopes, which unfortunately can be side-effecting as demonstrated above.
 
 ```elixir
-iex> hello = if(false, do: "true", else: "false")        
+iex> hello = if(false, do: "true", else: "false")
 "false"
 ```
 
 In order to keep your intentions explicit and for good functional programming practice, the side-effecting pattern should be avoided in favor of the latter. Clearly show your intention to bind the return value to a variable.
 
-## <a name="conditions_cond"></a>Cond
+## Cond
 
 ```elixir
 iex> name = "hello"
@@ -90,7 +100,7 @@ iex> cond do
 
 ```
 
-The `cond` construct will raise an error if it does not find a suitable condition to fulfill. 
+The `cond` construct will raise an error if it does not find a suitable condition to fulfill.
 
 ```elixir
 iex> name = "hello"
@@ -110,7 +120,7 @@ iex> cond do
 
 The last condition of a `cond` construct can be substituted with the atom `true` in order to prevent an exception from raising. The `true` will obviously always be truthful and by this addition we're making sure there is a fallback mechanism, for example in the case of unexpected values or a programmer error.
 
-## <a name="conditions_case"></a>Case
+## Case
 
 The `case` construct is perharps the most interesting of the conditional constructs. The `case` construct allows the programmer to use the full power of pattern matching in combination with guard clauses.
 
@@ -146,7 +156,7 @@ iex> case {1, 2, 3} do
 "Will always match"
 ```
 
-The `_` clause has a special meaning in Elixir. The underscore `_` means "any value" or "anything" or "ignore the value" and will always yield true in `cond` constructs. 
+The `_` clause has a special meaning in Elixir. The underscore `_` means "any value" or "anything" or "ignore the value" and will always yield true in `cond` constructs.
 
 
 ```elixir
@@ -161,7 +171,7 @@ iex> case {1, 2, 3} do
 
 The clauses listed in the `case` construct need not be exhaustive. The clauses can be a combination of bound variables or they can be ignored. The second clause in addition to the last one is the only one that has a properly matching pattern.
 
-## <a name="conditions_case"></a>A case of guards
+## A case of guards
 
 ```elixir
 iex> case {1, 2, 3} do
@@ -199,7 +209,7 @@ iex> case 666 do
 
 The guard condition can also match against ranges, which can prove itself useful with it's elegant short-hand syntax.
 
-## <a name="pin_operator"></a>The pin operator
+## The pin operator
 
 As Elixir allows variables existing in a given scope to be rebound, the conditional statements can sometimes be a little risky and yield unpredictable results. The allow matching against the values bound to variables, Elixir provides an operator `^`, commonly referred to as the pin operator.
 
