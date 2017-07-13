@@ -8,8 +8,8 @@ import Routes from './routes.jsx'
 import hljs from 'highlight.js'
 
 
-(function() {
-  hljs.registerLanguage('language-elixir', function(hljs) {
+(() => {
+  hljs.registerLanguage('language-elixir', (hljs) => {
     return hljs.getLanguage('elixir');
   });
   $(document).ready(function() {

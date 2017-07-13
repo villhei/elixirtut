@@ -28,7 +28,7 @@ module.exports = {
         query: {
           presets: ['react', 'es2015']
         }
-      }, 
+      },
       {
         test: /\.less$/,
         loader: ExtractTextPlugin.extract("style-loader", "css-loader!less-loader")
