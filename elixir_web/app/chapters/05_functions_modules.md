@@ -1,6 +1,6 @@
 [lambda]: img/lambda.png
 <div class="warning">
-  <span>TODOS</span
+  <span>TODOS</span>
   <ul>
     <li>Function guards could be elaborated more</li>
     <li>Unsure if function capturing belongs here</li>
