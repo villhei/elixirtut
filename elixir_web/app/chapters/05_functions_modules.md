@@ -2,8 +2,6 @@
 <div class="warning">
   <span>TODOS</span>
   <ul>
-    <li>Function guards could be elaborated more</li>
-    <li>Unsure if function capturing belongs here</li>
     <li>Structs belong here, as they are defined by modules</li>
   </ul>
 </div>
@@ -24,7 +22,7 @@
 
 <!-- /TOC -->
 
-Elixir uses the concept of modules for grouping several functions together. Functions, other than anonymous functions, cannot be declared outside the scope of a module. We introduce the modules here very briefly and return to them when we start building something more complex.
+Elixir uses the concept of modules for grouping several functions together. Functions other than anonymous functions cannot be declared outside the scope of a module. We introduce the concept of modules here very briefly and return to them when we start building something more complex.
 
 ```elixir
 iex> defmodule Math do
@@ -37,7 +35,7 @@ iex> Math.square(2)
 4
 ```
 
-A module can be declared using the `iex` interpreter, or by saving the contents of the module to a file with the `.ex` extension by convention. Modules declared in separate files should be compiled with the `elixirc` compiler
+You can declare a module with `defmodule` using the `iex` interpreter, or by saving the contents of the module to a file with a `.ex` extension by convention. Modules declared in separate files should be compiled with the `elixirc` compiler
 
 ``` elixir
 defmodule <module_name> do
@@ -45,26 +43,46 @@ defmodule <module_name> do
 end
 ```
 
-The module definition follows the format `defmodule` module name `do` ... module body ... `end`. Functions within a module are defined with the `def` macro and private functions visible only within the lexical scope of the module use the `defp` macro.
+The module definition follows the format `defmodule` `<module name>` followed by `do` ... `module body` ... `end`. Functions within a module are defined with the `def` macro and private functions visible only within the lexical scope of the module are defined using the `defp` macro.
 
 ``` elixir
-def function_name(param_a, param_b) do
-  # Function body
+defmodule Example do
+  def function_name(param_a, param_b) do
+    # Function body
+  end
 end
 ```
 
 Both public and private functions follow the structure `def` fn_name(params..) `do` ... function body ... `end`
 
 ```elixir
-def square(a) do
-  a * a
+defmodule Math do
+  def square(a) do
+    multiply(a, a)
+  end
+
+  defp multiply(a, b) do
+    a * b
+  end
 end
 ```
+```
+iex(34)> Math.square(2)
+4
+iex> Math.multiply(2, 2)
+** (UndefinedFunctionError) function Math.multiply/2 is undefined or private
+    Math.multiply(2, 2)
+```
+
+Private functions defined with the `def` macro do not have a visiblity to callers outside the module context, in other words, private functions are callable only from other functions defined in the same module. Calling a private function from outside the module context will raise an error.
+
+Private functions are typically used as helper functions for abstracting module-specific commonalities and building for composing functions from small, manageable chunks.
+
 <div class="key-concept">
 <a name="implicit_return_values"></a> <span>Implicit return values</span>
 ![Key concept][lambda] <p>It is also worth noticing, that the function `square/1` does not have an explicit `return` statement or similar, like imperative languages such as Java or C tend to use. </p>
 
-<p>This is a common feature in functional languages. The function body is an expression, and the last evaluated value in the function body is treated as the function's return value.</p>
+<p>Implicit return values are  a common feature in functional languages. The function body is an expression, and the last evaluated value in the function body is treated as the function's return value.</p>
 </div>
 
 ```elixir
@@ -75,26 +93,26 @@ defmodule Math do
 end
 ```
 
-Create a new file called `math.ex` and save the contents above inside the file.
+Now it's time to create a new file called `math.ex` with the contents above.
 
 ```bash
 $ elixirc math.ex
 ```
 
-When the module is defined in it's own file, the module can be compiled with the `elixirc` command followed by the filename. The bytecode resulting from the compilation of our example can be found from the file `Elixir.Math.beam`
+When the module is defined in it's own file, the module is compiled with the `elixirc` command followed by the filename. The bytecode resulting from the compilation of our example is found in the file `Elixir.Math.beam`
 
 ```elixir
 iex> Math.square(2)
 4
 ```
 
-When executing the `iex` REPL in the same directory the compiled file is stored in, the module is automatically available for the Elixir interpreter.
+When executing the `iex` REPL in the same directory the compiled file is stored in, the module is automatically available for use with the Elixir interpreter. Automatic inclusion of modules is an easy way to gain an entry point to your code for debugging and taking your code for a test drive.
 
 ## Functions
 ### Functions as first-class citizens
 <div class="key-concept">
  ![Key concept][lambda]<span>Functions are first-class citizens</span>
- <p>Extensive use and composition of short, single purpose functions is one of the distinguishing properties of functional programming. Functions are first class citizens in functional programming: functions are acceptable parameters for functions, functions can be anonymous or named, assigned to variables, stored in data structures and functions can return functions as their return values.</p>
+ <p>Extensive use and composition of short, single purpose functions is one of the distinguishing properties of functional programming. Functions are often rederred to as first-class citizens in functional programming: functions are acceptable parameters for functions, functions can be anonymous or named, assigned to variables, stored in data structures and functions can return functions as their return values.</p>
 
 <p>In other words, function is a value with the type function, which when evaluated, reduces to the return value generated by the expression captured by the function. </p>
 </div>
@@ -127,7 +145,14 @@ defmodule Temperature do
 end
 ```
 
-The above is an example of the module `Temperature` which consists of conversion functions between temperatures reported in celsius, kelvin and fahrenheit. The functions do not have an explicit return statement, instead the functions return the value the expression representing the function body evaluates to. In this case, the expressions of the functions evaluate to the result of the calculation declared in the function body.
+The above is an example of a module. The module `Temperature` consists of conversion functions between temperatures reported in celsius, kelvin and fahrenheit. None of the functions has an explicit return statement, instead the functions return the same values as the function bodies evaluate to. In these cases, the expressions of the functions evaluate to the results of the calculations declared in the function bodies.
+
+```elixir
+iex> Temperature.fahrenheit_to_kelvin(0)
+255.3722222222222
+```
+
+Try saving this module to a file, compiling it with `elixirc` and start up the `iex` REPL in the same directory with the module. Try calling the module functions.
 
 ```elixir
 defmodule PersonOps do
@@ -142,7 +167,7 @@ defmodule PersonOps do
 end
 ```
 
-Let's declare some operations for a person represented by the map type. The person has three properties, `first_name`, `last_name` and `age`.
+Let's declare some operations for handling people. A person in our case is represented by the map type. A person is a map with three properties: `first_name`, `last_name` and `age`.
 
 ```elixir
 iex> person = %{first_name: "Esko", last_name: "Erikoinen", age: 42}
@@ -158,9 +183,9 @@ The person's name is Esko Erikoinen
 ```
 You'll notice that the functions perform the actions you expected. A careful reader makes an additional note: now that the `IO.puts\1` is the last value of the expression declared in the function body, in addition to the `:stdout` output the function returns the atom `:ok` indicating a succesful I/O operation.
 
-Repeat after me: everything is an expression, and every expression evaluates to a value.
+Repeat after me: In functional programming everything is an expression, and every expression evaluates to a value.
 
-In Elixir everything is an expression, as in everything has an identifiable value.
+Unsurprisingly everything is an expression in Elixir as well.
 
 ## Recursion
 
@@ -170,7 +195,7 @@ In Elixir everything is an expression, as in everything has an identifiable valu
 
 <p>Recursive function is a function that calculates it's final value by repeated application of the function - in other words - function calling itself over and over again. If you do not understand recursion is, read this paragraph again.</p>
 
-<p> Playing with recursion in imperative languages feels somewhat having a conversation with your Australian cousin. The language is fun and refreshing for a while, but you usually want to go back to speaking real English after a while. In the end, recursion is no different from using `for` or `while` loops.</p>
+<p> Playing with recursion in imperative languages feels somewhat like having a conversation with your Australian cousin. The language is fun and refreshing for a while, but you usually want to go back to speaking real English after a while. In the end, recursion is no different from using `for` or `while` loops.</p>
 </div>
 
 ```java
@@ -220,6 +245,37 @@ It is always important to have a terminating condition for recursion (`n < 2`) o
 
 ```elixir
 defmodule ListOps do
+  def list_sum(list) do
+    case list do
+      [] -> 0
+      [head | tail] -> head + list_sum(tail)
+    end
+  end
+end
+
+iex> ListOps.list_sum([1, 2, 3])
+6
+```
+
+Recursive traversal of lists is a common scenario in functional programming. Typical approach to handling lists is to iterate through them an item at a time, first extracting the `head` element in the function body, handling it's value, and calling the current function again with the `tail` part until the function encounters an empty list.
+
+The return value of this function is the number returned by either condition of the `case` block.
+
+```elixir
+# When called, the function expands as follows:
+
+iex> ListOps.list_sum([1, 2, 3])
+    --> 1 + list_sum([2, 3])
+    --> 1 + 2 + list_sum([3])
+    --> 1 + 2 + 3 + list_sum([]) # The recursion terminates and returns a zero
+    --> 1 + 2 + 3 + 0
+6
+```
+
+The combination of destructuring values in a match block and re-using the function logic in a recursive application might feel a little odd in the beginning, but this oddness is simply removed by repeated application of recursion.
+
+```elixir
+defmodule ListOps do
   def list_length([]) do
     0
   end
@@ -233,13 +289,11 @@ iex> ListOps.list_length([1,2,3,4,5])
 5
 ```
 
-Here we already play with a new concept called pattern matching, which we will discuss in more detail in a later chapter.
+Many language constructs in Elixir are designed to make programming recursive functions easy. Function-level pattern matching (introduced in more detail in the next chapter) is one of these syntactic helpers.
 
-We defined a module `ListOps` with a two variants of the function `list_length/1`. The first variant accepts a pattern matching an empty list. The pattern matching is also used in the function parameters with the syntax `[head|tail]` to extract the head element from the tail of the list, as introduced in the lists-chapter earlier.
+The example above defines a module `ListOps` with a two variants of the function `list_length/1`. The first variant accepts a pattern matching to an empty list, for which it returns a zero.
 
-The second variant accepts a pattern of a non-empty list. Remember that the function `hd\1`, which the syntax used maps to, raises an exception for an empty list, so an empty list does not match the pattern provided.
-
-The former variant of `list_length/1` returns a zero for an empty list, and the latter adds the result of a recursive call to `list_length/1` with the number one.
+The pattern for a non-empty list is declared in the function parameters with the syntax `[head|tail]`. The `[head|tail]` declaration is used to extract the head element from the tail of the list early in the function parameters, leaving the function body to be a one-line implementation with no need for logic besides simple arithmetics.
 
 ```elixir
 # When called, the function expands as follows:
@@ -254,7 +308,7 @@ iex> ListOps.list_length([1, 2, 3, 4, 5])
 5
 ```
 
-The expansion of the `list_length/1` behaves quite similarly to the factorial function.
+The expansion of the `list_length/1` behaves quite similarly to the factorial function despite the fact that the last expanded value is returned from a different function body than the former ones.
 
 ```java
 int[] array = {1,2,3,4,5};
@@ -289,9 +343,9 @@ iex> ListOps.square_list([1,2,3,4,5])
 [1, 4, 9, 16, 25]
 ```
 
-Defining functions with multiple patterns is common practice in Elixir programming. The idea is to rule out cases on as high a level as possible, leaving the function with less clutter, so they can focus on expressing their behavior instead of performing checks on their inputs.
+Defining functions with multiple patterns is common practice in Elixir programming. The idea is to rule out unapplicable cases as early as possible, in order to leave functions with less clutter, so the functions can focus on expressing their behavior instead of performing slicing of their inputs.
 
-The latter definition of `square_list/1` multiplies the head of the list with itself, and prepends the result to the result produced by a recursive call to the same function `square_list/1`. The recursive call can now match against either of the functions by the same name.
+The latter definition of `square_list/1` multiplies the head of the list with itself, and prepends the result to the result to a tail part of a list produced by a recursive call to the same function `square_list/1`. The recursive call can now match against either of the functions by the same name.
 
 ```elixir
 defmodule ListOps do
@@ -328,7 +382,7 @@ The expansion of the `reverse/1` differs slightly from the earlier functions, bu
 ![Key concept][lambda]<span>Tail call optimization</span>
 <p>The function we defined does not come without problems. The Elixir compiler supports a feature called *tail call optimization* (or tail call elimination) for recursive functions. Tail call optimization refers to the elimination of the actual recursive call in favor of transforming the recursive calls in to a loop.</p>
 
-<p>The optimization is a significant performance improvement over recursion. After the transformation the virtual machine does not need to allocate a new call stack to the successive recursive function calls, but can instead reuse the original stack created during the initial function call.</p>
+<p>The optimization is a significant performance improvement over standard function calls generated by a compiled recursive application. After the optimizing transformation the virtual machine does not need to allocate a new call stack to the successive recursive function calls during execution, but can instead reuse the original stack created during the initial function call.</p>
 
 <p>The condition for the tail call optimization to be applied is to formulate the recursive call so that the final, recursion-terminating call does not need any values from the previous function calls.</p>
 </div>
@@ -351,9 +405,9 @@ iex> ArrayOps.square_list [1,2,3,4,5]
 [1, 4, 9, 16, 25]
 ```
 
-The rewritten `square_list\1` uses a helper function to enable the elimination of the call stack creation. Creating a private helper function `do_squaring/2` within the module allows for the original call syntax for the users' of the function.
+The rewritten `square_list\1` uses a helper function to enable the elimination of the call stack creation. Creating a private helper function `do_squaring/2` within the module allows for the original call syntax for the users of the function along with a module-private, optimized implementation of the function.
 
-`do_squaring/2` takes two parameters, an accumulator list that holds the squared values and the list with the values to square. The function iterates over the list element-by-element, and finally when the list runs out of elements, the `do_squaring/2` returns the accumulated value.
+`do_squaring/2` takes two parameters, an accumulator list that holds the squared values and the list with the values to be squared. The function iterates over the list element-by-element, and finally when the list runs out of elements, the `do_squaring/2` returns the accumulated value carried over by the function parameters.
 
 ```elixir
 defmodule MathEx do
@@ -367,7 +421,7 @@ defmodule MathEx do
 end
 ```
 
-Let's visit again the earlier example of the `fact/1` function. We also showed how the calls of the function rolled out. It's important to realize, that our implementation of `fact/1` is not tail-recursive, as the expression `n * fact(n-1)` cannot release the call stack, but expects a return value from the successive call on each iteration. Let's remedy the situation.
+Let's visit again the earlier example of the `fact/1` function. We also showed how the calls of the function rolled out. It's important to realize, that our implementation of `fact/1` was not tail-recursive, as the expression `n * fact(n-1)` cannot release the call stack, but expects a return value from the successive call on each iteration. Let's remedy the situation.
 
 ```elixir
 defmodule MathEx do
@@ -384,7 +438,7 @@ defmodule MathEx do
 end
 ```
 
-We achieve tail-recursiveness by implementing a helper function `do_fact/2` accepting to parameters, the accumulated state `acc` and the number `n` acting as the multiplier. The first call to `do_fact/2` assigns the initial parameter `n` as the accumulator `acc` and on each call to `do_fact/2` the `n` is subtracted by 1 to obtain a new multiplier. The recursion-terminates, when `n` reaches the number 1 and the accumulated value is returned.
+We can achieve tail-recursiveness by implementing a helper function `do_fact/2` accepting two parameters, the accumulated state `acc` and the number `n` acting as the multiplier. The first call to `do_fact/2` assigns the initial parameter `n` as the accumulator `acc` and on each call to `do_fact/2` the `n` is subtracted by 1 to obtain a new multiplier. The recursion-terminates, when `n` reaches the number 1 and the accumulated value is returned.
 
 ```elixir
 iex> MathEx.fact(5)
@@ -400,7 +454,9 @@ iex> MathEx.fact(5)
 120
 ```
 
-The tail-recursive variant of `fact/1` passes the state of calculation between the function calls, and the calls are optimized to an iterative loop by the compiler. The previous call stack is re-used between successive function calls. As a wrap up, elimination of tail-recursion allows a function to operate in constant (stack) space.
+The tail-recursive variant of `fact/1` passes the state of calculation between the function calls, and the calls are optimized to an iterative loop by the compiler. The previous call stack is re-used between successive function calls.
+
+To sum it up up: Elimination of tail-recursion is a commonly used optimization technique that allows a function to operate in constant stack space.
 
 ## Guards in functions
 
@@ -422,6 +478,26 @@ iex> MathEx.fact("a")
 ```
 
 The function definitions can also be decorated with guards in order to allow the function to yield safe and predictable results. The factorial function does not work for numbers less than zero so we decorate the function definition with a guard with the `when <cond>` just before the block initiated by the `do` keyword. Our guard makes sure that the function receives a number and the function is of valid magnitude.
+
+```
+defmodule Guards do
+
+  def hello(who) when is_bitstring(who) do
+    "Hello #{who}!"
+  end
+
+end
+
+iex> Guards.hello("you")
+"Hello you!"
+
+iex> Guards.hello(<<72, 101, 108, 108, 111, 32>>)
+"Hello Hello !"
+```
+
+The guards in function parameters for standard types are not exhaustive, for example, a string-specific guard does not exist (but the `is_bitstring/1` can be used similarily, but it will accept non UTF-8 compliant sequences of bytes). The lack of exhaustiveness comes from the guard function implemenations in the underlying Erlang virtual machine, which was originally very specific to telecom applications and did not support UTF-8 at all before late 2000s.
+
+The full list of available function guards is documented in the [Kernel module documentation](https://hexdocs.pm/elixir/guards.html).
 
 ## λ (lambda) functions
 <div class="key-concept">
@@ -469,7 +545,7 @@ iex(4)> fact.(fact, 5)
 
 ```
 
-Unlike recent versions of Erlang, Elixir 1.2 series comes with a slight caveat of not supporting named anonymous functions. This issue might be solved in future releases. Currently, if you need recursion as a part of your function, you need to pass the function name as a parameter of the anonymous function, as the function is evaluated before the actual function is constructed.
+Unlike recent versions of Erlang, Elixir comes with a slight caveat of not supporting named anonymous functions. This feature might be implemented in future releases. Currently, if you need recursion as a part of your function, you need to pass the function name as a parameter of the anonymous function, as the function is evaluated before the actual function is constructed.
 
 In the example above we define a function `fact` for calculating factorials. The `fn/2` accepts two parameters, a function name `fun` to apply recursion to, and the number `n` to be calculated. The first pattern is a stop condition for when the number reaches 1, it returns the number 1 and stops recursion. The other pattern multiplies the `n` with the result of the call to the anonymous `fn/2` `fun` with `n` subtracted by 1.
 
@@ -484,7 +560,7 @@ iex> fact = fn n ->
 iex> fact.(5)
 ```
 
-In the opinion of the author, the recursive anonymous function would be best defined as named function in a module. If you really insist on writing a recursive anonymous function, you can wrap it inside a wrapper function that defines a recursive inner function and hides away the nasty implementation and provides a regular call pattern of `fn/1.(args)`.
+In the opinion of the author, the recursive anonymous function would be best defined as named function in a module. If you really insist on writing a recursive anonymous function, you can wrap it inside a wrapper function that defines a recursive inner function and hides away the nasty implementation and provides a regular call pattern of `fn/1.(args)`. These technique of using an lambda-function to handle the recursion is known as the infamous Y-combinator.
 
 ## Functions as function parameters
 
@@ -533,7 +609,7 @@ iex> ListOps.map([1,2,3,4,5], fn
 
 As a cherry on top, Elixir also allows us to match patterns from within anonymous functions. We define two patterns for the `fn/1` which uses a guard in the first pattern the check if the remained from the `rem(n, 2)` is zero indicating the number is an even number. Those numbers are divided by two. The second pattern multiplies the odd numbers we supplied.
 
-The possibility to accept functions as function parameters proves itself a really powerful way of creating complex abstractions with a very little code time after time. The functionality implemented here is in reality provided by the [Enum module](http://elixir-lang.org/docs/stable/elixir/Enum.html). It's an uncommon case that a common behavior such as the one presented above needs to implemented by the programmer.
+The possibility to accept functions as function parameters proves itself a really powerful way of creating complex abstractions with a very little code time after time. The functionality implemented here is in reality provided by the [Enum module](http://elixir-lang.org/docs/stable/elixir/Enum.html). It's an uncommon case that a recurring behavior such as the ones presented above need to implemented by the programmer.
 
 
 ### Functions returning functions
@@ -578,8 +654,8 @@ iex> get_born = MapOps.get_key(:born)
 #Function<0.89557173/1 in MapOps.get/1>
 ```
 
-When calling the `MapOps.get_key/1` the function returns the anonymous inner function, that is now ready to accept a parameter.
-P
+When calling the `MapOps.get_key/1` the function returns the anonymous inner function, which is now ready to accept a parameter.
+
 ```elixir
 iex> names = Enum.map(people, get_name)
 ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
@@ -589,4 +665,4 @@ iex> ages = Enum.map(people, get_born)
 
 When working with multiple similar problems, the benefit of the curried function is clearly visible, as we reduced the amount of repeated code quite a plenty. The currying can be generalized even further, as shown [in this blog post](http://blog.patrikstorm.com/function-currying-in-elixir).
 
-Now that we've gotten our hands dirty with functions and their behavior, let's take a look at some of the commonly used functions provided by the Elixir API.
+Now that we've gotten our hands dirty with functions and their behavior, let's take a look at some of the commonly used high-order functions provided by the Elixir API.

@@ -1,10 +1,3 @@
-<div class="warning">
-<span>TODOS</span>
-  <ul>
-    <li>Guards could be more exhaustive</li>
-  </ul>
-</div>
-
 <!-- TOC -->
 
 - [If .. else](#if--else)
@@ -16,7 +9,7 @@
 <!-- /TOC -->
 
 [lambda]: img/lambda.png
-Elixir supports `if` ... `else`, `unless`, `cond` and `case` structures for controlling the flow of an application. The `if` ... `else` structures work much like in other languages. `unless` is syntactic sugar for negation of an `if` condition. `case` is used to match patterns extracted from variables or values, `cond` is used for complex chains of `if` ... `else` conditions.
+Elixir supports `if` ... `else`, `unless`, `cond` and `case` structures for controlling the flow of an application. The `if` ... `else` structures work much like in other languages. `unless` is syntactic sugar for negation of an `if` condition with the purpose of improving readability. `case` is used to match patterns extracted from variables or values, `cond` is used for complex chains of `if` ... `else` conditions.
 
 ## If .. else
 
@@ -38,14 +31,16 @@ iex> if(1, do: true, else: false)
 true
 ```
 
-The behavior of the `if/2` macro and it's keyword-list parameters is demonstrated with the example above. The condition is truthful, so the  which evaluates to true. The macro has two clauses, the `do:` block for a truthful condition and the `else:` block for a falsy condition. This syntax is rarely used, but is demonstrated here for better understanding of the implementation of the `if/2` macro.
+The behavior of the `if/2` macro and it's keyword-list parameters is demonstrated with the example above. The condition is truthful, so the  which evaluates to true. The macro has two clauses, the `do:` block for a truthful condition and the `else:` block for a falsy condition. This syntax is rarely used, but it is demonstrated here to help better understand the implementation of the `if/2` macro.
 
 ```elixir
-iex> iex(7)> if(false, do: "hello")
+iex> > if(true, do: "hello")
+"hello"
+iex> if(false, do: "hello")
 nil
 ```
 
-In case of a missing `else:`  block or keyword, the `if/2` evaluates to false.
+In case of a missing `else:` block and a falsy predicate, the `if/2` evaluates to `nil` instead of a compiler error you could expect in other languages. Omitting the `else` block can lead to unexpected behavior.
 
 ```elixir
 iex> hello = "world"
@@ -57,11 +52,17 @@ iex> hello
 
 ```
 
-![Warning][warning] It turns out that the macro implementation of the `if/2` has a slight gotcha! It's good to bear in mind that the `do:` or `else:` keyworded blocks are bound to their outer scopes, which unfortunately can be side-effecting as demonstrated above.
+![Warning][warning] It turns out that the macro implementation of the `if/2` has a slight gotcha! It's good to bear in mind that the `do:` or `else:` keyworded blocks are bound to their outer scopes, which unfortunately can be *semantically side-effecting* as demonstrated above.
+
+Generally speaking, in order to avoid such *semantic side-effects*, never-ever recycle a variable name unless you know what you are doing, but always assign a variable to a new name.
+
+The behavior demonstrated above is strictly speaking not a side-effect in terms of implementation details in the erlang virtual machine, but like the program behavior shows, this is not expected behavior for programmers experienced in other functional languages.
 
 ```elixir
-iex> hello = if(false, do: "true", else: "false")
-"false"
+iex> hello = if(false, do: "hello true", else: "hello false")
+"hello false"
+iex> hello
+"hello false"
 ```
 
 In order to keep your intentions explicit and for good functional programming practice, the side-effecting pattern should be avoided in favor of the latter. Clearly show your intention to bind the return value to a variable.
@@ -83,7 +84,7 @@ iex> cond do
 
 ```
 
-The `cond` turns out useful when the expressive power of `if` .. `else` runs out. The additional conditions listed in the `cond` construct behave much like `else if` statements in imperative languages such as Java. `cond` is relatively rarely used in Elixir, because most of the time `cond` can be substituted with the `case` construct that leans towards the functional style.
+The `cond` turns out useful when the expressive power of `if` .. `else` approachers their limits. The additional conditions listed in the `cond` construct behave much like `else if` statements in imperative languages such as Java. `cond` is relatively rarely used in Elixir, because most of the time `cond` can be substituted with the `case` construct that leans more towards the functional programming style in other languages.
 
 ```elixir
 iex> name = "hello"
@@ -112,7 +113,7 @@ iex> cond do
         "well #{name}!"
        name == "something else" ->
         "highly unlikely"
-       true ->
+       _ ->
         "Atoms to the rescue!"
       end
 "Atoms to the rescue!"
@@ -122,7 +123,7 @@ The last condition of a `cond` construct can be substituted with the atom `true`
 
 ## Case
 
-The `case` construct is perharps the most interesting of the conditional constructs. The `case` construct allows the programmer to use the full power of pattern matching in combination with guard clauses.
+The `case` construct is perhaps the most interesting of the conditional constructs. The `case` construct allows the programmer to use the full power of pattern matching in combination with guard clauses.
 
 ```elixir
 iex> case {1, 2, 3} do
@@ -156,8 +157,7 @@ iex> case {1, 2, 3} do
 "Will always match"
 ```
 
-The `_` clause has a special meaning in Elixir. The underscore `_` means "any value" or "anything" or "ignore the value" and will always yield true in `cond` constructs.
-
+The `_` clause has a special meaning in Elixir. The underscore `_` reads as "any value" or "anything" or "ignore the value" and will always yield true in `cond` constructs.
 
 ```elixir
 iex> case {1, 2, 3} do
@@ -169,7 +169,7 @@ iex> case {1, 2, 3} do
 "Will match"
 ```
 
-The clauses listed in the `case` construct need not be exhaustive. The clauses can be a combination of bound variables or they can be ignored. The second clause in addition to the last one is the only one that has a properly matching pattern.
+The clauses listed in the `case` construct need not be exhaustive. The clauses can be a combination of bound variables or they can be ignored. The second clause in addition to the last one is the only one that has a properly matching pattern for the input tuple `{1, 2, 3}`.
 
 ## A case of guards
 
@@ -182,11 +182,11 @@ iex> case {1, 2, 3} do
 "Will match"
 ```
 
-The `cond` constructs can also be complemented with *guard* conditions that represent a condition that must me fulfilled in addition for the pattern matching to produce valid results. In the example above we extract the values of the input `{1, 2, 3}` to variables in the tuple `{x, y, z}` and test a simple arithmetic expression against an integer value. 1 + 2 + 3 is equal to 6, so the middle condition is the only one to yield true.
+The `cond` constructs can also be complemented with *guard* conditions that represent a condition that must me fulfilled in addition for the pattern matching to produce valid results. In the example above we extract the values of the input `{1, 2, 3}` to variables in the tuple `{x, y, z}` and test a simple arithmetic expression against the given integer values. `1 + 2 + 3` is equal to `6`, so the second condition is the only one to yield true.
 
 Note that all comparison operators (ie. `<`, `>`, `<=` or `>=`) can be used as a part of a guard condition. Also the type checking functions such as `is_atom/1` are valid guard clauses. Full list of valid clauses can be found from the official [Elixir tutorial](http://elixir-lang.org/getting-started/case-cond-and-if.html).
 
-Also noteworthy that instead of the type-agnostic `||` and `&&` operators only the boolean operators `and` and `or` can be used as a part of a guard condition.
+It's also noteworthy that instead of the type-agnostic `||` and `&&` operators only the boolean operators `and` and `or` can be used as a part of a guard condition.
 
 ```elixir
 iex> case :dog do
@@ -196,7 +196,7 @@ iex> case :dog do
 "Will match"
 ```
 
-The guard condition guarding the clause can also be used to match multiple items in the same time using the `in` operator, which looks for the input value in a `list` or `range`. Unfortunately because of the `in`'s macro implementation and dynamic typing of Elixir, the `in` cannot reference a variable as it's right-hand side.
+The guard condition guarding the clause can also be used to match multiple items at the same time using the `in` operator, which looks for the input value in a `list` or `range`. Unfortunately because of the `in`'s macro implementation and dynamic typing of Elixir, the `in` cannot reference a variable as it's right-hand side.
 
 ```elixir
 iex> case 666 do
@@ -208,6 +208,17 @@ iex> case 666 do
 ```
 
 The guard condition can also match against ranges, which can prove itself useful with it's elegant short-hand syntax.
+
+```elixir
+iex> foo = %{some: "value"}
+iex> case foo do
+       %{} = map -> map
+       _ -> :error
+     end
+%{some: "value"}
+```
+
+Some data structures, such as maps and structs can also be used as type guards in match patterns. This feature can be exploited to require the matched value to be of certain shape, the example reads as "ensure this value matches the pattern of a map" (is a map).
 
 ## The pin operator
 
@@ -252,4 +263,4 @@ iex> _
 
 Elixir also provides a special match condition with the underscore symbol `_`. The underscore reads: "Match against whatever value and ignore the results." The condition will always yield a match but the underscore is always unbound and the right-hand side of the match is discarded.
 
-The underscore is syntactic sugar to allow the programmer easily produce an exhaustive match condition and to be explicit about the intention to ignore a value.
+The underscore is syntactic sugar to allow the programmer easily produce an exhaustive match conditions and to be explicit about the intention to ignore the matched value.
