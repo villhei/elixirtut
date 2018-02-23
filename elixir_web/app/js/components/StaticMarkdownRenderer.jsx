@@ -1,24 +1,23 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom'
-import $ from 'jquery';
 import hljs from 'highlight.js'
 
 export default class StaticMarkdownRenderer extends React.Component {
-
     rawMarkup() {
-        return{ __html: this.props.chapter.content};
+        return{ __html: this.props.content};
     }
 
     handleHighlight() {
-      const self = findDOMNode(this);
-      $(self).find('pre > code').each(function (i, block) {
-         hljs.highlightBlock(block);
+      const self = findDOMNode(this)
+      const codeBlocks = Array.from(self.querySelectorAll('pre > code'))
+      codeBlocks.forEach(function (block) {
+         hljs.highlightBlock(block)
       });
     }
 
     // This logic is risky, but problems haven't still popped up
     componentDidUpdate() {
-      this.handleHighlight();
+      this.handleHighlight()
     }
 
     componentDidMount() {

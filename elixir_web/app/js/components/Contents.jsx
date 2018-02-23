@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router'
-import { chapters } from '../chapters.js'
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { chapters } from '../chapters.jsx'
 
 import StaticMarkdownRenderer from './StaticMarkdownRenderer.jsx'
 

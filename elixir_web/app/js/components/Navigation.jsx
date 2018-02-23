@@ -1,11 +1,11 @@
-import React from 'react';
-import {chapters} from '../chapters.js'
-import { Link } from 'react-router'
+import React from 'react'
+import {chapters} from '../chapters.jsx'
+import { Link } from 'react-router-dom'
 
 export default class Navigation extends React.Component {
 
     render(){
-      let links = chapters.map(chapter => 
+      let links = chapters.map(chapter =>
              (<li key={chapter.path}><Link to={chapter.path}>{chapter.title}</Link></li>))
         return(
             <ul className="sidebar-nav">
