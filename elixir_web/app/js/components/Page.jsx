@@ -19,7 +19,6 @@ function getButton(title, cssClass) {
 
 export default class StaticPage extends React.Component {
   render() {
-    console.log('this.props', this.props)
     const prevButton = prevChapter(this.props.chapter).map(getButton("Previous chapter", "prev-chapter"));
     const nextButton = nextChapter(this.props.chapter).map(getButton("Next chapter", "next-chapter"))
     return (

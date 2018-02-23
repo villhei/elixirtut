@@ -21,7 +21,9 @@
 ![Key concept][lambda]<span>High-order functions</span>
 <p>High-order functions are functions that accept functions as their arguments or return a function as their result.</p>
 
-<p>Elixir's [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module provides a familiar set of high-order functions often found in other functional languages. </p>
+<p>Elixir's [Enum](http://elixir-lang.org/docs/stable/elixir/Enum.html) module provides a familiar set of high-order functions often found in other functional languages.</p>
+
+<p>
 </div>
 
 The often used high-order functions we are about to look into are `map/2`, `filter/2`, `zip/2` and `reduce/3`.
@@ -30,7 +32,7 @@ The high-order functions here are supplied by the [Enum module](http://elixir-la
 
 High order functions and lambda functions are best friends, as the loop-abstracting nature of high-order functions is commonly complemented with throw-away lambda functions expressing the action of the loop. Using lambda functions with common high-order functions is good practice, as a lambda is often more explicit about it's actions than a named function as a parameter.
 
-Usage of the functions found in the `Enum` and `Stream` module is highly encouraged. Usage of these functions is in favor of your own implementations is good programming practice and their semantics explicit to other programmers. The implemenations of library functions are also optimized by a varying degree, so their execution time is also faster than their manually implemented counterparts.
+Usage and knowledge of the functions found in the `Enum` and `Stream` module is highly encouraged. Usage of these functions is in favor of your own implementations is good programming practice and their semantics explicit to other programmers. The implemenations of library functions are also optimized by a varying degree, so their execution is likely more efficient than their manually implemented counterparts.
 
 ### Summary of common sample sizer functions
 
@@ -50,7 +52,7 @@ Usage of the functions found in the `Enum` and `Stream` module is highly encoura
         2. `function/1` returning a condition with an element passed as a parameter
       </td>
       <td>
-        Create a new enumerable of the same type from the elements that satisfy a given condition
+        Returns a new enumerable of the same type from the elements that satisfy a given condition
       </td>
     </tr>
     <tr>
@@ -98,7 +100,7 @@ Usage of the functions found in the `Enum` and `Stream` module is highly encoura
         2. Predicate `function/1`
       </td>
       <td>
-        Return a new Enumerable without the first elements until the predicate `function/1` yields a false
+        Returns a new Enumerable without the first elements until the predicate `function/1` yields a false
       </td>
     </tr>
   </tbody>
@@ -170,7 +172,7 @@ A more complete list of functions is documented in the [Enum](http://elixir-lang
 
 ## Sample sizer functions
 
-Let's take a look at functions that are used to limit the sample size of an `Enumerable`. These functions are used to create subcollections of `Enumerables`, either by removing leading or trailing elements, or removing elements that fulfill or fail a condition given by a predicate function.
+Let's take a look at functions that are used to limit the sample size of an `Enumerable`. These functions are used to create new subcollections of `Enumerable` types, either by removing leading or trailing elements, or removing elements that fulfill or fail a condition given by a predicate function.
 
 #### Enum.take/2
 
@@ -186,6 +188,8 @@ iex> length(Enum.take(map, 1))
 ```
 
 One of the simplest functions in the `Enum` module is the `Enum.take/2`, which can be used to create a new sublist of a `Enumerable` from the `n` first elements. Notice that applying `Enum.take/2` on a `Map` translates to a keyword list.
+
+The `Enum.take/2` for maps will transfrom the maps to to naturally ordered keyword lists and return the first `n` elements of that list.
 
 ```
 iex> Enum.take(list, 6)
@@ -342,7 +346,7 @@ iex> Enum.with_index(["a", "b", "c", "d"])
 [{"a", 0}, {"b", 1}, {"c", 2}, {"d", 3}]
 
 ```
-Generally speaking, the purpose of the `zip/2` function is simply what we stated, but the use cases are endless. For example, one might require to merge two lists of arbitrary values together, in order to process them further with other high-order functions, or one simply might require an index element of every item in the list, which would be case for `zip/2`. The `zip/2` function is so commonly used for indexing, that there exists a short-hand function `with_index/1` for this purpose.
+Generally speaking, the purpose of the `zip/2` function is simply what we stated, but the use cases are endless. For example, one might require to merge two lists of arbitrary values together, in order to process them further with other high-order functions, or one simply might require an index element of every item in the list, which would be case for `zip/2`. The `zip/2` function is so commonly used for indexing that there exists a semantically similar short-hand function `with_index/1` for this purpose.
 
 ### Enum.reduce/3
 
@@ -353,7 +357,7 @@ iex> sum = Enum.reduce(numbers, 0, fn(n, acc) -> acc + n end)
 15
 ```
 
-The `reduce/3` function is used to reduce the values of an `Enumerable` to a single value. `reduce/3` accepts three paremeters, a collection, an initial value and a function. The parameter function has two params `(n, acc)` of which the `acc` is the initial accumulator value or the value returned by the previous iteration of the function and `n` is the value of the current element. The previous example simply sums the elements of the list.
+The `reduce/3` function is used to reduce the values of an `Enumerable` to a single value. `reduce/3` accepts three parameters, a collection, an initial value and a function. The parameter function `fn/2` has two params `(n, acc)` of which the `acc` is the initial accumulator value or the value returned by the previous iteration of the function and `n` is the value of the current element. The previous example simply sums the elements of the list.
 
 ```elixir
 iex> names = ["Matti Ruohonen", "Teppo Ruohonen", "Seppo Räty"]
@@ -386,9 +390,17 @@ The Elixir shown initially is such an messy example of Elixir and functional pro
 We noticed that when applying several high-order functions sequentially, the code starts to lose some of it's beautiful, minimalistic elegance. Luckily we have the pipe operator `|>` that is used to chain or pass the value on the left-hand side of the operator to the function on the right-hand side. In it's behavior the pipe operator `|>` is very similar to the traditional UNIX `|` operator.
 
 ```elixir
+iex> Enum.reduce(Enum.map([1,2,3,4,5], fn(x) -> x*x end), 0, fn(n, acc) -> n + acc end)
+55
+```
+As en example for the list `[1,2,3,4,5]`  we first squared each value in the list using the function `Enum.map/2`. We pass the resulting list to the function `Enum.reduce/3` and reduce those values to a sum.
+
+We could save the intermediate return values to their own variables, in order to make this operation more readable, but we can also chain these operations together by using the `|>` pipe operator.
+
+```elixir
 iex> sum_of_squares = [1,2,3,4,5]
-...> |> Enum.map(fn(x) -> x*x end)
-...> |> Enum.reduce(0, fn(n, acc) -> n + acc end)
+     |> Enum.map(fn(x) -> x*x end)
+     |> Enum.reduce(0, fn(n, acc) -> n + acc end)
 55
 ```
 
@@ -412,6 +424,6 @@ iex> people
 "Matti OMG!!! Teppo OMG!!! "
 ```
 
-We can start seeing the benefits of the pipe operator here `|>`. The first step is to extract the names from the persons in people using `map/2`, then we use `filter/2` to check if the name contains the string `"Ruohonen"`, after which we split it to two parts with the `String.split/2`, drop the tail using `hd/1` on the split values and finally use `reduce/3` to reduce the result to a string.
+We can start seeing the benefits of the pipe operator here `|>`. The first step is to extract the names from the people in the list of people using `Enum.map/2`, then we use `Enum.filter/2` to check if the name contains the string `"Ruohonen"`, after which we split it to two parts with the `String.split/2`, drop the tail using `hd/1` on the split values and finally use `Enum.reduce/3` to reduce the result to a string.
 
 The use of the pipe `|>` operator is by no means limited to the functions from the `Enum` module. You can use it any time you need to pass the result of the previous function as the first argument to the next function.

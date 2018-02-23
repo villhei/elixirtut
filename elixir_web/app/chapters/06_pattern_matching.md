@@ -3,21 +3,21 @@
 <!-- TOC -->
 
 - [Pattern matching](#pattern-matching)
-  - [Simple matching](#simple-matching)
-  - [Destructuring](#destructuring)
-    - [Tuples](#tuples)
-    - [Lists](#lists)
-  - [The `with` special form](#the-with-special-form)
+- [Simple matching](#simple-matching)
+- [Destructuring](#destructuring)
+  - [Tuples](#tuples)
+  - [Lists](#lists)
+- [The `with` special form](#the-with-special-form)
 
 <!-- /TOC -->
 
-## Pattern matching
+### Pattern matching
 
 <div class="key-concept">
 ![Key concept][lambda]<span>Pattern matching</span>
-<p>Pattern matching in functional languages is a mechanism often used for implementing control flows and guard expressions within functions and expressions. We have seen the operator `=` used earlier for assignment of variables. In reality, the `=` operator in Elixir is called the <b>match operator</b>.</p>
+<p>Pattern matching in functional languages is a mechanism often used for implementing control flows, type checking and guard expressions within functions and expressions. We have seen the operator `=` used earlier for assignment of variables. In reality, the `=` operator in Elixir is called the <b>match operator</b>.</p>
 
-<p>As like pattern matching in other functional languages in general, pattern matching is used to match simple values to a format pattern, pattern matching can also be used to destructure complex data types.</p>
+<p>As like pattern matching in other functional languages in general, pattern matching is used to match simple values to a defined pattern. In Elixir, matching with the match operator is also used to destructure complex data types.</p>
 </div>
 
 ### Simple matching
@@ -27,7 +27,7 @@ iex> hello = "Perfect match!"
 "Perfect match!"
 ```
 
-The example above matches the right-hand side of the match operator `=` to the left-hand side variable hello, which as en expression, evaluates to the value "Perfect match!" and assigns the value to the variable hello.
+The example above matches the right-hand side of the match operator `=` to the left-hand side variable hello, which as en expression, evaluates to the value "Perfect match!" and assigns the given value to the variable `hello`.
 
 ```elixir
 iex> x = 1
@@ -36,7 +36,7 @@ iex> 1 = x
 1
 ```
 
-The use of match operator `=` looks a lot like assignments familiar from other programming languages when extracting values from the right-hand side of the match operator. It's good to keep in mind that whatever assigned to the left-hand side of the operator is also a constraint for the right-hand side. Using a variable is like saying "match anything from the right", using a value or a partial value is equivalent to saying "The data should look a lot like the value 1", as presented in the example above.
+The use of match operator `=` looks a lot like assignments in from other programming languages, when matching right-hand side values to a simple variable. It's good to keep in mind that whatever assigned to the left-hand side of the operator is also a constraint for the right-hand side. Using a variable is like saying "match anything from the right", using a value or a partial value is equivalent to saying "The data should look a lot like the value 1", as presented in the example above.
 
 ```elixir
 iex> 2 = x
@@ -45,6 +45,17 @@ iex> 2 = x
 ```
 
 An invalid match will raise an exception. The exceptions are expected behavior and they act as a motivator to handle both valid and invalid cases in matching.
+
+```elixir
+iex> x = 1
+1
+iex> y = 1 = x
+1
+iex> y
+1
+```
+
+Beause the match operator is in fact an expression, multiple matches can be chained easily. This proves itself handy, especially when working with structs or maps. The match operator can be exploited to ensure the matched value conforms to a structure or data type.
 
 ### Destructuring
 
@@ -74,7 +85,7 @@ iex> {"Mike", b, c} = {"Mickey", "Donald", "Zappa"}
 ** (MatchError) no match of right hand side value: {"Mickey", "Donald", "Zappa"}
 ```
 
-The patttern can also be more specific, than just multiple variables. The matching can be constrained to require specific values to be present in the match pattern, or the match will result in a `MatchError`, which usually does not need to be handled in match chains, which we will be looking in to the next chapter.
+The patttern can also be more specific than just multiple variables. The matching can be constrained to require specific values to be present in the match pattern, or the match will result in a `MatchError`, which usually does not need to be handled in match chains, which we will be looking in to the next chapter.
 
 #### Lists
 
@@ -138,27 +149,27 @@ Pattern matching expressions can become a little untidy, when we are working wit
 
 ```elixir
 iex> great_bands = %{
-    kvelertak: %{
-        name: "Kvelertak",
-        albums:
-            [
-                %{name: "Kvelertak", year: 2010},
-                %{name: "Meir", year: 2013},
-                %{name: "Nattesferd"}
-            ]
-        },
-    bloodred_hourglass: %{
-        name: "Bloodred Hourglass",
-        albums:
-            [
-                %{name: "Lifebound", year: 2012},
-                %{name: "Where the Oceans Burn", year: 2016}
-            ]
-        }
+     kvelertak: %{
+       name: "Kvelertak",
+       albums:
+         [
+           %{name: "Kvelertak", year: 2010},
+           %{name: "Meir", year: 2013},
+           %{name: "Nattesferd"}
+         ]
+     },
+     bloodred_hourglass: %{
+       name: "Bloodred Hourglass",
+       albums:
+         [
+           %{name: "Lifebound", year: 2012},
+           %{name: "Where the Oceans Burn", year: 2016}
+         ]
+     }
 }
 ```
 
-Consider a scenario where we have set up an instance of `Map` in order to perform programmatic searches of great music. The `Map` above is filled with band keys pointing to instances of `Map` offering detailed information on the given artist.
+Consider a scenario where we have set up an instance of `Map` in order to perform programmatic searches of great music. The `Map` above is populated with band keys pointing to nested instances of `Map` offering detailed information on the given artist.
 
 ```elixir
 iex> %{kvelertak: band_detail} = great_bands
@@ -194,7 +205,7 @@ defmodule Bands do
 end
 ```
 
-If we wanted to perform the same steps programmatically in order to provived general set of functions for working with bands, we could nest two pattern matching expressions to a chained action like demonstarted in the example above. Notice the use of the pin operator `^` when matching against the `:atom` bound to the variable `band`.
+If we wanted to perform the same steps programmatically in order to provive general set of functions for working with bands, we could nest two pattern matching expressions to a nested action like demonstrated in the example above. Notice the use of the pin operator `^` when matching against the `:atom` bound to the variable `band`.
 
 ```elixir
 iex> Bands.get_albums(great_bands, :kvelertak)
@@ -206,9 +217,9 @@ iex)> Bands.get_albums(great_bands, :justin_bieber)
     iex:16: Bands.get_albums/2
 ```
 
-Now we have a convenient interface for extracting information about bands. When given a key that exists in the `Map` of great bands, our function yields as a list of albums. When a key wasn't included in the list of great bands, the condition raises an error, as we only defined the happy path functionality.
+Now we have a convenient interface for extracting information about bands. When given a key that exists in the `Map` of great bands, our function returns a list of albums. When a key wasn't included in the list of great bands, the condition raises an error, as we only defined the happy path functionality.
 
-We shouldn't be completely satisfied with the condition, as it already requires us it's quite a heavily indented one. Let's clean it up a little bit using the `with` operator.
+We shouldn't be completely satisfied with the condition, as it already requires us to reason about heavily indented logic. Let's clean the function up a little bit using the `with` operator.
 
 ```elixir
 defmodule Bands do
@@ -220,7 +231,7 @@ defmodule Bands do
 end
 ```
 
-The flat list of conditions in our function `get_albums/2` looks a lot cleaner already. The `with/1` macro takes multiple matching clauses as it's arguments, and if all the matches yield a result, it executes the `do` block.
+The flat list of conditions in our function `get_albums/2` looks a lot cleaner already. The `with/1` macro takes multiple matching clauses as it's arguments, and if all the matches yield a result, it executes the given `do` block.
 
 ```elixir
 iex(18)> Bands.get_albums(great_bands, :kvelertak)
@@ -259,7 +270,7 @@ iex> Bands.get_albums(great_bands, :justin_bieber)
     iex:41: Bands.get_albums/2
 iex>
 ```
-In order to raise an error in case of match failure, we use the pipe operator `|>` to direct the result of the match to another `case` expression, in which we test if the result of the `with/1` block equals the the value bound to the input variable `bands` and `raise/1` an error in order to stop the execution.
+In order to raise an error in case of match failure, we use the pipe operator `|>` to direct the result of the match to another `case` expression, in which we test if the result of the `with/1` block is equal the value bound to the input variable `bands` and `raise/1` an error in order to stop the execution.
 
 From this behavior we can deduce, that using the `with/1` block comes in handy, when the matches or nested expressions run deeper than two levels.
 
@@ -276,4 +287,4 @@ defmodule Bands do
 end
 ```
 
-Elixir 1.3 improves in this situation by introducing an `else` block defining matchers for different error patterns. We resort to matching everything by using the underscore `_` as the left-hand side value.
+The Elixir version 1.3 improves this situation by introducing an `else` block defining matchers for different error patterns. With anything unexpected, we resort to matching everything by using the underscore `_` as the left-hand side value.
