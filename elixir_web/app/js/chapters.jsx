@@ -8,10 +8,12 @@ import pattern_matching from '../chapters/06_pattern_matching.md'
 import high_order_fun from '../chapters/07_high_order_functions.md'
 import lazy_streams from '../chapters/08_lazy_streams.md'
 import file_io from '../chapters/09_file_io.md'
-import processes from '../chapters/10_processes.md'
-import process_abstractions from '../chapters/11_supervisors_and_otp.md'
-import language_tools from '../chapters/12_mix_hex_docs.md'
+
+import modules_structs from '../chapters/10_modules_structs.md'
+import processes from '../chapters/11_processes.md'
+import process_abstractions from '../chapters/12_supervisors_and_otp.md'
 import composing_an_application from '../chapters/13_composing_an_application.md'
+import language_tools from '../chapters/14_mix_hex_docs.md'
 import drafts_and_ideas from '../chapters/drafts_and_ideas.md'
 
 const raw_chapters = [{
@@ -67,6 +69,12 @@ const raw_chapters = [{
   done: "75%",
   path: "/file_io",
   content: file_io
+},
+{
+  title: "Modules and structs",
+  done: "60%",
+  path: "/modules_structs",
+  content: modules_structs
 },
 {
   title: "Parallelism with processes",

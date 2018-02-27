@@ -1,16 +1,6 @@
 [lambda]: img/lambda.png
-<div class="warning">
-  <span>TODOS</span>
-  <ul>
-    <li>Structs belong here, as they are defined by modules</li>
-  </ul>
-</div>
-
-## Modules
-
 <!-- TOC -->
 
-- [Modules](#modules)
 - [Functions](#functions)
   - [Functions as first-class citizens](#functions-as-first-class-citizens)
 - [Recursion](#recursion)
