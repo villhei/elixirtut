@@ -7,11 +7,11 @@
 
 <!-- /TOC -->
 
-Most of the times programs need to interact with the surrounding world in order to produce useful results.
+Most of the time programs need to interact with the surrounding world in order to produce useful general purpose results.
 
 The basic IO functions are provided by the [IO module](http://elixir-lang.org/docs/stable/elixir/IO.html). We have already played around with the function `IO.puts/1` in order to produce some output from our code snippets.
 
-The functions provided by the `IO` module in fact take use of named IO processes running on the BEAM virtual machine. These processes include `:stdio` for the standard io stream and `:stderr` for the standard error stream.
+The functions provided by the `IO` module in fact take use of named IO processes running on the BEAM virtual machine. These processes include `:stdio` for the standard IO stream and `:stderr` for the standard error stream.
 
 These processes are called IO devices in the BEAM. The IO processes, including file processes, are positional. Positionality means that a successive read or write to or from the stream will continue from where the previous call finished.
 
@@ -66,12 +66,14 @@ iex> IO.puts("1 + 1 = #{1 + 1}")
 
 ```
 
-The `IO.puts/1` can also accept a variable as it's parameter, if the variable can be recognized as `chardata`. Elixir also supports a nice thing called string interpolation. The string interpolation allows us to write an expression within the string with the syntax `#{expr}`.
+The `IO.puts/1` can also accept a variable as it's parameter, if the variable can be recognized as `chardata`, as the call to `IO.puts(name)` demonstrates.
+
+Elixir also supports a nice thing called string interpolation. The string interpolation allows us to write an expression within the string with the syntax `#{expr}`.
 
 The interpolated string will evaluate to the result of the enclosed expression, as demonstrated in the latter example of adding 1 to 1.
 
 ```elixir
-iex> dog = {"Mortti", :pyrenese_sheepdog}
+iex> dog = {"Mort", :pyrenese_sheepdog}
 {"Mortti", :pyrenese_sheepdog}
 iex> IO.puts("#{dog}")
 ** (Protocol.UndefinedError) protocol String.Chars not implemented for {"Mortti", :pyrenese_sheepdog}
@@ -99,7 +101,7 @@ iex> IO.inspect(dog)
 {"Mortti", :pyrenese_sheepdog}
 ```
 
-The IO module also provides a function `IO.inspect/1` for printing the inspection result of a given data structure to the `:stdio` output. `IO.inspect/1` is a useful debug function.
+The IO module also provides a function `IO.inspect/1` for printing the inspection result of a given data structure to the standard output (`:stdio`). `IO.inspect/1` proves itself useful as a debug function.
 
 The rest of the functions defined by the [IO module](http://elixir-lang.org/docs/stable/elixir/IO.html) can be found from the official documentation.
 
@@ -107,19 +109,18 @@ The rest of the functions defined by the [IO module](http://elixir-lang.org/docs
 
 The [File](http://elixir-lang.org/docs/stable/elixir/File.html) module provides a set of functions that enable both read and write access to files and some convenience functions such as for manipulation of files.
 
-Most of the functions are named conveniently after their UNIX counterparts so it's quite easy to guess what `File.ls/1` is going to do.
+Most of the functions are named conveniently after their UNIX counterparts so it's quite easy to make a guess on what `File.ls/1` is going to do (it returns a list of files in a path).
 
+The `File` module provides a good coverage of abstractions for UNIX file system operations. Thus working with the `File` module should feel intuitive to those with prior *NIX command line experience.
 
-The `File` module provides a good coverage of abstractions for UNIX file system operations. Thus working with the `File` module should feel intuitive to most of us.
-
-Let's look at some of these functions and their usage in a bit more detail, to give a general idea on how to work with the filesystem in Elixir. As we will soon find out, it is very easy.
+Let's look at some of these functions and their usage in a bit more detail to give a general idea on how to work with the local filesystem in Elixir. As we will soon find out, it proves to be relatively easy.
 
 ```elixir
 iex> File.ls("/home/ville/shopping_lists")
 {:ok, ["ikea.txt", "groceries.txt"]}
 ```
 
-The `File.ls/1` function returns a tuple with `{:status, results}`, where the results is a list of of files in the directory given as a parameter.
+The `File.ls/1` function returns a tuple with `{:status, results}`, where the results is a list of of files in the directory given as a parameter. The `File.ls/1` function takes a path as it's only parameter. The path can be absolute or relative. Try executing `File.ls(".")` and you'll notice it will return the contents of your current working directory.
 
 ```elixir
 iex> File.ls("./not_accessible")
@@ -142,7 +143,7 @@ The `File` module provides an error-raising variant for the functions. The error
 
 The error-raising variants are quite a nice thing, as they allow the programmer to inspect the result instead of doing pattern matching with status codes. Obviously your current process will also crash, but hey! We don't really want to recover from every erroneous situation anyway.
 
-You should use the regular version whenever you expect the need to handle the error scenarios and use the `!` banged variant whenever you consider a fast fail a better option.
+You should use the regular version whenever you expect the need to handle the error scenarios and use the `!` banged variant whenever you consider a fast failure a better option.
 
 ```elixir
 iex> File.read("ikea.txt")
@@ -161,7 +162,7 @@ iex> ikea_stream |> Stream.map(fn s -> String.upcase(s) end) |> Enum.to_list
 ["TABLE\n", "SOFA\n", "MATTRESS\n", "DRAWER\n"]
 ```
 
-The file can also be opened as a stream with the `File.stream!` function. The returned stream by default chunks the file in to lines, and the resulting lines can be manipulated in the usual manner with functions from the `Stream` and `Enum` modules.
+A file can also be opened as a stream with the `File.stream!` function. By default the returned stream is chunked in to lines, and the resulting lines can be manipulated in the usual manner with functions from the `Stream` and `Enum` modules.
 
 ```elixir
 iex> {:ok, file} = File.open("new_file.txt", [:write, :utf8])
@@ -174,11 +175,11 @@ iex> File.close(file)
 :ok
 ```
 
-In order to write textual content to a file, we first open new process for the file by calling `File.open/2`. The `File.open/2` accepts the file name as a first parameter and an optional list of options as the second parameter. We pass the atoms `:write` and `:utf8` in order to handle unicode content properly.
+In order to write textual content to a file, we first open new process for the file by calling `File.open/2`. The `File.open/2` accepts the file name as a first parameter and an optional list of options as the second parameter. We pass the atoms `:write` and `:utf8` in order to handle unicode content properly. The `File.open/2` function returns a tuple `{:ok, file}` where the variable file refers to the process id of the stateful process created by the virtual machine. The process id is used as a reference or handle to the opened file in future calls.
 
-Then we use `IO.write/2` function to write a string to the file. Because of the positional nature of the `File` and `IO` operations, the second sentence will be appended after the first.
+After opening the file we use the `IO.write/2` function to write a string to the file. Because of the positional nature of the `File` and `IO` operations, the second sentence will be appended after the first.
 
-Finally we call `File.close/1` with the file process identifier in order to release the file.
+Finally we call `File.close/1` with the file process identifier in order to release the file and terminate the process handling the file access.
 
 ```elixir
 iex> File.read!("new_file.txt")
@@ -200,9 +201,9 @@ iex> File.close(file)
 :ok
 ```
 
-First we open the file again with a call to `File.open/2`, but this time we don't pass the `:write` atom. Then we use the `IO.read/2` function to read the file line by line. The `IO.read/2` will return the atom `:eof` when the read reaches the end of the file.
+First we open the file again with a call to `File.open/2`, but this time we don't pass the `:write` atom. Then we use the `IO.read/2` function to read the file line by line. The `IO.read/2` will return the atom `:eof` when the read reaches the end of the file. Notice that that the `IO.read/2` will return a different result in consecutive calls, this happens because the call to read is in reality a synchronous message passed the the process pointed by the `file` variable.
 
-The `IO.read/2` can also be used to read the file at once by passing the `:all` atom as a parameter. By passing a non-negative integer, you obtain the requested count of characters.
+The `IO.read/2` function can also be used to read the file at once by passing the `:all` atom as a parameter. By passing a non-negative integer, you obtain the requested count of characters.
 
 ```elixir
 iex> File.ls!(".")
@@ -213,7 +214,7 @@ iex> File.rm("new_file.txt")
 {:error, :enoent}
 ```
 
-Removal of files can be done using the `File.rm/1` function, that accepts a file name as a parameter. The banged variant `File.rm!/1` works very similarly, as it either returns an `:ok` or raises an exception.
+Removal of a file or files can be done using the `File.rm/1` function, that accepts a file name as a parameter. The banged variant `File.rm!/1` works very similarly, as it either returns an `:ok` or raises an exception.
 
 ### Partial table of File operations
 

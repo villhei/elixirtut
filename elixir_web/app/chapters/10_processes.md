@@ -3,26 +3,18 @@
 <!-- TOC -->
 
 - [Introduction to processes](#introduction-to-processes)
-- [<a name="actors"></a> Some formalism with actors](#a-nameactorsa-some-formalism-with-actors)
+- [<a name="actors"></a> Some formalism of processes with actors](#a-nameactorsa-some-formalism-of-processes-with-actors)
   - [An actor can create new actors](#an-actor-can-create-new-actors)
   - [An actor can send messages to other actors](#an-actor-can-send-messages-to-other-actors)
   - [An actor can decide how to handle the next message it receives](#an-actor-can-decide-how-to-handle-the-next-message-it-receives)
 - [Spawning processes](#spawning-processes)
   - [The keys to the kingdom with `spawn/1`](#the-keys-to-the-kingdom-with-spawn1)
   - [Accessing the mailbox with `send/2` and `receive`](#accessing-the-mailbox-with-send2-and-receive)
-- [Process links with `spawn_link/1`](#process-links-with-spawn_link1)
+- [Linked processes with `spawn_link/1`](#linked-processes-with-spawn_link1)
 - [Registering a process](#registering-a-process)
-- [Modelling a state machine](#modelling-a-state-machine)
+- [Modeling a state machine from a process](#modeling-a-state-machine-from-a-process)
 
 <!-- /TOC -->
-
-<div class="warning">
-  <span>TODOS</span
-  <ul>
-    <li>The page looks a little boring</li>
-    <li>The introduction needs a little more work</li>
-  </ul>
-</div>
 
 <div class="quote"><p>Processes are a part of the language - they do not belong to the operating system. That's really what's wrong in languages such as Java or C++ that, threads are not in the language, they are something that's in the operating system. They inherit all the problems they have in the the operating system.</p>
     <span class="quotee">-Joe Armstrong, The principal inventor of Erlang</span>
@@ -31,32 +23,33 @@
 
 Elixir inherits the concept of processes from the Erlang Virtual Machine BEAM. In Elixir all code runs within processes, which area extremely light-weight abstractions over threads. Internally BEAM creates a set of kernel-level threads and schedules the light weight threads (processes) between the more heavy-weight lower level threads. The amount of kernel level threads usually equals the amount of available CPU cores.
 
-Process creation in Elixir is really cheap in comparison to other programming languages such as Java or C#. The traditional approach is to create a new thread at the operating system level, which comes at a relatively high cost of context switching and memory use in comparison to the approach selected for BEAM.
+Process creation in Elixir is really cheap in comparison to other programming languages such as Java or C#. The traditional approach adopted by other multi-thread capable languages is to create a new thread at the operating system level, which comes at a relatively high cost of context switching and memory use in comparison to the approach selected for BEAM.
 
 Because of the multi-threaded nature of the BEAM virtual machine, Elixir processes run in *parallel*. Parallelism is concept distinct from concurrency. Many single-threaded languages such as JavaScript allow for *concurrent* execution, but not for *parallel* execution.
 
-Parallel means simultaneous execution of possible related computations in multiple processor cores. In turn, concurrency references to the composition of independentely executing processes. Or well, if you work on an ancient single-threaded machine, even resorting to Elixir won't make your computations parallel.
+Parallel means simultaneous execution of possible related computations in multiple processor cores. In turn, concurrency references to the composition of independentely executing processes. Of course, if you work on an ancient single-threaded machine, even resorting to Elixir won't make your computations run in parallel.
 
 As a result, it is no way uncommon for a typical Elixir or Erlang application to coordinate hundreds, thousands or even tens of thousands of processes on a single machine. Impressive, tempting, exciting!
 
-Being a functional language, Elixir also doesn't face the problem of state corruption, which is a typical problem in concurrent programming using imperative languages. Because mutable state does not exist, data does not need to be protected from writes with constructs such as locks, mutexes or semaphores.
+Being a functional language, Elixir also doesn't face the problem of state corruption, which is a typical problem in concurrent or parallel programming using imperative languages. Because mutable state does not exist, data does not need to be protected from writes with constructs such as locks, mutexes or semaphores.
 
-More info, motivation: http://www.infoq.com/presentations/erlang-software-for-a-concurrent-world
+For more information and motivation, refer to a presentation [Erlang: Software for a concurrent world](http://www.infoq.com/presentations/erlang-software-for-a-concurrent-world) by Joe Armstrong.
 
 There are two possible approaches to parallelism and concurrency: *the shared memory model*, where processes lock the data for the duration needed to access it and the *message passing* model selected for use in BEAM.
 
-**The problems of shared memory model**
-  - A thread crashes while doing a write in a shared region of memory making the memory corrupted and thus inaccessible for other threads
-  - High latency for accessing the shared region of memory
 
-To be able to utilize these features provided by BEAM, we are going to take a look at the concept of processes in Elixir.
+**The problems of shared memory model**
+  - A thread crash during a write in to a shared region of memory can corrupt memory
+  - Corrupted memory can become inaccassible to other threads, if a lock isn't gracefully released   - High latency for accessing the shared region of memory
 
 **The message passing approach selected by the BEAM and Elixir**
   - No sharing of data
   - Pure message passing
-  - No locks
-  - Lots of computers (let one crash)
-  - Functional programming (avoid side effects)
+  - No need for locking of data
+  - Allows for easy clustered operation: lots of computers where one crash isn't fatal
+  - Functional programming style to avoid side effects
+
+To be able to utilize these features provided by BEAM, we are going to take a look at the concept of processes in Elixir.
 
 <div class="key-concept">
   ![Key concept][lambda]<span>Note about processes</span>
@@ -64,9 +57,9 @@ To be able to utilize these features provided by BEAM, we are going to take a lo
 
   <p>In case of a process failure, the supervisor process usually restarts the process group that failed. This is possible because processes are isolated and <b>do not</b> share any data with other processes. Since processes are isolated, a failure in a process <b>will not</b> crash or corrupt the state of another process.</p>
 
-  <p>Remember, it's completely okay for a process to fail, for there is very little overhead in creating a new process to replace the failed one.</p>
+  <p>Remember that in Elixir it's completely okay for a process to fail, for there is very little overhead in creating a new process to replace the failed one. Letting a process crash is often an approach favored over extensive error handling.</p>
 </div>
-## <a name="actors"></a> Some formalism with actors
+## <a name="actors"></a> Some formalism of processes with actors
 
 Defined more formally, the independent processing units (processes) in Elixir and the BEAM follow the definition of an [Actor](https://en.wikipedia.org/wiki/Actor_model). Actor is a concept introduced by Carl Hewitt in 1973 as an alternative to the object-oriented approach for stucturing of programs.
 
@@ -91,13 +84,13 @@ Let's imagine our actor is modelled as a a state-machine. We first create an act
 
 ### An actor can create new actors
 
-The actor `parent` receives our initiating message `{:do_something, sender, dataset}`. Upon receiving the message, the `parent`actor is programmed to create new actors, called `workers` that are effectively it's children.
+For example, we have actor called `parent`. The `parent` actor receives an initiating message `{:do_something, sender, dataset}`. Upon receiving the message, the `parent` actor is programmed to create new actors, called `workers` that are effectively it's children.
 
 ### An actor can send messages to other actors
 
-When the actor has created it's `workers`, the actor chunks the dataset it received and sends the chunks it to it's `workers` by with the message `{:do_calculations, chunk}`.
+When the `parent` actor has created it's `workers`, the `parent` actor chunks the dataset it received as parameter and sends the chunks it to it's children, the `workers` with the message `{:do_calculations, chunk_of_dataset}`.
 
-The `workers` receive the message and start doing the calculation, which can of course be split to even smaller chunks and distributed to new `workers` recursively.
+The `workers` receive the message and start performing the calculation, which can of course be split to even smaller chunks and distributed to new `workers` recursively.
 
 ### An actor can decide how to handle the next message it receives
 
@@ -109,7 +102,12 @@ When the `parent` receives the first results back from a `worker` the parent tra
 
 ## Spawning processes
 
-It turns out we have been working inside a BEAM process this whole time! That means, the thread we are working in can be used to spawn processes. Let's confirm this fact immediately.
+```elixir
+iex> self()
+#PID<0.85.0>
+```
+
+The call to the kernel function `self/0` reveals that we have in fact been working inside a BEAM process the whole time! That means, as the actor laws state, the process we are working in can be used to spawn more processes. Let's confirm this fact immediately.
 
 ### The keys to the kingdom with `spawn/1`
 
@@ -154,9 +152,9 @@ iex> receive do
 
 There is no shame in talking to your self, everybody does it sometimes. By obtaining the process handle with `self/0` we can send a message consisting of the atom `:you_have_mail`. The expression `receive` works just like the conditional structure `case`. Unlike `case`, the `receive` expression does not take an explicit parameter, but it blocks the process until it reads the next message from the process' mailbox to match against.
 
-The message is then matched against the patterns provided for the `receive` expression. In the case presented the results are sort of predictable.
+The message is then matched against the patterns provided for the `receive` expression. In our example case the presented results are sort of predictable.
 
-![Warning][warning] Be vary of what kind of data you are sending between processes. Elixir and Erlang processes having their own memory (heaps) means that all data sent between processes is always copied. So extensive use of processes might come at a cost of data copying. For example, when building pipelines data pipelines, you might be better off handling the data in a single process instead of moving it around.
+![Warning][warning] Be vary of what kind of data you are sending between processes. Elixir and Erlang processes having their own memory (heaps) means that all data sent between processes is always copied. So extensive use of processes might come at a cost of data copying. For example, when building pipelines data pipelines. In case of large chunks of data you might be better off handling the data in a single process instead of moving it around.
 
 ```elixir
 iex> receive do
@@ -180,9 +178,9 @@ iex> receive do
 "Received a response {:hey_there, #PID<0.112.0>}"
 ```
 
-Holy Uncanny Process! Yes, it really is this easy. We first assign the variable `parent` to point to the `iex` shell session. Then we spawn an anonymous function, which uses `send/2` to send the parent a message with the payload consisting of the atom `:hey_there` and a reference to the sender, which is points to newly created anonymous function.
+Holy Uncanny Processes! Yes, it really is this easy. We first assign the variable `parent` to point to the `iex` shell session. Then we spawn an anonymous function, which uses the `send/2` function to send the parent process a message. The message is formed with the payload consisting of the atom `:hey_there` and a reference to the sender function, the newly created child anonymous function.
 
-The `parent` process defines the expression received that just assigns the response to the variable `res` and interpolates the response within a string using the `inspect/2` function from the Kernel module. The result is a string informing us of a received response.
+The `receive` block in the `parent` process defines an expression that just assigns any received response to the variable `res` and interpolates the response into a string by calling the `inspect/2` function. The result is a string built from the received response.
 
 ```elixir
 iex> parent = self()
@@ -196,11 +194,11 @@ iex> flush()
 
 In practice, especially for debugging purposes, we do not really have to write the `receive` expression every single time. The Elixir Kernel also provides the `flush/0` function that reads every message from the mailbox and calls `inspect/2` for each result.
 
-## Process links with `spawn_link/1`
+## Linked processes with `spawn_link/1`
 
-The Erlang virtual machine supports a concept called process link. A link between the process is a relationship between processes that change the behavior in case of crashes. In case of a crash a linked child process will bring down the parent process. Also in the case of a parent failure, the link also causes the child processes to die.
+The Erlang virtual machine supports a concept called process link. A link between processes is a relationship between processes that changes the default behavior in case of crashes. In case of a crash a linked child process will bring down the parent process. Also in the case of a parent failure, the link also causes the child processes to die.
 
-This behavior is a useful property with links, when we take dependencies between processes in to consideration. If a process dies, it's a good idea to kill the processes that depend on it rather than resolving the potentially missing dependencies manually. An alternative to manual resolving is just to restart the whole process tree or group. This is a part of the let-it-die, or fail fast philosophy of both Erlang and Elixir.
+This behavior is a useful property when we take dependencies between processes in to consideration. If a process dies, it's a good idea to kill the processes that depend on it rather than resolving the potentially missing dependencies manually. An alternative to manual resolving is just to restart the whole process tree or group. This is a part of the let-it-die, or fail fast philosophy of both Erlang and Elixir.
 
 ```elixir
 iex> pid = spawn(fn -> raise "hell" end)
@@ -240,13 +238,13 @@ Interactive Elixir (1.2.3) - press Ctrl+C to exit (type h() ENTER for help)
 iex(1)>
 ```
 
-The `spawn_link/1` can be used exactly like the `spawn/1` function, but the difference is, that it makes the parent process die in case of the child dying. It is kind of scary to see the `iex` process crashing at the same time - but it's comforting to know that in a real-life scenario our application would basically just restart and continue normal operation.
+The `spawn_link/1` can be used exactly like the `spawn/1` function, but the difference is, that it makes the parent process die in case of the child dying. It is kind of scary to see the `iex` process crashing at the same time - but it's comforting to know that in a real-life scenario our application could basically just restart very fast and continue normal operation.
 
-We don't really have to worry about these linked processes crashing our application all the time. Elixir and Erlang feature a special type of process called the (process) supervisor for this purpose. We will discuss supervisors in a bit more detail in the next chapter.
+We don't really have to worry about these linked processes crashing our application all the time. Elixir and Erlang feature a special type of process called the (process) [Supervisor](https://hexdocs.pm/elixir/Supervisor.html) for this purpose. We will discuss supervisors in a bit more detail in the next chapter.
 
 ## Registering a process
 
-Registering a process is basically giving a process a well-known name within an application. The name allows the process to be accessed by other processes by calling it's name. This is a useful property in cases such as implementing application-wide services. The name is represented by an `:atom` value.
+Registering a process is basically giving a process a unique globally referencable name within an application. The name allows the process to be accessed by other processes by calling it's name. This is a useful property in cases such as implementing application-wide services. The name is represented by an `:atom` value.
 
 ```elixir
 defmodule Ponger do
@@ -291,7 +289,7 @@ iex> flush()
 
 After registering the name, we can substitute the process identifier taken as the first parameter of `send/2` with the atom `:ponger`. Using the registered atom in `send/2` calls makes calling `Ponger` quite a bit more convenient.
 
-## Modelling a state machine
+## Modeling a state machine from a process
 
 Now that we have taken a closer look to processes, let's start building something a little more complex and return to the abstract example of `parent` and `worker`s used in the introductory section.
 
@@ -316,26 +314,26 @@ end
 
 Let's start by defining a really simple implementation for the behavior of `parent` we discussed earlier. The parent has a public function `start/0` which calls the `spawn_link/1` function with an anonymous function calling the other function `ready_to_receive/0`. The function `ready_to_receive` defines the expression `receive` with two patterns to match against the incoming data.
 
-The first pattern defined by the expression matches the incoming data to the atom `:do_something`. If the data doesn't match, the any `_` pattern will output an error message. Both patterns recursively call `ready_to_receive/0` recursively to enable us to do a little bit of test-driving our fancy new process.
+The first pattern defined by the expression matches the incoming data to the atom `:do_something`. If the data doesn't match, the wildcard `_` pattern will output an error message. Both patterns recursively call `ready_to_receive/0` for now to enable us a for a chance of test-driving our fancy new process.
 
 ```elixir
 iex> parent = Parent.start()
 #PID<0.86.0>
 ```
 
-First we start a new instance of the parent. The `spawn_link/1` returns us a process handle, represented by the type `PID`, which we match against the variable `parent` for later use.
+First we start a new instance of the parent module. The `spawn_link/1` returns us a process handle, represented by the type `PID`, which we assign to, or match against, the variable `parent` for later use.
 
 ```elixir
-iex> send(p, :foo)
+iex> send(parent, :foo)
 :foo
-iex> send(p, :do_something)
+iex> send(parent, :do_something)
 Task received
 :do_something
 ```
 
-Looking good! The parent reacted to our messages as expected, and even better: handled more than a single message. Now let's allow the `Parent`'s transition to a different state.
+Looking good! The parent reacted to our messages as expected, and even better: handled more than a single message. Now let's allow the `Parent` to transition to a different state.
 
-At this point, working in the `iex` interpreter is getting a little challenging. I recommended you to create a new elixir script `state_machine.exs`, which can be executed by entering the command `elixir state_machine.exs` in the directory the file was saved in.
+At this point, working in the `iex` interpreter is getting a little challenging. I recommend you to create a new elixir script `state_machine.exs`, which can be executed by entering the command `elixir state_machine.exs` in the directory the file was saved in.
 
 ```elixir
 defmodule Parent do
@@ -390,9 +388,9 @@ defmodule Worker do
 end
 ```
 
-Now it's the time to add a second module `Worker` to our script. The worker defines two functions `start/2` which takes a sender process to send the result back to and a number `n` indicating the number to be squared. The worker will respond with a tuple `{:job_done, pid, result}` when it finishes the task. We opt to use the `pid` to determine which worker sent the result in order to allow our parent to preserve ordering of the results.
+Now it's the time to add a second module `Worker` to our script. The worker defines two functions, one for starting the worker, a second for performing a task. The `start/2` function takes a sender process to send the result back to and a number `n` indicating the number to be squared. The worker will respond with a tuple `{:job_done, pid, result}` when it finishes the task. We opt to use the `pid` to determine which worker sent the result in order to allow our parent to preserve ordering of the results.
 
-Notice that we also choose to use a function guard here to enforce the type safety. Using a guard is completely optional, but we choose to use one for the sake of practice.
+Notice that we also choose to use function guards in `start/2` to enforce the type safety. Using guards is completely optional, but we choose to use them for the sake of good practice.
 
 ```elixir
 iex> Worker.start(self, 5)
@@ -413,9 +411,9 @@ defmodule Parent do
 
   defp ready_to_receive() do
     receive do
-      # We now use a tuple here, in order to take in a command and parameters
+      # Wrap messages in a tuple, in order to take in a command, sender and parameters
       {:do_something, sender, dataset} ->
-        # We want to extract the heavy lifting out of here
+        # We want to extract the heavy lifting to it's own function
         start_task(sender, dataset)
       x ->
         IO.puts("Can't handle this #{inspect(x)}")
@@ -428,7 +426,7 @@ defmodule Parent do
     # in order to preserve the order in which the input data was given
     workers = dataset |> Enum.map(fn n -> Worker.start(self(), n) end)
     # Use an empty map for receiving results, because we can't know
-    # in which order they will arrive. Don't we all just love asynchronism?
+    # in which order they will arrive. Don't we just love asynchronism?
     task_running(initiator, workers, %{})
   end
 
@@ -438,7 +436,7 @@ defmodule Parent do
         # Whenever a result comes in, insert it into the result map
         # remember overwriting the variable result_map is perfectly safe
         result_map = Map.put(result_map, sender, result)
-        # Inspect if the result count matches the number of workers
+        # Test if the count of results matches the number of workers
         case Map.size(result_map) == length(workers) do
         # If all results are in, send them back and transition back to
         # accepting new jobs
@@ -455,7 +453,7 @@ defmodule Parent do
     end
   end
 
-  # Map over the workers, and grab the result corresponding the worker
+  # Map over the workers, and grab the result corresponding to the worker
   # from the result map, resulting in an ordered list of results
   defp send_results(initiator, workers, result_map) do
     results = workers |> Enum.map(fn w -> Map.get(result_map, w) end)
@@ -485,7 +483,7 @@ $ elixir state_machine.exs
 Received a result [1, 4, 9, 16, 25]
 ```
 
-Nice! We basically implemented a map-reduce type of action using a finite state machine. Our FSM first splits the task, collects the results and reports them back to the sender. Although it feels a little shameful that the `do_square/1` function we implemented in the `Worker` module would have performed a lot faster had we implemented it as an inline lambda, but let's not get stuck on the minor details.
+Nice! We basically implemented a map-reduce logic using a finite state machine. Our FSM first splits the task, collects the results and reports them back to the sender. Although it feels a little shameful that the `do_square/1` function we implemented in the `Worker` module would have performed it's task a lot faster had we implemented it as an inline lambda instead of this parallel approach, but let's not get stuck on the minor details.
 
 ```elixir
       msg -> IO.puts("I am busy, bother me later")
@@ -493,6 +491,6 @@ Nice! We basically implemented a map-reduce type of action using a finite state 
            task_running(initiator, workers, result_map)
 ```
 
-As a side note, changing the last match condition in `task_running/3` from using the `_` underscore to recognize a message `msg`, we can send the message back to the instance of the parent by calling `send/2` with `self()` and `msg`, which effectively creates a queuing mechanism, albeit a naive one.
+As a side note, changing the last match condition in `task_running/3` from using the `_` underscore to recognize a message `msg`, we can send the message back to the instance of the parent by calling `send/2` with `self()` and `msg`, which effectively creates a queuing mechanism, albeit an extremely naive an inefficient one.
 
-This concludes our tour of processes. In the next chapter we will look at some built-in constructs on processes that allow us to implement similar functionality with a lot less code using the built-in abstractions for generalized process behaviors.
+This concludes our tour of processes. In the next chapter we will look at some built-in constructs on processes that allow us to implement similar functionality with a lot less code using the built-in abstractions for generalized and standard process behaviors.

@@ -9,11 +9,11 @@
 
 <div class="key-concept">
     ![Key concept][lambda]<span>Laziness as a virtue</span>
-    <p>In addition to lists Elixir provides a list-like structure called a stream. A stream is a lazily evulated counterpart of a list. The laziness means, that after declaration, the value of a list is not necessarily evaluated immediately, but will be accessible when some eager function requires it.</p>
+    <p>In addition to lists Elixir provides a list-like concept called a stream. A stream is a lazily evulated counterpart of the list type. The laziness means, that after declaration, the values of a stream are not necessarily evaluated immediately, but will be accessible in a list-like manner when some eager function requires them.</p>
 
-    <p>Eager in this context refers to functions that demand a result right away. All the high-order functions found from the Enum module are examples of eager functions. The module `Stream` provides for the lazy counterparts of the functions in the `Enum` module. Unlike eager functions, the evaluation of lazy functions does not require (often a chain of) expressions to be evaluated right away. The evaluation of expressions defined using lazy constructs is delayed until something eager wants to access them. </p>
+    <p>Eager in this context refers to functions that demand a result right away. All the high-order functions found from the Enum module are examples of eager functions. The module `Stream` provides the lazy counterparts of the functions found in the `Enum` module. Unlike eager functions, the evaluation of lazy functions does not require (often a chain of) expressions to be evaluated right away. The evaluation of expressions defined using lazy constructs is delayed until something eager wants to access them. </p>
 
-    <p>Laziness proves itself useful in many situations. The programmer can define never-ending streams (lists) of data and access only the subset of the data one needs. For example, they can be used as infinite generators for fibonacci numbers or primes.</p>
+    <p>Laziness proves itself useful in many situations. The programmer can define never-ending streams (lists) and access only the subset of the data one needs. As for practical examples, a `Stream` can be used as infinite generators for fibonacci numbers or primes.</p>
 </div>
 
 ## Streams
@@ -25,7 +25,7 @@ iex> abc_cycle = Stream.cycle([:a, :b, :c])
 #Function<59.71479995/2 in Stream.unfold/2>
 ```
 
-We start by defining a stream with `Stream.cycle/1`. The function takes an enumerable as parameter and cycles through it infinitely. In these case, the stream produces a list `[:a, :b, :c, :a, :b ...]`.
+We start by defining a stream with `Stream.cycle/1`. The `cycle/1` function takes an enumerable as parameter and cycles through it infinitely. In the example case, the stream produces a list `[:a, :b, :c, :a, :b ...]`.
 
 Observe that instead of the `iex` shell displaying a value like usual, the `Stream.cycle/1` returns a function representing the underlying evaluation.
 
@@ -43,6 +43,8 @@ iex> abc_cycle |> Stream.drop(2) |> Enum.take(4)
 ```
 
 It's about time to prove the stream really works as advertised. Now that we are applying an eager function `Enum.take/2` on the stream, we are starting to see some results, as it returns a good old fashioned list of items.
+
+The reason the stream gets evaluated is that the eager function `Enum.take/2` requires access to `n` elements of the `Enumerable` represented by the stream. This means, that the values of the first `n` elements of the stream are returned as a new list.
 
 ```elixir
 iex> powers_of_two = Stream.unfold(2, fn n -> {n, n*2} end)
@@ -111,13 +113,13 @@ iex> Stream.unfold({0, 1}, fn {n, m} -> {n, {m, n + m}} end) |> Enum.take(10)
 Did I hear someone say "fibonacci sequence"? The `Stream.unfold/2` can be used with any kinds of values, not limited to just plain numbers. The above call to `Stream.unfold/2` uses a tuple `{0, 1}` as the initial accumulator. By using pattern matching, the `fn/1` defined as a second parameter extracts the values `{n, m}` from the tuple, and returns another tuple `{n, {m, n + m}}`, where `n` is the number returned in the current iteration. `m` represents the "next number" and the expression `n + m` represents the one after next. Quite neat, if I may say so.
 
 ```elixir
-iex> Stream.unfold(1, fn 10 -> nil; n-> {n, n+1} end) |> Enum.to_list()
+iex> Stream.unfold(1, fn(10 -> nil; n)-> {n, n+1} end) |> Enum.to_list()
 [1, 2, 3, 4, 5, 6, 7, 8, 9]
 ```
 
 One interesting feature of `Stream.unfold/2` is the ability for the programmer to provide a pattern of functions. The function still accepts two parameters, but instead of a single function as the second parameter, we supply two alternative bodies to choose from by matching the accumulator value.
 
-If the function returns a `nil`, `Stream.unfold/2` will treat it as the end of the stream. In any other case `Stream.unfold/2` will continue evulation as required.
+If the function returns a `nil`, `Stream.unfold/2` will treat it as the end of the stream. In any other case `Stream.unfold/2` will continue evaluation as required.
 
 In addition to manually defining streams, many libraries and modules, such as the [File module](http://elixir-lang.org/docs/stable/elixir/File.html) provide streaming functions to allow for delayed or on-demand access to resources. There is a future chapter dedicated to functions from the `File` module, but let's take a look at how streaming a file works.
 
@@ -173,7 +175,7 @@ We can think, that we have defined `line_count` as the length of the input, and 
   }
 ```
 
-The imperative approach would be better here, as counting the lines would not need the several hundred thousand unnecessary instructions forced upon us by the functional approach.
+The imperative approach would be more performant here, as counting the lines would not need the several hundred thousand unnecessary instructions forced upon us by the selected declarative approach.
 
 ## Ranges
 
